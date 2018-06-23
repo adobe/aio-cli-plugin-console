@@ -1,0 +1,12 @@
+{
+  "extends": "oclif",
+  "env": {
+    "node": true,
+    "es6": true,
+    "jest": true
+  },
+  "rules": {
+    "camelcase": [2, {"properties": "never"}],
+    "unicorn/filename-case": [ "error", { "case": "kebabCase" }]    
+  }
+}
