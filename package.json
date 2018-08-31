@@ -73,6 +73,7 @@
       "jest-junit"
     ],
     "testEnvironment": "node",
+    "setupTestFrameworkScriptFile": "./jest.setup.js",
     "globalSetup": "./test/fixtures/scripts/global-setup.js",
     "globalTeardown": "./test/fixtures/scripts/global-teardown.js"
   }
