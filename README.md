@@ -25,7 +25,7 @@ $ npm install -g @adobe/aio-cli-plugin-console
 $ ./bin/run COMMAND
 running command...
 $ ./bin/run (-v|--version|version)
-@adobe/aio-cli-plugin-console/1.0.9 darwin-x64 node-v8.9.4
+@adobe/aio-cli-plugin-console/1.0.9 darwin-x64 node-v8.11.4
 $ ./bin/run --help [COMMAND]
 USAGE
   $ ./bin/run COMMAND
@@ -53,7 +53,7 @@ EXAMPLES
   $ aio console:sel INTEGRATION_ID
 ```
 
-_See code: [src/commands/console.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.0.9/src/commands/console.js)_
+_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.0.9/src/commands/console/index.js)_
 
 ## `./bin/run console:list-integrations`
 

@@ -1,3 +1,5 @@
+/package-lock.json
+/yarn.lock
 *-debug.log
 *-error.log
 /.nyc_output
