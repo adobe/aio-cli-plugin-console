@@ -9,6 +9,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 -->
+
+[![Build Status](https://travis-ci.org/adobe/aio-cli-plugin-console.svg?branch=master)](https://travis-ci.org/adobe/aio-cli-plugin-console)
+[![Build status](https://ci.appveyor.com/api/projects/status/uqfe3c8bcr3anbbp?svg=true)](https://ci.appveyor.com/project/shazron/aio-cli-plugin-console)
+
 aio-cli-plugin-console
 ======================
 
