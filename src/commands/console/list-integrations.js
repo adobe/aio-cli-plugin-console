@@ -18,10 +18,10 @@ const DEFAULT_PAGE_NUMBER = 1
 const DEFAULT_PAGE_SIZE = 20
 
 // simplified to include only id+orgId, and name. Formatted for output.
-async function _listIntegrations(pageNum, pageSize) {
+async function _listIntegrations(passphrase, pageNum, pageSize) {
   try {
     const apiKey = await getApiKey()
-    const accessToken = await getAccessToken()
+    const accessToken = await getAccessToken(passphrase)
     const orgs = await getOrgs(accessToken, apiKey)
     const integrations = await getIntegrations(orgs[0].id, accessToken, apiKey, {pageNum, pageSize})
 
@@ -43,7 +43,7 @@ class ListIntegrationsCommand extends Command {
     let result
 
     try {
-      result = await this.listIntegrations(flags.page, flags.pageSize)
+      result = await this.listIntegrations(flags.passphrase, flags.page, flags.pageSize)
     } catch (e) {
       this.error(e.message)
     }
@@ -52,8 +52,8 @@ class ListIntegrationsCommand extends Command {
     return result
   }
 
-  async listIntegrations(page = DEFAULT_PAGE_NUMBER, pageSize = DEFAULT_PAGE_SIZE) {
-    return _listIntegrations(page, pageSize)
+  async listIntegrations(passphrase = null, page = DEFAULT_PAGE_NUMBER, pageSize = DEFAULT_PAGE_SIZE) {
+    return _listIntegrations(passphrase, page, pageSize)
   }
 }
 
@@ -62,6 +62,7 @@ ListIntegrationsCommand.description = 'lists integrations for use with Adobe I/O
 ListIntegrationsCommand.flags = {
   page: flags.integer({char: 'p', description: 'page number', default: DEFAULT_PAGE_NUMBER}),
   pageSize: flags.integer({char: 's', description: 'size of a page (max 50)', default: DEFAULT_PAGE_SIZE}),
+  passphrase: flags.string({char: 'p', description: 'the passphrase for the private-key'}),
 }
 
 ListIntegrationsCommand.aliases = [
