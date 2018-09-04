@@ -55,9 +55,21 @@ async function _selectIntegration(integrationId, passphrase) {
       AUTH=${result.auth}`
 
     const filePath = getWskPropsFilePath()
+
     let writeToFile = true
+    let _confirm = async message => {
+      try {
+        let response = await cli.prompt(`${message} (y/n)`, {required: false, timeout: 20000, default: 'n'})
+        if (['n', 'no'].includes(response)) return false
+        if (['y', 'yes'].includes(response)) return true
+        return _confirm(message)
+      } catch (e) {
+        return false
+      }
+    }
+
     if (fs.existsSync(filePath)) {
-      writeToFile = await cli.confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it? [y/n]`)
+      writeToFile = await _confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it?`)
     }
 
     if (writeToFile) {
