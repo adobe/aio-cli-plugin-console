@@ -16,6 +16,7 @@ const dedent = require('dedent-js')
 const fs = require('fs')
 const {accessToken: getAccessToken} = require('@adobe/aio-cli-plugin-jwt-auth')
 const {getNamespaceUrl, getApiKey, getWskPropsFilePath} = require('../../console-helpers')
+const {cli} = require('cli-ux')
 
 async function _selectIntegration(integrationId, passphrase) {
   if (!integrationId) {
@@ -54,7 +55,14 @@ async function _selectIntegration(integrationId, passphrase) {
       AUTH=${result.auth}`
 
     const filePath = getWskPropsFilePath()
-    fs.writeFileSync(filePath, wskProps)
+    let writeToFile = true
+    if (fs.existsSync(filePath)) {
+      writeToFile = await cli.confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it? [y/n]`)
+    }
+
+    if (writeToFile) {
+      fs.writeFileSync(filePath, wskProps)
+    }
 
     return result
   } catch (e) {

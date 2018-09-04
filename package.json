@@ -10,6 +10,7 @@
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/errors": "^1.1.2",
+    "cli-ux": "^4.8.1",
     "dedent-js": "^1.0.1",
     "jest": "^23.1.0",
     "jest-junit": "^5.0.0",
