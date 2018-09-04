@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const {Command} = require('@oclif/command')
+const {Command, flags} = require('@oclif/command')
 const rp = require('request-promise-native')
 const dedent = require('dedent-js')
 const fs = require('fs')
 const {accessToken: getAccessToken} = require('@adobe/aio-cli-plugin-jwt-auth')
 const {getNamespaceUrl, getApiKey, getWskPropsFilePath} = require('../../console-helpers')
 
-async function _selectIntegration(integrationId) {
+async function _selectIntegration(integrationId, passphrase) {
   if (!integrationId) {
     return Promise.reject(new Error('missing expected integration identifier.'))
   }
@@ -33,7 +33,7 @@ async function _selectIntegration(integrationId) {
     // ensure namespaceUrl ends with '/'
     namespaceUrl += namespaceUrl.endsWith(FORWARD_SLASH) ? '' : FORWARD_SLASH
     const tempUrl = `${namespaceUrl}${keys.join(FORWARD_SLASH)}`
-    const accessToken = await getAccessToken()
+    const accessToken = await getAccessToken(passphrase)
     const apiKey = await getApiKey()
 
     const options = {
@@ -65,24 +65,29 @@ async function _selectIntegration(integrationId) {
 class SelectIntegrationCommand extends Command {
   async run() {
     const {args} = this.parse(SelectIntegrationCommand)
+    const {flags} = this.parse(SelectIntegrationCommand)
     let result
 
     try {
-      result = await this.selectIntegration(args.integration_Id)
+      result = await this.selectIntegration(args.integration_Id, flags.passphrase)
     } catch (e) {
       this.error(e.message)
     }
     return result
   }
 
-  async selectIntegration(integrationId) {
-    return _selectIntegration(integrationId)
+  async selectIntegration(integrationId, passphrase) {
+    return _selectIntegration(integrationId, passphrase)
   }
 }
 
 SelectIntegrationCommand.args = [
   {name: 'integration_Id'},
 ]
+
+SelectIntegrationCommand.flags = {
+  passphrase: flags.string({char: 'p', description: 'the passphrase for the private-key'}),
+}
 
 SelectIntegrationCommand.description = `selects an integration and writes the .wskprops file to the local machine
 Run 'console:ls' to get a list of integrations to select from.

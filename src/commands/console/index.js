@@ -10,15 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const {Command} = require('@oclif/command')
+const {Command, flags} = require('@oclif/command')
 const ListIntegrationsCommand = require('./list-integrations')
 
 class ConsoleCommand extends Command {
   async run() {
+    const {flags} = this.parse(ListIntegrationsCommand)
     // when this is run, no params are needed
     // which is the same as `console:ls` (get list of integrations)
-    return ListIntegrationsCommand.run([])
+    return ListIntegrationsCommand.run([`--passphrase=${flags.passphrase}`])
   }
+}
+
+ConsoleCommand.flags = {
+  passphrase: flags.string({char: 'p', description: 'the passphrase for the private-key'}),
 }
 
 // this is set in package.json, see https://github.com/oclif/oclif/issues/120
