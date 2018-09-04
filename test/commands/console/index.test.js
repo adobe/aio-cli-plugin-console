@@ -26,7 +26,7 @@ test('call with no params', async () => {
   expect(spy).toHaveBeenCalledTimes(1)
   expect(spyList).toHaveBeenCalledTimes(1)
   expect(spy).toHaveBeenCalledWith([])
-  expect(spyList).toHaveBeenCalledWith([])
+  expect(spyList).toHaveBeenCalledWith(['--passphrase=undefined'])
 })
 
 test('exports', async () => {
