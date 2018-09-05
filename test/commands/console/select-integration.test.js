@@ -98,3 +98,44 @@ test('select-integration - config error', async () => {
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: console_get_namespaces_url'))
 })
+
+test('select-integration - mock success and overwrite .wskprops', async () => {
+  jest.mock('fs')
+
+  jest.spyOn(Config, 'get')
+  .mockImplementation(key => {
+    if (key === 'jwt-auth') {
+      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/"}'
+    }
+  })
+
+  let rp = require('request-promise-native')
+  rp.mockImplementation(() => Promise.resolve({name: 'Basil', auth: '======'}))
+
+  expect.assertions(2)
+
+  let runResult = SelectIntegrationCommand.run(['5_5', '--overwrite'])
+  await expect(runResult instanceof Promise).toBeTruthy()
+  await expect(runResult).resolves.toEqual({name: 'Basil', auth: '======'})
+})
+
+// test('select-integration - mock .wskprops does not exist', async () => {
+//   jest.mock('fs')
+
+//   jest.spyOn(Config, 'get')
+//   .mockImplementation(key => {
+//     if (key === 'jwt-auth') {
+//       return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/"}'
+//     }
+//   })
+
+//   let rp = require('request-promise-native')
+//   rp.mockImplementation(() => Promise.resolve({name: 'Basil', auth: '======'}))
+
+//   expect.assertions(2)
+
+//   let runResult = SelectIntegrationCommand.run(['5_5'])
+//   await expect(runResult instanceof Promise).toBeTruthy()
+//   await expect(runResult).resolves.toEqual({name: 'Basil', auth: '======'})
+// })
+

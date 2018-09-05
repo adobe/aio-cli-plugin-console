@@ -15,8 +15,7 @@ const rp = require('request-promise-native')
 const dedent = require('dedent-js')
 const fs = require('fs')
 const {accessToken: getAccessToken} = require('@adobe/aio-cli-plugin-jwt-auth')
-const {getNamespaceUrl, getApiKey, getWskPropsFilePath} = require('../../console-helpers')
-const {cli} = require('cli-ux')
+const {confirm, getNamespaceUrl, getApiKey, getWskPropsFilePath} = require('../../console-helpers')
 
 async function _selectIntegration(integrationId, passphrase, overwrite) {
   if (!integrationId) {
@@ -55,24 +54,13 @@ async function _selectIntegration(integrationId, passphrase, overwrite) {
       AUTH=${result.auth}`
 
     const filePath = getWskPropsFilePath()
-
     let writeToFile = true
-    let _confirm = async message => {
-      try {
-        let response = await cli.prompt(`${message} (y/n)`, {required: false, timeout: 20000, default: 'n'})
-        if (['n', 'no'].includes(response)) return false
-        if (['y', 'yes'].includes(response)) return true
-        return _confirm(message)
-      } catch (e) {
-        return false
-      }
-    }
 
     if (fs.existsSync(filePath)) {
       if (overwrite) {
         writeToFile = true
       } else {
-        writeToFile = await _confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it?`)
+        writeToFile = await confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it?`)
       }
     }
 

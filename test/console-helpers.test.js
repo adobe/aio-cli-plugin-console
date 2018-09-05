@@ -16,8 +16,9 @@ jest.mock('request-promise-native')
 jest.setTimeout(10000)
 
 const path = require('path')
-const {getApiKey, getIntegrations, getOrgs, getOrgsUrl, getWskPropsFilePath, getNamespaceUrl} = require('../src/console-helpers')
+const {confirm, getApiKey, getIntegrations, getOrgs, getOrgsUrl, getWskPropsFilePath, getNamespaceUrl} = require('../src/console-helpers')
 const Config = require('@adobe/aio-cli-plugin-config')
+const {cli} = require('cli-ux')
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -144,4 +145,24 @@ test('getIntegrations', async () => {
 
   await expect(getIntegrations('myOrg', 'myAccessToken', 'myApiKey')).resolves.toBeUndefined()
   await expect(getIntegrations('myOrg', 'myAccessToken', 'myApiKey', {pageNum: -1, pageSize: 51})).resolves.toBeUndefined()
+})
+
+test('confirm', async () => {
+  let confirmPromise = confirm('Require input?')
+  process.stdin.emit('data', 'yes')
+  let answer = await confirmPromise
+  await cli.done()
+  expect(answer).toBe(true)
+
+  confirmPromise = confirm('Require input?')
+  process.stdin.emit('data', 'no')
+  answer = await confirmPromise
+  await cli.done()
+  expect(answer).toBe(false)
+
+  confirmPromise = confirm('Require input?')
+  process.stdin.emit('data', 'gibberish')
+  answer = await confirmPromise
+  await cli.done()
+  expect(answer).toBe(false)
 })
