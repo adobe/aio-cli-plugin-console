@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const fs = require('fs')
 const Config = require('@adobe/aio-cli-plugin-config')
 const SelectIntegrationCommand = require('../../../src/commands/console/select-integration')
 jest.mock('request-promise-native')
@@ -43,7 +44,9 @@ test('select-integration - bad args', async () => {
 })
 
 test('select-integration - console_get_namespaces_url, does not end with forward slash', async () => {
-  jest.mock('fs')
+  fs.writeFileSync = jest.fn()
+  fs.existsSync = jest.fn()
+  fs.existsSync.mockReturnValue(false)
 
   jest.spyOn(Config, 'get')
   .mockImplementation(key => {
@@ -63,7 +66,9 @@ test('select-integration - console_get_namespaces_url, does not end with forward
 })
 
 test('select-integration - mock success', async () => {
-  jest.mock('fs')
+  fs.writeFileSync = jest.fn()
+  fs.existsSync = jest.fn()
+  fs.existsSync.mockReturnValue(true)
 
   jest.spyOn(Config, 'get')
   .mockImplementation(key => {
@@ -83,7 +88,9 @@ test('select-integration - mock success', async () => {
 })
 
 test('select-integration - config error', async () => {
-  jest.mock('fs')
+  fs.writeFileSync = jest.fn()
+  fs.existsSync = jest.fn()
+  fs.existsSync.mockReturnValue(true)
 
   jest.spyOn(Config, 'get')
   .mockImplementation(key => {
@@ -100,7 +107,9 @@ test('select-integration - config error', async () => {
 })
 
 test('select-integration - mock success and overwrite .wskprops', async () => {
-  jest.mock('fs')
+  fs.writeFileSync = jest.fn()
+  fs.existsSync = jest.fn()
+  fs.existsSync.mockReturnValue(true)
 
   jest.spyOn(Config, 'get')
   .mockImplementation(key => {
@@ -119,23 +128,25 @@ test('select-integration - mock success and overwrite .wskprops', async () => {
   await expect(runResult).resolves.toEqual({name: 'Basil', auth: '======'})
 })
 
-// test('select-integration - mock .wskprops does not exist', async () => {
-//   jest.mock('fs')
+test('select-integration - mock .wskprops does not exist', async () => {
+  fs.writeFileSync = jest.fn()
+  fs.existsSync = jest.fn()
+  fs.existsSync.mockReturnValue(false)
 
-//   jest.spyOn(Config, 'get')
-//   .mockImplementation(key => {
-//     if (key === 'jwt-auth') {
-//       return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/"}'
-//     }
-//   })
+  jest.spyOn(Config, 'get')
+  .mockImplementation(key => {
+    if (key === 'jwt-auth') {
+      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/"}'
+    }
+  })
 
-//   let rp = require('request-promise-native')
-//   rp.mockImplementation(() => Promise.resolve({name: 'Basil', auth: '======'}))
+  let rp = require('request-promise-native')
+  rp.mockImplementation(() => Promise.resolve({name: 'Basil', auth: '======'}))
 
-//   expect.assertions(2)
+  expect.assertions(2)
 
-//   let runResult = SelectIntegrationCommand.run(['5_5'])
-//   await expect(runResult instanceof Promise).toBeTruthy()
-//   await expect(runResult).resolves.toEqual({name: 'Basil', auth: '======'})
-// })
+  let runResult = SelectIntegrationCommand.run(['5_5'])
+  await expect(runResult instanceof Promise).toBeTruthy()
+  await expect(runResult).resolves.toEqual({name: 'Basil', auth: '======'})
+})
 
