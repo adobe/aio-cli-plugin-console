@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const rp = require('request-promise-native')
 const path = require('path')
 const Config = require('@adobe/aio-cli-plugin-config')
+const {cli} = require('cli-ux')
 
 function toJson(item) {
   let c = item
@@ -123,7 +124,27 @@ async function getIntegrations(orgId, accessToken, apiKey, {pageNum = 1, pageSiz
   return rp(options)
 }
 
+/**
+ * Wrapper for cli.prompt because cli.confirm does not support options
+ *
+ * @param {*} message The message to output
+ * @param {*} options cli.prompt options
+ */
+async function confirm(message, options) {
+  try {
+    options = options || {required: false, timeout: 20000, default: 'n'}
+    let response = await cli.prompt(`${message} (y/n)`, options)
+
+    if (['n', 'no'].includes(response)) return false
+    if (['y', 'yes'].includes(response)) return true
+    return false // default is false
+  } catch (e) {
+    return false
+  }
+}
+
 module.exports = {
+  confirm,
   getOrgs,
   getOrgsUrl,
   getWskPropsFilePath,

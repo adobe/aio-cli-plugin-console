@@ -15,9 +15,9 @@ const rp = require('request-promise-native')
 const dedent = require('dedent-js')
 const fs = require('fs')
 const {accessToken: getAccessToken} = require('@adobe/aio-cli-plugin-jwt-auth')
-const {getNamespaceUrl, getApiKey, getWskPropsFilePath} = require('../../console-helpers')
+const {confirm, getNamespaceUrl, getApiKey, getWskPropsFilePath} = require('../../console-helpers')
 
-async function _selectIntegration(integrationId, passphrase) {
+async function _selectIntegration(integrationId, passphrase, overwrite) {
   if (!integrationId) {
     return Promise.reject(new Error('missing expected integration identifier.'))
   }
@@ -54,7 +54,19 @@ async function _selectIntegration(integrationId, passphrase) {
       AUTH=${result.auth}`
 
     const filePath = getWskPropsFilePath()
-    fs.writeFileSync(filePath, wskProps)
+    let writeToFile = true
+
+    if (fs.existsSync(filePath)) {
+      if (overwrite) {
+        writeToFile = true
+      } else {
+        writeToFile = await confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it?`)
+      }
+    }
+
+    if (writeToFile) {
+      fs.writeFileSync(filePath, wskProps)
+    }
 
     return result
   } catch (e) {
@@ -69,15 +81,15 @@ class SelectIntegrationCommand extends Command {
     let result
 
     try {
-      result = await this.selectIntegration(args.integration_Id, flags.passphrase)
+      result = await this.selectIntegration(args.integration_Id, flags.passphrase, flags.overwrite)
     } catch (e) {
       this.error(e.message)
     }
     return result
   }
 
-  async selectIntegration(integrationId, passphrase) {
-    return _selectIntegration(integrationId, passphrase)
+  async selectIntegration(integrationId, passphrase, overwrite) {
+    return _selectIntegration(integrationId, passphrase, overwrite)
   }
 }
 
@@ -86,7 +98,8 @@ SelectIntegrationCommand.args = [
 ]
 
 SelectIntegrationCommand.flags = {
-  passphrase: flags.string({char: 'p', description: 'the passphrase for the private-key'}),
+  passphrase: flags.string({char: 'p', description: 'the passphrase for the private-key', default: null}),
+  overwrite: flags.boolean({char: 'w', description: 'overwrite the .wskprops file if it exists', default: false}),
 }
 
 SelectIntegrationCommand.description = `selects an integration and writes the .wskprops file to the local machine
