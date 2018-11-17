@@ -78,13 +78,18 @@ test('select-integration - mock success', async () => {
   })
 
   let rp = require('request-promise-native')
-  rp.mockImplementation(() => Promise.resolve({name: 'Basil', auth: '======'}))
+  rp.mockImplementation(opts => {
+    expect(opts.headers['x-ims-org-id']).toEqual('5')
+    return Promise.resolve({name: 'Basil', auth: '======'})
+  })
 
-  expect.assertions(2)
+  expect.assertions(4)
 
   let runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({name: 'Basil', auth: '======'})
+  expect(rp).toHaveBeenCalled()
+
 })
 
 test('select-integration - config error', async () => {

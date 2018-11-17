@@ -41,6 +41,7 @@ async function _selectIntegration(integrationId, passphrase, overwrite) {
       method: 'POST',
       headers: {
         'X-Api-Key': apiKey,
+        'x-ims-org-id': keys[0],
         Authorization: `Bearer ${accessToken}`,
         accept: 'application/json',
       },
