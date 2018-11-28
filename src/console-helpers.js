@@ -97,6 +97,22 @@ async function getNamespaceUrl() {
   return configData.console_get_namespaces_url
 }
 
+async function getIMSOrgId() {
+  const configStr = await Config.get('jwt-auth')
+  if (!configStr) {
+    return Promise.reject(new Error('missing config data: jwt-auth'))
+  }
+
+  const configData = toJson(configStr)
+  if (!configData.jwt_payload) {
+    return Promise.reject(new Error('missing config data: jwt_payload'))
+  }
+  if (!configData.jwt_payload.iss) {
+    return Promise.reject(new Error('missing config data: jwt_payload.iss'))
+  }
+  return configData.jwt_payload.iss
+}
+
 /**
  * @description Calls the server api to get a list of integrations (by org)
  * @param {string} orgId organization to look in
@@ -151,4 +167,5 @@ module.exports = {
   getApiKey,
   getNamespaceUrl,
   getIntegrations,
+  getIMSOrgId,
 }
