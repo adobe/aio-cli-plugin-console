@@ -51,7 +51,7 @@ test('select-integration - console_get_namespaces_url, does not end with forward
   jest.spyOn(Config, 'get')
   .mockImplementation(key => {
     if (key === 'jwt-auth') {
-      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar"}'
+      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar","jwt_payload": {"iss":"asd"}}'
     }
   })
 
@@ -73,13 +73,13 @@ test('select-integration - mock success', async () => {
   jest.spyOn(Config, 'get')
   .mockImplementation(key => {
     if (key === 'jwt-auth') {
-      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/"}'
+      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/","jwt_payload": {"iss":"asd"}}'
     }
   })
 
   let rp = require('request-promise-native')
   rp.mockImplementation(opts => {
-    expect(opts.headers['x-ims-org-id']).toEqual('5')
+    expect(opts.headers['x-ims-org-id']).toEqual('asd')
     return Promise.resolve({name: 'Basil', auth: '======'})
   })
 
@@ -89,7 +89,6 @@ test('select-integration - mock success', async () => {
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({name: 'Basil', auth: '======'})
   expect(rp).toHaveBeenCalled()
-
 })
 
 test('select-integration - config error', async () => {
@@ -111,6 +110,73 @@ test('select-integration - config error', async () => {
   await expect(runResult).rejects.toEqual(new Error('missing config data: console_get_namespaces_url'))
 })
 
+test('select-integration - config error missing jwt_payload', async () => {
+  fs.writeFileSync = jest.fn()
+  fs.existsSync = jest.fn()
+  fs.existsSync.mockReturnValue(true)
+
+  jest.spyOn(Config, 'get')
+  .mockImplementation(key => {
+    if (key === 'jwt-auth') {
+      return '{"client_id": "1234","console_get_namespaces_url":"http://foo.bar/"}'
+    }
+  })
+
+  expect.assertions(2)
+
+  let runResult = SelectIntegrationCommand.run(['5_5'])
+  await expect(runResult instanceof Promise).toBeTruthy()
+  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload'))
+})
+
+test('select-integration - config error missing jwt_payload pre-condition', async () => {
+  fs.writeFileSync = jest.fn()
+  fs.existsSync = jest.fn()
+  fs.existsSync.mockReturnValue(true)
+
+  let goodValue = '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/"}'
+  // first mock is for getNamespaceUrl
+  // second mock is for getAccessToken
+  // third mock we want to fail so we can get full test coverage
+  jest.spyOn(Config, 'get')
+  .mockImplementationOnce(key => {
+    if (key === 'jwt-auth') {
+      return goodValue
+    }
+  })
+  .mockImplementationOnce(key => {
+    if (key === 'jwt-auth') {
+      return goodValue
+    }
+  })
+  .mockImplementationOnce(() => {})
+
+  expect.assertions(2)
+
+  let runResult = SelectIntegrationCommand.run(['5_5'])
+  await expect(runResult instanceof Promise).toBeTruthy()
+  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+})
+
+test('select-integration - config error missing jwt_payload.iss', async () => {
+  fs.writeFileSync = jest.fn()
+  fs.existsSync = jest.fn()
+  fs.existsSync.mockReturnValue(true)
+
+  jest.spyOn(Config, 'get')
+  .mockImplementation(key => {
+    if (key === 'jwt-auth') {
+      return '{"client_id": "1234","console_get_namespaces_url":"http://foo.bar/","jwt_payload":{}}'
+    }
+  })
+
+  expect.assertions(2)
+
+  let runResult = SelectIntegrationCommand.run(['5_5'])
+  await expect(runResult instanceof Promise).toBeTruthy()
+  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload.iss'))
+})
+
 test('select-integration - mock success and overwrite .wskprops', async () => {
   fs.writeFileSync = jest.fn()
   fs.existsSync = jest.fn()
@@ -119,7 +185,7 @@ test('select-integration - mock success and overwrite .wskprops', async () => {
   jest.spyOn(Config, 'get')
   .mockImplementation(key => {
     if (key === 'jwt-auth') {
-      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/"}'
+      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/","jwt_payload": {"iss":"asd"}}'
     }
   })
 
@@ -141,7 +207,7 @@ test('select-integration - mock .wskprops does not exist', async () => {
   jest.spyOn(Config, 'get')
   .mockImplementation(key => {
     if (key === 'jwt-auth') {
-      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/"}'
+      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/","jwt_payload": {"iss":"asd"}}'
     }
   })
 

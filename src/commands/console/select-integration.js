@@ -15,7 +15,7 @@ const rp = require('request-promise-native')
 const dedent = require('dedent-js')
 const fs = require('fs')
 const {accessToken: getAccessToken} = require('@adobe/aio-cli-plugin-jwt-auth')
-const {confirm, getNamespaceUrl, getApiKey, getWskPropsFilePath} = require('../../console-helpers')
+const {confirm, getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId} = require('../../console-helpers')
 
 async function _selectIntegration(integrationId, passphrase, overwrite) {
   if (!integrationId) {
@@ -35,18 +35,20 @@ async function _selectIntegration(integrationId, passphrase, overwrite) {
     const tempUrl = `${namespaceUrl}${keys.join(FORWARD_SLASH)}`
     const accessToken = await getAccessToken(passphrase)
     const apiKey = await getApiKey()
+    const imsOrgId = await getIMSOrgId()
 
     const options = {
       uri: tempUrl,
       method: 'POST',
       headers: {
         'X-Api-Key': apiKey,
-        'x-ims-org-id': keys[0],
+        'x-ims-org-id': imsOrgId,
         Authorization: `Bearer ${accessToken}`,
         accept: 'application/json',
       },
       json: true,
     }
+
     const result = await rp(options)
 
     const wskProps = dedent`
