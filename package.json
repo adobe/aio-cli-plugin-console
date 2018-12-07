@@ -19,11 +19,11 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
-    "@oclif/plugin-help": "^1",
+    "@oclif/plugin-help": "^2.1.4",
     "@oclif/test": "^1",
     "chalk": "^2.4.1",
-    "eslint": "^4",
-    "eslint-config-oclif": "^1",
+    "eslint": "^5.9.0",
+    "eslint-config-oclif": "^3.1.0",
     "stdout-stderr": "^0.1.9"
   },
   "engines": {
