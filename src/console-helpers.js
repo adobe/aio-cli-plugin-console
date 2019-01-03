@@ -154,7 +154,7 @@ async function confirm(message, options) {
     if (['n', 'no'].includes(response)) return false
     if (['y', 'yes'].includes(response)) return true
     return false // default is false
-  } catch (e) {
+  } catch (error) {
     return false
   }
 }

@@ -72,8 +72,8 @@ async function _selectIntegration(integrationId, passphrase, overwrite) {
     }
 
     return result
-  } catch (e) {
-    return Promise.reject(e)
+  } catch (error) {
+    return Promise.reject(error)
   }
 }
 
@@ -85,8 +85,8 @@ class SelectIntegrationCommand extends Command {
 
     try {
       result = await this.selectIntegration(args.integration_Id, flags.passphrase, flags.overwrite)
-    } catch (e) {
-      this.error(e.message)
+    } catch (error) {
+      this.error(error.message)
     }
     return result
   }
