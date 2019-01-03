@@ -29,7 +29,7 @@ $ npm install -g @adobe/aio-cli-plugin-console
 $ ./bin/run COMMAND
 running command...
 $ ./bin/run (-v|--version|version)
-@adobe/aio-cli-plugin-console/1.0.11 darwin-x64 node-v8.11.2
+@adobe/aio-cli-plugin-console/1.1.1 darwin-x64 node-v8.11.2
 $ ./bin/run --help [COMMAND]
 USAGE
   $ ./bin/run COMMAND
@@ -60,7 +60,7 @@ EXAMPLES
   $ aio console:sel INTEGRATION_ID
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.0.11/src/commands/console/index.js)_
+_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.1.1/src/commands/console/index.js)_
 
 ## `./bin/run console:list-integrations`
 
@@ -79,7 +79,7 @@ ALIASES
   $ ./bin/run console:ls
 ```
 
-_See code: [src/commands/console/list-integrations.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.0.11/src/commands/console/list-integrations.js)_
+_See code: [src/commands/console/list-integrations.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.1.1/src/commands/console/list-integrations.js)_
 
 ## `./bin/run console:select-integration [INTEGRATION_ID]`
 
@@ -101,5 +101,5 @@ ALIASES
   $ ./bin/run console:sel
 ```
 
-_See code: [src/commands/console/select-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.0.11/src/commands/console/select-integration.js)_
+_See code: [src/commands/console/select-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.1.1/src/commands/console/select-integration.js)_
 <!-- commandsstop -->
