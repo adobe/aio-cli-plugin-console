@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 -->
 
 [![Build Status](https://travis-ci.org/adobe/aio-cli-plugin-console.svg?branch=master)](https://travis-ci.org/adobe/aio-cli-plugin-console)
-[![Build status](https://ci.appveyor.com/api/projects/status/uqfe3c8bcr3anbbp?svg=true)](https://ci.appveyor.com/project/shazron/aio-cli-plugin-console)
+[![Build status](https://ci.appveyor.com/api/projects/status/uqfe3c8bcr3anbbp?svg=true)](https://ci.appveyor.com/project/shazron/aio-cli-plugin-console) [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/aio-cli-plugin-console.svg)](https://greenkeeper.io/)
 
 aio-cli-plugin-console
 ======================

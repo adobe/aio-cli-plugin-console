@@ -32,8 +32,8 @@ async function _listIntegrations(passphrase, pageNum, pageSize) {
     const str = `Success: Page ${integrations.page + 1} of ${integrations.pages}, Showing ${results.length} results of ${integrations.total} total.`
     results.unshift(str)
     return Promise.resolve(results.join('\n'))
-  } catch (e) {
-    return Promise.reject(e)
+  } catch (error) {
+    return Promise.reject(error)
   }
 }
 
@@ -44,8 +44,8 @@ class ListIntegrationsCommand extends Command {
 
     try {
       result = await this.listIntegrations(flags.passphrase, flags.page, flags.pageSize)
-    } catch (e) {
-      this.error(e.message)
+    } catch (error) {
+      this.error(error.message)
     }
 
     this.log(result)
