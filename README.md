@@ -9,9 +9,11 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 -->
-
+[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
+[![Version](https://img.shields.io/npm/v/@adobe/aio-cli-plugin-console.svg)](https://npmjs.org/package/@adobe/aio-cli-plugin-console)
+[![Downloads/week](https://img.shields.io/npm/dw/@adobe/aio-cli-plugin-console.svg)](https://npmjs.org/package/@adobe/aio-cli-plugin-console)
 [![Build Status](https://travis-ci.org/adobe/aio-cli-plugin-console.svg?branch=master)](https://travis-ci.org/adobe/aio-cli-plugin-console)
-[![Build status](https://ci.appveyor.com/api/projects/status/uqfe3c8bcr3anbbp?svg=true)](https://ci.appveyor.com/project/shazron/aio-cli-plugin-console) [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/aio-cli-plugin-console.svg)](https://greenkeeper.io/)
+[![Build status](https://ci.appveyor.com/api/projects/status/uqfe3c8bcr3anbbp?svg=true)](https://ci.appveyor.com/project/shazron/aio-cli-plugin-console) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/aio-cli-plugin-console.svg)](https://greenkeeper.io/)
 
 aio-cli-plugin-console
 ======================
