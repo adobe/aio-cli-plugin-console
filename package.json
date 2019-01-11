@@ -13,7 +13,7 @@
     "cli-ux": "^4.8.1",
     "dedent-js": "^1.0.1",
     "jest": "^23.1.0",
-    "jest-junit": "^5.0.0",
+    "jest-junit": "^6.0.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },
