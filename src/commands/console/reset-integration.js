@@ -10,14 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const {Command, flags} = require('@oclif/command')
+const {Command} = require('@oclif/command')
 const rp = require('request-promise-native')
-const dedent = require('dedent-js')
-const fs = require('fs')
 const {accessToken: getAccessToken} = require('@adobe/aio-cli-plugin-jwt-auth')
-const {confirm, getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId} = require('../../console-helpers')
+const {getNamespaceUrl, getApiKey, getIMSOrgId} = require('../../console-helpers')
 
-async function _resetIntegration(integrationId, passphrase, overwrite) {
+async function _resetIntegration(integrationId, passphrase) {
   if (!integrationId) {
     return Promise.reject(new Error('missing expected integration identifier.'))
   }
@@ -51,6 +49,7 @@ async function _resetIntegration(integrationId, passphrase, overwrite) {
 
     const result = await rp(options)
 
+    // eslint-disable-next-line no-warning-comments
     // todo: is there anything else?
 
     return result
