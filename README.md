@@ -31,7 +31,7 @@ $ npm install -g @adobe/aio-cli-plugin-console
 $ ./bin/run COMMAND
 running command...
 $ ./bin/run (-v|--version|version)
-@adobe/aio-cli-plugin-console/1.1.1 darwin-x64 node-v8.11.2
+@adobe/aio-cli-plugin-console/1.1.1 darwin-x64 node-v8.9.4
 $ ./bin/run --help [COMMAND]
 USAGE
   $ ./bin/run COMMAND
@@ -42,6 +42,7 @@ USAGE
 <!-- commands -->
 * [`./bin/run console`](#bin-run-console)
 * [`./bin/run console:list-integrations`](#bin-run-consolelist-integrations)
+* [`./bin/run console:reset-integration [INTEGRATION_ID]`](#bin-run-consolereset-integration-integration-id)
 * [`./bin/run console:select-integration [INTEGRATION_ID]`](#bin-run-consoleselect-integration-integration-id)
 
 ## `./bin/run console`
@@ -82,6 +83,24 @@ ALIASES
 ```
 
 _See code: [src/commands/console/list-integrations.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.1.1/src/commands/console/list-integrations.js)_
+
+## `./bin/run console:reset-integration [INTEGRATION_ID]`
+
+resets an integration's .wskprops auth hash.
+
+```
+USAGE
+  $ ./bin/run console:reset-integration [INTEGRATION_ID]
+
+DESCRIPTION
+  after running this command all clients will need to run `console:select-integration` 
+  to get a new auth hash in their .wskprops file
+
+ALIASES
+  $ ./bin/run console:reset
+```
+
+_See code: [src/commands/console/reset-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.1.1/src/commands/console/reset-integration.js)_
 
 ## `./bin/run console:select-integration [INTEGRATION_ID]`
 
