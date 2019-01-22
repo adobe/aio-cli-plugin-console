@@ -31,7 +31,7 @@ $ npm install -g @adobe/aio-cli-plugin-console
 $ ./bin/run COMMAND
 running command...
 $ ./bin/run (-v|--version|version)
-@adobe/aio-cli-plugin-console/1.2.0 darwin-x64 node-v8.14.0
+@adobe/aio-cli-plugin-console/1.2.0 darwin-x64 node-v8.11.2
 $ ./bin/run --help [COMMAND]
 USAGE
   $ ./bin/run COMMAND
@@ -61,6 +61,8 @@ EXAMPLES
   $ aio console:ls
   $ aio console:select-integration INTEGRATION_ID
   $ aio console:sel INTEGRATION_ID
+  $ aio console:reset-integration INTEGRATION_ID
+  $ aio console:reset INTEGRATION_ID
 ```
 
 _See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.2.0/src/commands/console/index.js)_

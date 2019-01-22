@@ -24,6 +24,8 @@ ConsoleCommand.examples = [
   '$ aio console:ls',
   '$ aio console:select-integration INTEGRATION_ID',
   '$ aio console:sel INTEGRATION_ID',
+  '$ aio console:reset-integration INTEGRATION_ID',
+  '$ aio console:reset INTEGRATION_ID',
 ]
 
 module.exports = ConsoleCommand
