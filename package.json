@@ -7,7 +7,7 @@
   "dependencies": {
     "@adobe/aio-cli-plugin-config": "^1.0.6",
     "@adobe/aio-cli-plugin-jwt-auth": "^1.0.9",
-    "@adobe/oclif-base-index-command": "^1.0.1",
+    "@adobe/oclif-base-index-command": "^1.0.2",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/errors": "^1.1.2",
@@ -54,8 +54,8 @@
   },
   "repository": "adobe/aio-cli-plugin-console",
   "scripts": {
-    "posttest": "eslint src",
-    "test": "npm run unit-tests",
+    "eslint": "eslint src test",
+    "test": "npm run eslint && npm run unit-tests",
     "unit-tests": "jest --ci -w=2",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
