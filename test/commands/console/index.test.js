@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 const ConsoleCommand = require('../../../src/commands/console')
-const ListIntegrationsCommand = require('../../../src/commands/console/list-integrations')
 const ConsoleExports = require('../../../src')
 const {stdout} = require('stdout-stderr')
 
@@ -19,14 +18,11 @@ beforeAll(() => stdout.start())
 afterAll(() => stdout.stop())
 
 test('call with no params', async () => {
-  let spy = jest.spyOn(ConsoleCommand, 'run')
-  let spyList = jest.spyOn(ListIntegrationsCommand, 'run').mockImplementation(() => Promise.resolve())
-  await ConsoleCommand.run([])
+  expect.assertions(2)
 
-  expect(spy).toHaveBeenCalledTimes(1)
-  expect(spyList).toHaveBeenCalledTimes(1)
-  expect(spy).toHaveBeenCalledWith([])
-  expect(spyList).toHaveBeenCalledWith(['--passphrase=undefined'])
+  let runResult = ConsoleCommand.run([])
+  await expect(runResult instanceof Promise).toBeTruthy()
+  await expect(runResult).rejects.toEqual(new Error('Missing 1 required arg:\nsub-command\nSee more help with --help'))
 })
 
 test('exports', async () => {
