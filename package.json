@@ -13,7 +13,7 @@
     "@oclif/errors": "^1.1.2",
     "cli-ux": "^5.1.0",
     "dedent-js": "^1.0.1",
-    "jest": "^23.1.0",
+    "jest": "^24.1.0",
     "jest-junit": "^6.0.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
@@ -74,7 +74,7 @@
       "jest-junit"
     ],
     "testEnvironment": "node",
-    "setupTestFrameworkScriptFile": "./jest.setup.js",
+    "setupFilesAfterEnv": ["./jest.setup.js"],
     "globalSetup": "./test/fixtures/scripts/global-setup.js",
     "globalTeardown": "./test/fixtures/scripts/global-teardown.js"
   }
