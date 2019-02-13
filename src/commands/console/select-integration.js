@@ -52,7 +52,7 @@ async function _selectIntegration(integrationId, passphrase, overwrite) {
     const result = await rp(options)
 
     const wskProps = dedent`
-      APIHOST=https://runtime.adobe.io
+      APIHOST=https://adobeioruntime.net
       NAMESPACE=${result.name}
       AUTH=${result.auth}`
 
