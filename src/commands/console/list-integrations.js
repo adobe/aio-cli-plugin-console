@@ -62,7 +62,7 @@ ListIntegrationsCommand.description = 'lists integrations for use with Adobe I/O
 ListIntegrationsCommand.flags = {
   page: flags.integer({char: 'p', description: 'page number', default: DEFAULT_PAGE_NUMBER}),
   pageSize: flags.integer({char: 's', description: 'size of a page (max 50)', default: DEFAULT_PAGE_SIZE}),
-  passphrase: flags.string({char: 'p', description: 'the passphrase for the private-key'}),
+  passphrase: flags.string({char: 'r', description: 'the passphrase for the private-key'}),
 }
 
 ListIntegrationsCommand.aliases = [
