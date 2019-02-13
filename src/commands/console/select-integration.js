@@ -107,7 +107,7 @@ SelectIntegrationCommand.flags = {
 
 SelectIntegrationCommand.description = `selects an integration and writes the .wskprops file to the local machine
 Run 'console:ls' to get a list of integrations to select from.
-The .wskprops file will be written to your home folder, and will overwrite the existing file.
+The .wskprops file will be written to your home folder, and you will be prompted whether you want to overwrite an existing file.
 `
 
 SelectIntegrationCommand.aliases = [
