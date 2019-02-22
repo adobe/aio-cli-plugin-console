@@ -11,15 +11,14 @@
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/errors": "^1.1.2",
-    "acorn": "^6.1.0",
     "cli-ux": "^5.1.0",
     "dedent-js": "^1.0.1",
-    "jest": "^24.1.0",
-    "jest-junit": "^6.0.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },
   "devDependencies": {
+    "jest": "^24.1.0",
+    "jest-junit": "^6.0.0",
     "@oclif/dev-cli": "^1",
     "@oclif/plugin-help": "^2.1.4",
     "@oclif/test": "^1",
@@ -75,7 +74,9 @@
       "jest-junit"
     ],
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["./jest.setup.js"],
+    "setupFilesAfterEnv": [
+      "./jest.setup.js"
+    ],
     "globalSetup": "./test/fixtures/scripts/global-setup.js",
     "globalTeardown": "./test/fixtures/scripts/global-teardown.js"
   }
