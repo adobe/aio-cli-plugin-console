@@ -106,3 +106,17 @@ test('ls missing client_id', async () => {
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: client_id'))
 })
+
+describe('basic command properties', () => {
+  test('has a description', () => {
+    expect(ListIntegrationsCommand.description).toBeDefined()
+  })
+
+  test('has aliases', () => {
+    expect(ListIntegrationsCommand.aliases).toBeDefined()
+  })
+
+  test('has flags', () => {
+    expect(ListIntegrationsCommand.flags).toBeDefined()
+  })
+})

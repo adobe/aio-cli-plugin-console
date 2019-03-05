@@ -13,20 +13,41 @@ governing permissions and limitations under the License.
 const ConsoleCommand = require('../../../src/commands/console')
 const ConsoleExports = require('../../../src')
 const {stdout} = require('stdout-stderr')
+const ListIntegrationsCommand = require('../../../src/commands/console/list-integrations')
 
 beforeAll(() => stdout.start())
 afterAll(() => stdout.stop())
 
-test('call with no params', async () => {
-  expect.assertions(2)
+describe('ConsoleCommand (index) ', () => {
 
-  let runResult = ConsoleCommand.run([])
-  await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('Missing 1 required arg:\nsub-command\nSee more help with --help'))
+  test('call with no params', async () => {
+    let spy = jest.spyOn(ConsoleCommand, 'run')
+    let spyList = jest.spyOn(ListIntegrationsCommand, 'run').mockImplementation(() => Promise.resolve())
+    await ConsoleCommand.run([])
+
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spyList).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledWith([])
+    expect(spyList).toHaveBeenCalledWith(['--passphrase=undefined'])
+  })
+
+  test('exports', async () => {
+    expect(typeof ConsoleExports.index).toEqual('function')
+    expect(typeof ConsoleExports['list-integrations']).toEqual('function')
+    expect(typeof ConsoleExports['select-integration']).toEqual('function')
+  })
 })
 
-test('exports', async () => {
-  expect(typeof ConsoleExports.index).toEqual('function')
-  expect(typeof ConsoleExports['list-integrations']).toEqual('function')
-  expect(typeof ConsoleExports['select-integration']).toEqual('function')
+describe('basic command properties', () => {
+  test('has a description', () => {
+    expect(ConsoleCommand.description).toBeDefined()
+  })
+
+  test('has a examples', () => {
+    expect(ConsoleCommand.examples).toBeDefined()
+  })
+
+  test('has flags', () => {
+    expect(ConsoleCommand.flags).toBeDefined()
+  })
 })
