@@ -19,7 +19,6 @@ beforeAll(() => stdout.start())
 afterAll(() => stdout.stop())
 
 describe('ConsoleCommand (index) ', () => {
-
   test('call with no params', async () => {
     let spy = jest.spyOn(ConsoleCommand, 'run')
     let spyList = jest.spyOn(ListIntegrationsCommand, 'run').mockImplementation(() => Promise.resolve())
