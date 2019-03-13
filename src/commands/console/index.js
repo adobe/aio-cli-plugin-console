@@ -10,14 +10,24 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const BaseIndexCommand = require('@adobe/oclif-base-index-command')
+const {Command, flags} = require('@oclif/command')
+const ListIntegrationsCommand = require('./list-integrations')
 
-class ConsoleCommand extends BaseIndexCommand {
+class ConsoleCommand extends Command {
+  async run() {
+    const {flags} = this.parse(ListIntegrationsCommand)
+    // when this is run, no params are needed
+    // which is the same as `console:ls` (get list of integrations)
+    return ListIntegrationsCommand.run([`--passphrase=${flags.passphrase}`])
+  }
 }
 
 // this is set in package.json, see https://github.com/oclif/oclif/issues/120
 // if not set it will get the first (alphabetical) topic's help description
 ConsoleCommand.description = 'List or select console integrations for the Adobe I/O Runtime'
+ConsoleCommand.flags = {
+  passphrase: flags.string({char: 'p', description: 'the passphrase for the private-key'}),
+}
 
 ConsoleCommand.examples = [
   '$ aio console:list-integrations',

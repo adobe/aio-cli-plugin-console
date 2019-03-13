@@ -176,3 +176,21 @@ test('reset-integration - config error missing jwt_payload.iss', async () => {
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload.iss'))
 })
+
+describe('ResetIntegrationCommand : basic command properties', () => {
+  test('has a description', () => {
+    expect(ResetIntegrationCommand.description).toBeDefined()
+  })
+
+  test('has args', () => {
+    expect(ResetIntegrationCommand.args).toBeDefined()
+  })
+
+  test('has aliases', () => {
+    expect(ResetIntegrationCommand.aliases).toBeDefined()
+  })
+
+  test('has flags', () => {
+    expect(ResetIntegrationCommand.flags).toBeDefined()
+  })
+})
