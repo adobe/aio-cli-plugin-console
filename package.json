@@ -19,12 +19,14 @@
     "@oclif/dev-cli": "^1",
     "@oclif/plugin-help": "^2.1.4",
     "@oclif/test": "^1",
+    "acorn": "^6.1.1",
     "chalk": "^2.4.1",
     "codecov": "^3.2.0",
-    "eslint": "^5.9.0",
+    "eslint": "^5.15.1",
     "eslint-config-oclif": "^3.1.0",
     "jest": "^24.1.0",
-    "jest-junit": "^6.0.0",
+    "jest-haste-map": "^24.5.0",
+    "jest-junit": "^6.3.0",
     "stdout-stderr": "^0.1.9"
   },
   "engines": {
