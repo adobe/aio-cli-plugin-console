@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const {Command} = require('@oclif/command')
+const { Command } = require('@oclif/command')
 const rp = require('request-promise-native')
-const {accessToken: getAccessToken} = require('@adobe/aio-cli-plugin-jwt-auth')
-const {getNamespaceUrl, getApiKey, getIMSOrgId} = require('../../console-helpers')
+const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
+const { getNamespaceUrl, getApiKey, getIMSOrgId } = require('../../console-helpers')
 
-async function _resetIntegration(integrationId, passphrase) {
+async function _resetIntegration (integrationId, passphrase) {
   if (!integrationId) {
     return Promise.reject(new Error('missing expected integration identifier.'))
   }
@@ -42,9 +42,9 @@ async function _resetIntegration(integrationId, passphrase) {
         'X-Api-Key': apiKey,
         'x-ims-org-id': imsOrgId,
         Authorization: `Bearer ${accessToken}`,
-        accept: 'application/json',
+        accept: 'application/json'
       },
-      json: true,
+      json: true
     }
 
     const result = await rp(options)
@@ -59,9 +59,9 @@ async function _resetIntegration(integrationId, passphrase) {
 }
 
 class ResetIntegrationCommand extends Command {
-  async run() {
-    const {args} = this.parse(ResetIntegrationCommand)
-    const {flags} = this.parse(ResetIntegrationCommand)
+  async run () {
+    const { args } = this.parse(ResetIntegrationCommand)
+    const { flags } = this.parse(ResetIntegrationCommand)
     let result
 
     try {
@@ -72,24 +72,24 @@ class ResetIntegrationCommand extends Command {
     return result
   }
 
-  async resetIntegration(integrationId, passphrase, overwrite) {
+  async resetIntegration (integrationId, passphrase, overwrite) {
     return _resetIntegration(integrationId, passphrase, overwrite)
   }
 }
 
 ResetIntegrationCommand.args = [
-  {name: 'integration_Id'},
+  { name: 'integration_Id' }
 ]
 
 ResetIntegrationCommand.flags = {}
 
-ResetIntegrationCommand.description =  `resets an integration's .wskprops auth hash.
+ResetIntegrationCommand.description = `resets an integration's .wskprops auth hash.
 after running this command all clients will need to run \`console:select-integration\` 
 to get a new auth hash in their .wskprops file
 `
 
 ResetIntegrationCommand.aliases = [
-  'console:reset',
+  'console:reset'
 ]
 
 module.exports = ResetIntegrationCommand

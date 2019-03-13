@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const {Command, flags} = require('@oclif/command')
+const { Command, flags } = require('@oclif/command')
 const ListIntegrationsCommand = require('./list-integrations')
 
 class ConsoleCommand extends Command {
-  async run() {
-    const {flags} = this.parse(ListIntegrationsCommand)
+  async run () {
+    const { flags } = this.parse(ListIntegrationsCommand)
     // when this is run, no params are needed
     // which is the same as `console:ls` (get list of integrations)
     return ListIntegrationsCommand.run([`--passphrase=${flags.passphrase}`])
@@ -26,7 +26,7 @@ class ConsoleCommand extends Command {
 // if not set it will get the first (alphabetical) topic's help description
 ConsoleCommand.description = 'List or select console integrations for the Adobe I/O Runtime'
 ConsoleCommand.flags = {
-  passphrase: flags.string({char: 'p', description: 'the passphrase for the private-key'}),
+  passphrase: flags.string({ char: 'p', description: 'the passphrase for the private-key' })
 }
 
 ConsoleCommand.examples = [
@@ -38,7 +38,7 @@ ConsoleCommand.examples = [
   '$ aio console select-integration INTEGRATION_ID',
   '$ aio console:reset-integration INTEGRATION_ID',
   '$ aio console:reset INTEGRATION_ID',
-  '$ aio console reset-integration INTEGRATION_ID',
+  '$ aio console reset-integration INTEGRATION_ID'
 ]
 
 module.exports = ConsoleCommand

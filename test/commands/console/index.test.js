@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 const ConsoleCommand = require('../../../src/commands/console')
 const ConsoleExports = require('../../../src')
-const {stdout} = require('stdout-stderr')
+const { stdout } = require('stdout-stderr')
 const ListIntegrationsCommand = require('../../../src/commands/console/list-integrations')
 
 beforeAll(() => stdout.start())

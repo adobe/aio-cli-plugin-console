@@ -27,7 +27,7 @@ jest.mock('conf', () => {
     // see https://github.com/facebook/jest/issues/2982
     Object.defineProperty(this, 'store',
       {
-        get: jest.fn(() => mockStore),
+        get: jest.fn(() => mockStore)
       })
 
     this.get = jest.fn(k => mockStore[k])
@@ -41,7 +41,7 @@ jest.mock('@adobe/aio-cli-plugin-jwt-auth', () => {
   return {
     accessToken: () => {
       return Promise.resolve('fake-token')
-    },
+    }
   }
 })
 
@@ -61,25 +61,25 @@ test('list-integrations - mock success', async () => {
   mockStore = {
     'jwt-auth': JSON.stringify({
       client_id: '1234',
-      console_get_orgs_url: '...',
-    }),
+      console_get_orgs_url: '...'
+    })
   }
 
   let rp = require('request-promise-native')
   rp.mockImplementationOnce(() => {
     // first call is to getOrgs ...
-    return Promise.resolve([{id: 0}])
+    return Promise.resolve([{ id: 0 }])
   })
-  .mockImplementationOnce(() => {
+    .mockImplementationOnce(() => {
     // second call is to getIntegrations within org
-    return Promise.resolve({page: 1,
-      pages: 2,
-      total: 15,
-      content: [{orgId: 0, id: 1, name: 'A'},
-        {orgId: 0, id: 2, name: 'B'},
-        {orgId: 0, id: 3, name: 'C'}],
+      return Promise.resolve({ page: 1,
+        pages: 2,
+        total: 15,
+        content: [{ orgId: 0, id: 1, name: 'A' },
+          { orgId: 0, id: 2, name: 'B' },
+          { orgId: 0, id: 3, name: 'C' }]
+      })
     })
-  })
 
   expect.assertions(2)
 
@@ -91,8 +91,8 @@ test('list-integrations - mock success', async () => {
 test('ls missing client_id', async () => {
   mockStore = {
     'jwt-auth': JSON.stringify({
-      not_client_id: '1234',
-    }),
+      not_client_id: '1234'
+    })
   }
 
   expect.assertions(4)

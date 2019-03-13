@@ -10,20 +10,20 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const {Command, flags} = require('@oclif/command')
-const {accessToken: getAccessToken} = require('@adobe/aio-cli-plugin-jwt-auth')
-const {getApiKey, getOrgs, getIntegrations} = require('../../console-helpers')
+const { Command, flags } = require('@oclif/command')
+const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
+const { getApiKey, getOrgs, getIntegrations } = require('../../console-helpers')
 
 const DEFAULT_PAGE_NUMBER = 1
 const DEFAULT_PAGE_SIZE = 20
 
 // simplified to include only id+orgId, and name. Formatted for output.
-async function _listIntegrations(passphrase, pageNum, pageSize) {
+async function _listIntegrations (passphrase, pageNum, pageSize) {
   try {
     const apiKey = await getApiKey()
     const accessToken = await getAccessToken(passphrase)
     const orgs = await getOrgs(accessToken, apiKey)
-    const integrations = await getIntegrations(orgs[0].id, accessToken, apiKey, {pageNum, pageSize})
+    const integrations = await getIntegrations(orgs[0].id, accessToken, apiKey, { pageNum, pageSize })
 
     const results = integrations.content.map(obj => {
       return `${obj.orgId}_${obj.id} : ${obj.name}` // \n\t- ${obj.description}`;
@@ -38,8 +38,8 @@ async function _listIntegrations(passphrase, pageNum, pageSize) {
 }
 
 class ListIntegrationsCommand extends Command {
-  async run() {
-    const {flags} = this.parse(ListIntegrationsCommand)
+  async run () {
+    const { flags } = this.parse(ListIntegrationsCommand)
     let result
 
     try {
@@ -52,7 +52,7 @@ class ListIntegrationsCommand extends Command {
     return result
   }
 
-  async listIntegrations(passphrase = null, page = DEFAULT_PAGE_NUMBER, pageSize = DEFAULT_PAGE_SIZE) {
+  async listIntegrations (passphrase = null, page = DEFAULT_PAGE_NUMBER, pageSize = DEFAULT_PAGE_SIZE) {
     return _listIntegrations(passphrase, page, pageSize)
   }
 }
@@ -60,13 +60,13 @@ class ListIntegrationsCommand extends Command {
 ListIntegrationsCommand.description = 'lists integrations for use with Adobe I/O Runtime serverless functions'
 
 ListIntegrationsCommand.flags = {
-  page: flags.integer({char: 'p', description: 'page number', default: DEFAULT_PAGE_NUMBER}),
-  pageSize: flags.integer({char: 's', description: 'size of a page (max 50)', default: DEFAULT_PAGE_SIZE}),
-  passphrase: flags.string({char: 'r', description: 'the passphrase for the private-key'}),
+  page: flags.integer({ char: 'p', description: 'page number', default: DEFAULT_PAGE_NUMBER }),
+  pageSize: flags.integer({ char: 's', description: 'size of a page (max 50)', default: DEFAULT_PAGE_SIZE }),
+  passphrase: flags.string({ char: 'r', description: 'the passphrase for the private-key' })
 }
 
 ListIntegrationsCommand.aliases = [
-  'console:ls',
+  'console:ls'
 ]
 
 module.exports = ListIntegrationsCommand

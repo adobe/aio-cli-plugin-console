@@ -19,7 +19,7 @@ jest.mock('@adobe/aio-cli-plugin-jwt-auth', () => {
   return {
     accessToken: () => {
       return Promise.resolve('fake-token')
-    },
+    }
   }
 })
 
@@ -49,20 +49,20 @@ test('reset-integration - console_get_namespaces_url, does not end with forward 
   fs.existsSync.mockReturnValue(false)
 
   jest.spyOn(Config, 'get')
-  .mockImplementation(key => {
-    if (key === 'jwt-auth') {
-      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar","jwt_payload": {"iss":"asd"}}'
-    }
-  })
+    .mockImplementation(key => {
+      if (key === 'jwt-auth') {
+        return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar","jwt_payload": {"iss":"asd"}}'
+      }
+    })
 
   let rp = require('request-promise-native')
-  rp.mockImplementation(() => Promise.resolve({name: 'Basil', auth: '======'}))
+  rp.mockImplementation(() => Promise.resolve({ name: 'Basil', auth: '======' }))
 
   expect.assertions(2)
 
   let runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).resolves.toEqual({name: 'Basil', auth: '======'})
+  await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
 })
 
 test('reset-integration - mock success', async () => {
@@ -71,23 +71,23 @@ test('reset-integration - mock success', async () => {
   fs.existsSync.mockReturnValue(true)
 
   jest.spyOn(Config, 'get')
-  .mockImplementation(key => {
-    if (key === 'jwt-auth') {
-      return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/","jwt_payload": {"iss":"asd"}}'
-    }
-  })
+    .mockImplementation(key => {
+      if (key === 'jwt-auth') {
+        return '{"client_id":1234,"console_get_namespaces_url":"http://foo.bar/","jwt_payload": {"iss":"asd"}}'
+      }
+    })
 
   let rp = require('request-promise-native')
   rp.mockImplementation(opts => {
     expect(opts.headers['x-ims-org-id']).toEqual('asd')
-    return Promise.resolve({name: 'Basil', auth: '======'})
+    return Promise.resolve({ name: 'Basil', auth: '======' })
   })
 
   expect.assertions(4)
 
   let runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).resolves.toEqual({name: 'Basil', auth: '======'})
+  await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
   expect(rp).toHaveBeenCalled()
 })
 
@@ -97,11 +97,11 @@ test('reset-integration - config error', async () => {
   fs.existsSync.mockReturnValue(true)
 
   jest.spyOn(Config, 'get')
-  .mockImplementation(key => {
-    if (key === 'jwt-auth') {
-      return '{"not_client_id": "1234"}'
-    }
-  })
+    .mockImplementation(key => {
+      if (key === 'jwt-auth') {
+        return '{"not_client_id": "1234"}'
+      }
+    })
 
   expect.assertions(2)
 
@@ -116,11 +116,11 @@ test('reset-integration - config error missing jwt_payload', async () => {
   fs.existsSync.mockReturnValue(true)
 
   jest.spyOn(Config, 'get')
-  .mockImplementation(key => {
-    if (key === 'jwt-auth') {
-      return '{"client_id": "1234","console_get_namespaces_url":"http://foo.bar/"}'
-    }
-  })
+    .mockImplementation(key => {
+      if (key === 'jwt-auth') {
+        return '{"client_id": "1234","console_get_namespaces_url":"http://foo.bar/"}'
+      }
+    })
 
   expect.assertions(2)
 
@@ -139,17 +139,17 @@ test('reset-integration - config error missing jwt_payload pre-condition', async
   // second mock is for getAccessToken
   // third mock we want to fail so we can get full test coverage
   jest.spyOn(Config, 'get')
-  .mockImplementationOnce(key => {
-    if (key === 'jwt-auth') {
-      return goodValue
-    }
-  })
-  .mockImplementationOnce(key => {
-    if (key === 'jwt-auth') {
-      return goodValue
-    }
-  })
-  .mockImplementationOnce(() => {})
+    .mockImplementationOnce(key => {
+      if (key === 'jwt-auth') {
+        return goodValue
+      }
+    })
+    .mockImplementationOnce(key => {
+      if (key === 'jwt-auth') {
+        return goodValue
+      }
+    })
+    .mockImplementationOnce(() => {})
 
   expect.assertions(2)
 
@@ -164,11 +164,11 @@ test('reset-integration - config error missing jwt_payload.iss', async () => {
   fs.existsSync.mockReturnValue(true)
 
   jest.spyOn(Config, 'get')
-  .mockImplementation(key => {
-    if (key === 'jwt-auth') {
-      return '{"client_id": "1234","console_get_namespaces_url":"http://foo.bar/","jwt_payload":{}}'
-    }
-  })
+    .mockImplementation(key => {
+      if (key === 'jwt-auth') {
+        return '{"client_id": "1234","console_get_namespaces_url":"http://foo.bar/","jwt_payload":{}}'
+      }
+    })
 
   expect.assertions(2)
 
