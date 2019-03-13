@@ -42,18 +42,21 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`./bin/run console SUB-COMMAND`](#bin-run-console-sub-command)
+* [`./bin/run console`](#bin-run-console)
 * [`./bin/run console:list-integrations`](#bin-run-consolelist-integrations)
 * [`./bin/run console:reset-integration [INTEGRATION_ID]`](#bin-run-consolereset-integration-integration-id)
 * [`./bin/run console:select-integration [INTEGRATION_ID]`](#bin-run-consoleselect-integration-integration-id)
 
-## `./bin/run console SUB-COMMAND`
+## `./bin/run console`
 
 List or select console integrations for the Adobe I/O Runtime
 
 ```
 USAGE
-  $ ./bin/run console SUB-COMMAND
+  $ ./bin/run console
+
+OPTIONS
+  -p, --passphrase=passphrase  the passphrase for the private-key
 
 EXAMPLES
   $ aio console:list-integrations
