@@ -221,3 +221,20 @@ test('select-integration - mock .wskprops does not exist', async () => {
   await expect(runResult).resolves.toEqual({name: 'Basil', auth: '======'})
 })
 
+describe('SelectIntegrationCommand : basic command properties', () => {
+  test('has a description', () => {
+    expect(SelectIntegrationCommand.description).toBeDefined()
+  })
+
+  test('has aliases', () => {
+    expect(SelectIntegrationCommand.aliases).toBeDefined()
+  })
+
+  test('has args', () => {
+    expect(SelectIntegrationCommand.args).toBeDefined()
+  })
+
+  test('has flags', () => {
+    expect(SelectIntegrationCommand.flags).toBeDefined()
+  })
+})
