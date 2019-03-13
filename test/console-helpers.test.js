@@ -16,9 +16,9 @@ jest.mock('request-promise-native')
 jest.setTimeout(10000)
 
 const path = require('path')
-const {confirm, getApiKey, getIntegrations, getOrgs, getOrgsUrl, getWskPropsFilePath, getNamespaceUrl} = require('../src/console-helpers')
+const { confirm, getApiKey, getIntegrations, getOrgs, getOrgsUrl, getWskPropsFilePath, getNamespaceUrl } = require('../src/console-helpers')
 const Config = require('@adobe/aio-cli-plugin-config')
-const {cli} = require('cli-ux')
+const { cli } = require('cli-ux')
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -50,7 +50,7 @@ test('toJson coverage', async () => {
   jest.spyOn(Config, 'get').mockImplementation(k => {
     if (k === 'jwt-auth') {
       return {
-        console_get_orgs_url: '...',
+        console_get_orgs_url: '...'
       }
     }
   })
@@ -73,7 +73,7 @@ test('getOrgs', async () => {
   jest.spyOn(Config, 'get').mockImplementation(k => {
     if (k === 'jwt-auth') {
       return JSON.stringify({
-        console_get_orgs_url: '...',
+        console_get_orgs_url: '...'
       })
     }
   })
@@ -108,7 +108,7 @@ test('getNamespaceUrl', async () => {
   jest.spyOn(Config, 'get').mockImplementation(k => {
     if (k === 'jwt-auth') {
       return JSON.stringify({
-        console_get_namespaces_url: '...',
+        console_get_namespaces_url: '...'
       })
     }
   })
@@ -130,7 +130,7 @@ test('getApiKey', async () => {
   jest.spyOn(Config, 'get').mockImplementation(k => {
     if (k === 'jwt-auth') {
       return JSON.stringify({
-        client_id: '...',
+        client_id: '...'
       })
     }
   })
@@ -139,12 +139,12 @@ test('getApiKey', async () => {
 
 test('getIntegrations', async () => {
   jest.spyOn(Config, 'get')
-  .mockImplementation(() => '{"client_id":1234, "console_get_orgs_url":"http://foo.bar"}')
+    .mockImplementation(() => '{"client_id":1234, "console_get_orgs_url":"http://foo.bar"}')
 
   expect.assertions(2)
 
   await expect(getIntegrations('myOrg', 'myAccessToken', 'myApiKey')).resolves.toBeUndefined()
-  await expect(getIntegrations('myOrg', 'myAccessToken', 'myApiKey', {pageNum: -1, pageSize: 51})).resolves.toBeUndefined()
+  await expect(getIntegrations('myOrg', 'myAccessToken', 'myApiKey', { pageNum: -1, pageSize: 51 })).resolves.toBeUndefined()
 })
 
 test('confirm', async () => {

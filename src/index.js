@@ -26,5 +26,5 @@ module.exports = {
   index: ConsoleCommand,
   'list-integrations': new ListIntegrationsCommand().listIntegrations,
   'select-integration': new SelectIntegrationCommand().selectIntegration,
-  'reset-integration': new ResetIntegrationCommand().resetIntegration,
+  'reset-integration': new ResetIntegrationCommand().resetIntegration
 }

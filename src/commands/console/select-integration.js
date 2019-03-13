@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const {Command, flags} = require('@oclif/command')
+const { Command, flags } = require('@oclif/command')
 const rp = require('request-promise-native')
 const dedent = require('dedent-js')
 const fs = require('fs')
-const {accessToken: getAccessToken} = require('@adobe/aio-cli-plugin-jwt-auth')
-const {confirm, getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId} = require('../../console-helpers')
+const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
+const { confirm, getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
 
-async function _selectIntegration(integrationId, passphrase, overwrite) {
+async function _selectIntegration (integrationId, passphrase, overwrite) {
   if (!integrationId) {
     return Promise.reject(new Error('missing expected integration identifier.'))
   }
@@ -44,9 +44,9 @@ async function _selectIntegration(integrationId, passphrase, overwrite) {
         'X-Api-Key': apiKey,
         'x-ims-org-id': imsOrgId,
         Authorization: `Bearer ${accessToken}`,
-        accept: 'application/json',
+        accept: 'application/json'
       },
-      json: true,
+      json: true
     }
 
     const result = await rp(options)
@@ -78,9 +78,9 @@ async function _selectIntegration(integrationId, passphrase, overwrite) {
 }
 
 class SelectIntegrationCommand extends Command {
-  async run() {
-    const {args} = this.parse(SelectIntegrationCommand)
-    const {flags} = this.parse(SelectIntegrationCommand)
+  async run () {
+    const { args } = this.parse(SelectIntegrationCommand)
+    const { flags } = this.parse(SelectIntegrationCommand)
     let result
 
     try {
@@ -91,18 +91,18 @@ class SelectIntegrationCommand extends Command {
     return result
   }
 
-  async selectIntegration(integrationId, passphrase, overwrite) {
+  async selectIntegration (integrationId, passphrase, overwrite) {
     return _selectIntegration(integrationId, passphrase, overwrite)
   }
 }
 
 SelectIntegrationCommand.args = [
-  {name: 'integration_Id'},
+  { name: 'integration_Id' }
 ]
 
 SelectIntegrationCommand.flags = {
-  passphrase: flags.string({char: 'p', description: 'the passphrase for the private-key', default: null}),
-  overwrite: flags.boolean({char: 'w', description: 'overwrite the .wskprops file if it exists', default: false}),
+  passphrase: flags.string({ char: 'p', description: 'the passphrase for the private-key', default: null }),
+  overwrite: flags.boolean({ char: 'w', description: 'overwrite the .wskprops file if it exists', default: false })
 }
 
 SelectIntegrationCommand.description = `selects an integration and writes the .wskprops file to the local machine
@@ -111,7 +111,7 @@ The .wskprops file will be written to your home folder, and you will be prompted
 `
 
 SelectIntegrationCommand.aliases = [
-  'console:sel',
+  'console:sel'
 ]
 
 module.exports = SelectIntegrationCommand

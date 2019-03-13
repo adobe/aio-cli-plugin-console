@@ -13,9 +13,9 @@ governing permissions and limitations under the License.
 const rp = require('request-promise-native')
 const path = require('path')
 const Config = require('@adobe/aio-cli-plugin-config')
-const {cli} = require('cli-ux')
+const { cli } = require('cli-ux')
 
-function toJson(item) {
+function toJson (item) {
   let c = item
   if (typeof c === 'string') {
     c = JSON.parse(c)
@@ -30,7 +30,7 @@ function toJson(item) {
  * @param {Sting} apiKey a valid api_key for this api
  * @return {Promise} resolves with a list of orgs
  */
-async function getOrgs(accessToken, apiKey) {
+async function getOrgs (accessToken, apiKey) {
   const orgsUrl = await getOrgsUrl()
 
   const options = {
@@ -39,9 +39,9 @@ async function getOrgs(accessToken, apiKey) {
     headers: {
       'X-Api-Key': apiKey,
       Authorization: `Bearer ${accessToken}`,
-      accept: 'application/json',
+      accept: 'application/json'
     },
-    json: true,
+    json: true
   }
   return rp(options)
 }
@@ -51,14 +51,14 @@ async function getOrgs(accessToken, apiKey) {
  *  can be overridden with an enviroment variable
  * @return {String} resolved path to wskprops file
  */
-function getWskPropsFilePath() {
+function getWskPropsFilePath () {
   if (process.env.WSK_CONFIG_FILE) {
     return path.resolve(process.env.WSK_CONFIG_FILE)
   }
   return path.resolve(require('os').homedir(), '.wskprops')
 }
 
-async function getApiKey() {
+async function getApiKey () {
   const configStr = await Config.get('jwt-auth')
   if (!configStr) {
     return Promise.reject(new Error('missing config data: jwt-auth'))
@@ -71,7 +71,7 @@ async function getApiKey() {
   return configData.client_id
 }
 
-async function getOrgsUrl() {
+async function getOrgsUrl () {
   const configStr = await Config.get('jwt-auth')
   if (!configStr) {
     return Promise.reject(new Error('missing config data: jwt-auth'))
@@ -84,7 +84,7 @@ async function getOrgsUrl() {
   return configData.console_get_orgs_url
 }
 
-async function getNamespaceUrl() {
+async function getNamespaceUrl () {
   const configStr = await Config.get('jwt-auth')
   if (!configStr) {
     return Promise.reject(new Error('missing config data: jwt-auth'))
@@ -97,7 +97,7 @@ async function getNamespaceUrl() {
   return configData.console_get_namespaces_url
 }
 
-async function getIMSOrgId() {
+async function getIMSOrgId () {
   const configStr = await Config.get('jwt-auth')
   if (!configStr) {
     return Promise.reject(new Error('missing config data: jwt-auth'))
@@ -120,7 +120,7 @@ async function getIMSOrgId() {
  * @param {Sting} apiKey a valid api_key for this api
  * @return {Promise} resolves with a list of integrations
  */
-async function getIntegrations(orgId, accessToken, apiKey, {pageNum = 1, pageSize = 20} = {}) {
+async function getIntegrations (orgId, accessToken, apiKey, { pageNum = 1, pageSize = 20 } = {}) {
   // server is zero based, we are 1 based
   const pg = (pageNum > 0) ? pageNum - 1 : 0
   // server chokes with pagesize greater than 50
@@ -133,9 +133,9 @@ async function getIntegrations(orgId, accessToken, apiKey, {pageNum = 1, pageSiz
     headers: {
       'X-Api-Key': apiKey,
       Authorization: `Bearer ${accessToken}`,
-      accept: 'application/json',
+      accept: 'application/json'
     },
-    json: true,
+    json: true
   }
   return rp(options)
 }
@@ -146,9 +146,9 @@ async function getIntegrations(orgId, accessToken, apiKey, {pageNum = 1, pageSiz
  * @param {*} message The message to output
  * @param {*} options cli.prompt options
  */
-async function confirm(message, options) {
+async function confirm (message, options) {
   try {
-    options = options || {required: false, timeout: 20000, default: 'n'}
+    options = options || { required: false, timeout: 20000, default: 'n' }
     let response = await cli.prompt(`${message} (y/n)`, options)
 
     if (['n', 'no'].includes(response)) return false
@@ -167,5 +167,5 @@ module.exports = {
   getApiKey,
   getNamespaceUrl,
   getIntegrations,
-  getIMSOrgId,
+  getIMSOrgId
 }
