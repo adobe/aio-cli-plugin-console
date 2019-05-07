@@ -62,30 +62,11 @@
   },
   "repository": "adobe/aio-cli-plugin-console",
   "scripts": {
-    "eslint": "eslint src test",
+    "eslint": "eslint .",
     "test": "npm run eslint && npm run unit-tests",
-    "unit-tests": "jest --ci -w=2",
+    "unit-tests": "jest",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
     "version": "oclif-dev readme && git add README.md"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "testPathIgnorePatterns": [
-      "<rootDir>/tests/fixtures/"
-    ],
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/tests/fixtures/"
-    ],
-    "reporters": [
-      "default",
-      "jest-junit"
-    ],
-    "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "./test/jest.setup.js"
-    ],
-    "globalSetup": "./test/fixtures/scripts/global-setup.js",
-    "globalTeardown": "./test/fixtures/scripts/global-teardown.js"
   }
 }
