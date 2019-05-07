@@ -10,19 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const rp = require('request-promise-native')
+const fetch = require('node-fetch')
 const path = require('path')
-const Config = require('@adobe/aio-cli-plugin-config')
+const config = require('@adobe/aio-cli-config')
 const { cli } = require('cli-ux')
-
-function toJson (item) {
-  let c = item
-  if (typeof c === 'string') {
-    c = JSON.parse(c)
-  }
-
-  return c
-}
+const debug = require('debug')('aio-cli-plugin-console')
+const fs = require('fs')
 
 /**
  * @description Calls the server api to get a list of orgs
@@ -34,16 +27,18 @@ async function getOrgs (accessToken, apiKey) {
   const orgsUrl = await getOrgsUrl()
 
   const options = {
-    uri: orgsUrl,
-    method: 'GET',
     headers: {
       'X-Api-Key': apiKey,
       Authorization: `Bearer ${accessToken}`,
       accept: 'application/json'
-    },
-    json: true
+    }
   }
-  return rp(options)
+
+  debug(`fetch: ${orgsUrl}`)
+  return fetch(orgsUrl, options).then((res) => {
+    if (res.ok) return res.json()
+    else throw new Error(`Cannot retrieve organizations: ${orgsUrl} (${res.status} ${res.statusText})`)
+  })
 }
 
 /**
@@ -58,57 +53,50 @@ function getWskPropsFilePath () {
   return path.resolve(require('os').homedir(), '.wskprops')
 }
 
-async function getApiKey () {
-  const configStr = await Config.get('jwt-auth')
-  if (!configStr) {
-    return Promise.reject(new Error('missing config data: jwt-auth'))
-  }
+function getWskProps () {
+  const result = {}
+  try {
+    const props = fs.readFileSync(getWskPropsFilePath(), 'utf-8')
+    const re = /^(.+)=(.+)$/gm
+    let m
+    while ((m = re.exec(props)) !== null) {
+      result[m[1].toLowerCase().trim()] = m[2].replace(/ #.*$/, '').trim()
+    }
+  } catch (e) { }
+  return result
+}
 
-  const configData = toJson(configStr)
+async function getJwtAuth () {
+  const data = config.get('jwt-auth')
+  if (!data) throw new Error('missing config data: jwt-auth')
+  return data
+}
+
+async function getApiKey () {
+  const configData = await getJwtAuth()
   if (!configData.client_id) {
-    return Promise.reject(new Error('missing config data: client_id'))
+    throw new Error('missing config data: client_id')
   }
   return configData.client_id
 }
 
 async function getOrgsUrl () {
-  const configStr = await Config.get('jwt-auth')
-  if (!configStr) {
-    return Promise.reject(new Error('missing config data: jwt-auth'))
-  }
-
-  const configData = toJson(configStr)
-  if (!configData.console_get_orgs_url) {
-    return Promise.reject(new Error('missing config data: console_get_orgs_url'))
-  }
-  return configData.console_get_orgs_url
+  const configData = await getJwtAuth()
+  return configData.console_get_orgs_url || 'https://api.adobe.io/console/organizations'
 }
 
 async function getNamespaceUrl () {
-  const configStr = await Config.get('jwt-auth')
-  if (!configStr) {
-    return Promise.reject(new Error('missing config data: jwt-auth'))
-  }
-
-  const configData = toJson(configStr)
-  if (!configData.console_get_namespaces_url) {
-    return Promise.reject(new Error('missing config data: console_get_namespaces_url'))
-  }
-  return configData.console_get_namespaces_url
+  const configData = await getJwtAuth()
+  return configData.console_get_namespaces_url || 'https://api.adobe.io/runtime/admin/namespaces/'
 }
 
 async function getIMSOrgId () {
-  const configStr = await Config.get('jwt-auth')
-  if (!configStr) {
-    return Promise.reject(new Error('missing config data: jwt-auth'))
-  }
-
-  const configData = toJson(configStr)
+  const configData = await getJwtAuth()
   if (!configData.jwt_payload) {
-    return Promise.reject(new Error('missing config data: jwt_payload'))
+    throw new Error('missing config data: jwt_payload')
   }
   if (!configData.jwt_payload.iss) {
-    return Promise.reject(new Error('missing config data: jwt_payload.iss'))
+    throw new Error('missing config data: jwt_payload.iss')
   }
   return configData.jwt_payload.iss
 }
@@ -127,17 +115,53 @@ async function getIntegrations (orgId, accessToken, apiKey, { pageNum = 1, pageS
   const sz = (pageSize < 51) ? pageSize : 50
 
   const orgsUrl = await getOrgsUrl()
+  const integrationsUrl = `${orgsUrl}/${orgId}/integrations?page=${pg}&size=${sz}`
   const options = {
-    uri: `${orgsUrl}/${orgId}/integrations?page=${pg}&size=${sz}`,
-    method: 'GET',
     headers: {
       'X-Api-Key': apiKey,
       Authorization: `Bearer ${accessToken}`,
       accept: 'application/json'
-    },
-    json: true
+    }
   }
-  return rp(options)
+
+  debug(`fetch: ${integrationsUrl}`)
+  return fetch(integrationsUrl, options).then((res) => {
+    if (res.ok) return res.json()
+    else throw new Error(`Cannot retrieve integrations: ${integrationsUrl} (${res.status} ${res.statusText})`)
+  })
+}
+
+/**
+ * @description Calls the server api to get an integrations by namespace
+ * @param {string} namespace namespace
+ * @param {string} accessToken a valid token from jwt-auth command
+ * @param {Sting} apiKey a valid api_key for this api
+ * @return {Promise} resolves with a list of integrations
+ */
+async function getIntegration (namespace, accessToken, apiKey) {
+  const orgsUrl = await getOrgsUrl()
+  const [org, integration] = namespace.split('_')
+  const integrationUrl = `${orgsUrl}/${org}/integrations/${integration}`
+  const options = {
+    headers: {
+      'X-Api-Key': apiKey,
+      Authorization: `Bearer ${accessToken}`,
+      accept: 'application/json'
+    }
+  }
+
+  debug(`fetch: ${integrationUrl}`)
+  return fetch(integrationUrl, options).then((res) => {
+    if (res.ok) return res.json()
+    else throw new Error(`Cannot retrieve integration: ${integrationUrl} (${res.status} ${res.statusText})`)
+  })
+}
+
+/**
+ *
+ */
+function getConfig () {
+  return { ...getWskProps(), ...config.get('runtime') }
 }
 
 /**
@@ -153,10 +177,8 @@ async function confirm (message, options) {
 
     if (['n', 'no'].includes(response)) return false
     if (['y', 'yes'].includes(response)) return true
-    return false // default is false
-  } catch (error) {
-    return false
-  }
+  } catch (e) { }
+  return false
 }
 
 module.exports = {
@@ -167,5 +189,8 @@ module.exports = {
   getApiKey,
   getNamespaceUrl,
   getIntegrations,
-  getIMSOrgId
+  getIMSOrgId,
+  getWskProps,
+  getIntegration,
+  getConfig
 }

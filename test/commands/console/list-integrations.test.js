@@ -10,31 +10,22 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+let helpers = require('../../../src/console-helpers')
+helpers.getOrgs = jest.fn(() => Promise.resolve([{ id: 0 }]))
+helpers.getIntegrations = jest.fn()
+helpers.getIntegrations.mockImplementation(() => Promise.resolve({ page: 1,
+  pages: 2,
+  total: 3,
+  content: [{ orgId: 0, id: 3, name: 'A', status: 'ENABLED' },
+    { orgId: 0, id: 2, name: 'B', status: 'ENABLED' },
+    { orgId: 0, id: 1, name: 'C', status: 'ENABLED' }]
+}))
+
 const ListIntegrationsCommand = require('../../../src/commands/console/list-integrations')
-jest.mock('request-promise-native')
+const config = require('@adobe/aio-cli-config')
 
-jest.setTimeout(10000)
-
-let mockStore = {
-  // 'jwt-auth': JSON.stringify({
-  // }),
-}
-
-jest.mock('conf', () => {
-  return function () { // constructor
-    // set properties and functions for object
-    // this is how you can get the call stats on the mock instance,
-    // see https://github.com/facebook/jest/issues/2982
-    Object.defineProperty(this, 'store',
-      {
-        get: jest.fn(() => mockStore)
-      })
-
-    this.get = jest.fn(k => mockStore[k])
-    this.set = jest.fn()
-    this.delete = jest.fn()
-    this.clear = jest.fn()
-  }
+afterEach(() => {
+  jest.clearAllMocks()
 })
 
 jest.mock('@adobe/aio-cli-plugin-jwt-auth', () => {
@@ -43,10 +34,6 @@ jest.mock('@adobe/aio-cli-plugin-jwt-auth', () => {
       return Promise.resolve('fake-token')
     }
   }
-})
-
-beforeEach(() => {
-  mockStore = {}
 })
 
 test('list-integrations - missing config', async () => {
@@ -58,52 +45,62 @@ test('list-integrations - missing config', async () => {
 })
 
 test('list-integrations - mock success', async () => {
-  mockStore = {
-    'jwt-auth': JSON.stringify({
+  config.get.mockImplementation(() => {
+    return {
       client_id: '1234',
-      console_get_orgs_url: '...'
-    })
-  }
-
-  let rp = require('request-promise-native')
-  rp.mockImplementationOnce(() => {
-    // first call is to getOrgs ...
-    return Promise.resolve([{ id: 0 }])
+      console_get_orgs_url: '...',
+      namespace: '0_1'
+    }
   })
-    .mockImplementationOnce(() => {
-    // second call is to getIntegrations within org
-      return Promise.resolve({ page: 1,
-        pages: 2,
-        total: 15,
-        content: [{ orgId: 0, id: 1, name: 'A' },
-          { orgId: 0, id: 2, name: 'B' },
-          { orgId: 0, id: 3, name: 'C' }]
-      })
-    })
 
-  expect.assertions(2)
+  expect.assertions(1)
 
-  let runResult = ListIntegrationsCommand.run(['--page=1', '--pageSize=10'])
-  await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).resolves.toEqual('Success: Page 2 of 2, Showing 3 results of 15 total.\n0_1 : A\n0_2 : B\n0_3 : C')
+  let runResult = ListIntegrationsCommand.run([])
+  return expect(runResult).resolves.toEqual([{ 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' }, { 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' }, { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }, { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }, { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }, { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }])
+})
+
+test('list-integrations - mock success sort by name', async () => {
+  config.get.mockImplementation(() => {
+    return {
+      client_id: '1234',
+      console_get_orgs_url: '...',
+      namespace: '0_1'
+    }
+  })
+
+  jest.mock('node-fetch', () => jest.fn().mockImplementation(() => null))
+  expect.assertions(1)
+
+  let runResult = ListIntegrationsCommand.run(['--name'])
+  return expect(runResult).resolves.toEqual([{ 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }, { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }, { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }, { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }, { 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' }, { 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' }])
+})
+
+test('list-integrations - mock success, multiple pages', async () => {
+  config.get.mockImplementation(() => {
+    return {
+      client_id: '1234',
+      console_get_orgs_url: '...',
+      namespace: '0_1'
+    }
+  })
+
+  expect.assertions(1)
+
+  let runResult = ListIntegrationsCommand.run([])
+  return expect(runResult).resolves.toEqual([{ 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' }, { 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' }, { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }, { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }, { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }, { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }])
 })
 
 test('ls missing client_id', async () => {
-  mockStore = {
-    'jwt-auth': JSON.stringify({
-      not_client_id: '1234'
-    })
-  }
+  config.get.mockImplementation(() => {
+    return { }
+  })
 
-  expect.assertions(4)
+  expect.assertions(2)
 
   let runResult = ListIntegrationsCommand.run([])
-  await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: client_id'))
 
-  // coverage
   runResult = new ListIntegrationsCommand().listIntegrations()
-  await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: client_id'))
 })
 

@@ -12,29 +12,30 @@ governing permissions and limitations under the License.
 
 const { Command, flags } = require('@oclif/command')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getOrgs, getIntegrations } = require('../../console-helpers')
+const { getApiKey, getOrgs, getIntegrations, getConfig } = require('../../console-helpers')
+const { cli } = require('cli-ux')
 
-const DEFAULT_PAGE_NUMBER = 1
-const DEFAULT_PAGE_SIZE = 20
+const PAGE_SIZE = 50
 
 // simplified to include only id+orgId, and name. Formatted for output.
-async function _listIntegrations (passphrase, pageNum, pageSize) {
-  try {
-    const apiKey = await getApiKey()
-    const accessToken = await getAccessToken(passphrase)
-    const orgs = await getOrgs(accessToken, apiKey)
-    const integrations = await getIntegrations(orgs[0].id, accessToken, apiKey, { pageNum, pageSize })
+async function _listIntegrations (passphrase) {
+  const apiKey = await getApiKey()
+  const accessToken = await getAccessToken(passphrase)
+  const orgs = await getOrgs(accessToken, apiKey)
+  const integrations = await getIntegrations(orgs[0].id, accessToken, apiKey, { pageNum: 1, pageSize: PAGE_SIZE })
+  let result = integrations.content
 
-    const results = integrations.content.map(obj => {
-      return `${obj.orgId}_${obj.id} : ${obj.name}` // \n\t- ${obj.description}`;
-    })
-
-    const str = `Success: Page ${integrations.page + 1} of ${integrations.pages}, Showing ${results.length} results of ${integrations.total} total.`
-    results.unshift(str)
-    return Promise.resolve(results.join('\n'))
-  } catch (error) {
-    return Promise.reject(error)
+  const pages = integrations.pages
+  const fetches = []
+  for (let i = 2; i <= pages; i++) {
+    fetches.push(getIntegrations(orgs[0].id, accessToken, apiKey, { pageNum: i, pageSize: PAGE_SIZE }))
   }
+
+  const rest = await Promise.all(fetches)
+
+  rest.forEach((integration) => { result = result.concat(integration.content) })
+
+  return result
 }
 
 class ListIntegrationsCommand extends Command {
@@ -43,30 +44,55 @@ class ListIntegrationsCommand extends Command {
     let result
 
     try {
-      result = await this.listIntegrations(flags.passphrase, flags.page, flags.pageSize)
+      result = await this.listIntegrations(flags.passphrase)
     } catch (error) {
       this.error(error.message)
     }
 
-    this.log(result)
+    const currentNamespace = getConfig()['namespace']
+
+    result.forEach(obj => {
+      obj.selected = `${obj.orgId}_${obj.id}` === currentNamespace
+      obj.namespace = `${obj.orgId}_${obj.id}`
+      return obj
+    })
+
+    if (flags.name) {
+      result = result.sort((a, b) => a.name.localeCompare(b.name))
+    } else {
+      result = result.sort((a, b) => a.namespace.localeCompare(b.namespace))
+    }
+
+    cli.table(result, {
+      namespace: { },
+      name: { },
+      status: {},
+      current: {
+        header: '',
+        get: row => (row.selected) ? '(currently selected)' : ''
+      }
+    }, {
+      printLine: this.log
+    })
+
     return result
   }
 
-  async listIntegrations (passphrase = null, page = DEFAULT_PAGE_NUMBER, pageSize = DEFAULT_PAGE_SIZE) {
-    return _listIntegrations(passphrase, page, pageSize)
+  async listIntegrations (passphrase = null) {
+    return _listIntegrations(passphrase)
   }
 }
 
 ListIntegrationsCommand.description = 'lists integrations for use with Adobe I/O Runtime serverless functions'
 
 ListIntegrationsCommand.flags = {
-  page: flags.integer({ char: 'p', description: 'page number', default: DEFAULT_PAGE_NUMBER }),
-  pageSize: flags.integer({ char: 's', description: 'size of a page (max 50)', default: DEFAULT_PAGE_SIZE }),
-  passphrase: flags.string({ char: 'r', description: 'the passphrase for the private-key' })
+  passphrase: flags.string({ char: 'r', description: 'the passphrase for the private-key' }),
+  name: flags.boolean({ char: 'n', description: 'sort results by name' })
 }
 
 ListIntegrationsCommand.aliases = [
-  'console:ls'
+  'console:ls',
+  'console:list'
 ]
 
 module.exports = ListIntegrationsCommand

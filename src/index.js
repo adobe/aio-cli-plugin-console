@@ -13,6 +13,8 @@ governing permissions and limitations under the License.
 const ListIntegrationsCommand = require('./commands/console/list-integrations')
 const SelectIntegrationCommand = require('./commands/console/select-integration')
 const ResetIntegrationCommand = require('./commands/console/reset-integration')
+const SelectedIntegrationCommand = require('./commands/console/selected-integration')
+const IntegrationCommand = require('./commands/console/integration')
 const ConsoleCommand = require('./commands/console')
 
 // The full process we intend to enable with this command is:
@@ -26,5 +28,7 @@ module.exports = {
   index: ConsoleCommand,
   'list-integrations': new ListIntegrationsCommand().listIntegrations,
   'select-integration': new SelectIntegrationCommand().selectIntegration,
-  'reset-integration': new ResetIntegrationCommand().resetIntegration
+  'reset-integration': new ResetIntegrationCommand().resetIntegration,
+  'selected-integration': new SelectedIntegrationCommand().selectedIntegration,
+  'integration': new IntegrationCommand().integration
 }
