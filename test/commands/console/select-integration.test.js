@@ -58,9 +58,8 @@ test('select-integration - bad args', async () => {
 })
 
 test('select-integration - console_get_namespaces_url, does not end with forward slash', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(false)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => false)
 
   config.get.mockImplementation(key => {
     return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar', 'jwt_payload': { 'iss': 'asd' } }
@@ -79,9 +78,8 @@ test('select-integration - console_get_namespaces_url, does not end with forward
 })
 
 test('select-integration - mock success', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(true)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementation(() => true)
 
   config.get.mockImplementation(() => {
     return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
@@ -101,9 +99,8 @@ test('select-integration - mock success', async () => {
 })
 
 test('select-integration - write local', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(true)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   config.get.mockImplementation(() => {
     return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
@@ -123,9 +120,8 @@ test('select-integration - write local', async () => {
 })
 
 test('select-integration - write global', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(true)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   config.get.mockImplementation(() => {
     return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
@@ -145,9 +141,8 @@ test('select-integration - write global', async () => {
 })
 
 test('select-integration - config error', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(true)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   config.get
     .mockImplementation(key => {
@@ -162,9 +157,8 @@ test('select-integration - config error', async () => {
 })
 
 test('select-integration - config error missing jwt_payload', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(true)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   config.get
     .mockImplementation(() => {
@@ -179,9 +173,8 @@ test('select-integration - config error missing jwt_payload', async () => {
 })
 
 test('select-integration - config error missing jwt_payload pre-condition', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(true)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   let goodValue = { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/' }
 
@@ -202,9 +195,8 @@ test('select-integration - config error missing jwt_payload pre-condition', asyn
 })
 
 test('select-integration - config error missing jwt_payload.iss', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(true)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   config.get
     .mockImplementation(key => {
@@ -219,9 +211,8 @@ test('select-integration - config error missing jwt_payload.iss', async () => {
 })
 
 test('select-integration - bad fetch', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(true)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   config.get
     .mockImplementation(key => {
@@ -238,9 +229,8 @@ test('select-integration - bad fetch', async () => {
 })
 
 test('select-integration - mock success and overwrite .wskprops', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(true)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   config.get
     .mockImplementation(() => {
@@ -260,10 +250,9 @@ test('select-integration - mock success and overwrite .wskprops', async () => {
 })
 
 test('select-integration - mock success and dont overwrite .wskprops', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(true)
   helpers.confirm.mockImplementationOnce(() => false)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => false)
 
   config.get
     .mockImplementation(() => {
@@ -284,9 +273,8 @@ test('select-integration - mock success and dont overwrite .wskprops', async () 
 })
 
 test('select-integration - mock .wskprops does not exist', async () => {
-  fs.writeFileSync = jest.fn()
-  fs.existsSync = jest.fn()
-  fs.existsSync.mockReturnValue(false)
+  jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
+  jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => false)
 
   config.get
     .mockImplementation(key => {
