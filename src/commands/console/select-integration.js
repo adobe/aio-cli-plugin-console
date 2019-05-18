@@ -15,8 +15,9 @@ const fetch = require('node-fetch')
 const config = require('@adobe/aio-cli-config')
 const fs = require('fs')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { confirm, getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
+const { getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
 const debug = require('debug')('aio-cli-plugin-console')
+const { confirm } = require('cli-ux').cli
 
 async function _selectIntegration (integrationId, passphrase, force, dest) {
   if (!integrationId) {
@@ -65,7 +66,7 @@ AUTH=${result.auth}`
     let filePath = getWskPropsFilePath()
 
     if (fs.existsSync(filePath) && !force) {
-      let confirmed = await confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it?`)
+      let confirmed = await confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it`)
       if (!confirmed) return
     }
 
