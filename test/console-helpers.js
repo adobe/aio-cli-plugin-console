@@ -15,8 +15,7 @@ jest.mock('node-fetch', () => jest.fn().mockImplementation(() => mockResult))
 const fs = require('fs')
 const path = require('path')
 const config = require('@adobe/aio-cli-config')
-const { confirm, getApiKey, getIntegrations, getOrgs, getOrgsUrl, getIntegration, getWskProps, getConfig, getWskPropsFilePath, getNamespaceUrl, getIMSOrgId } = require('../src/console-helpers')
-const { cli } = require('cli-ux')
+const { getApiKey, getIntegrations, getOrgs, getOrgsUrl, getIntegration, getWskProps, getConfig, getWskPropsFilePath, getNamespaceUrl, getIMSOrgId } = require('../src/console-helpers')
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -174,24 +173,4 @@ test('getWskProps', async () => {
 
   jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => { throw new Error('no file') })
   expect(getWskProps()).toEqual({})
-})
-
-test('confirm', async () => {
-  let confirmPromise = confirm('Require input?')
-  process.stdin.emit('data', 'yes')
-  let answer = await confirmPromise
-  await cli.done()
-  expect(answer).toBe(true)
-
-  confirmPromise = confirm('Require input?')
-  process.stdin.emit('data', 'no')
-  answer = await confirmPromise
-  await cli.done()
-  expect(answer).toBe(false)
-
-  confirmPromise = confirm('Require input?')
-  process.stdin.emit('data', 'gibberish')
-  answer = await confirmPromise
-  await cli.done()
-  expect(answer).toBe(false)
 })

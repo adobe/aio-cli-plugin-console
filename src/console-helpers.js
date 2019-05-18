@@ -13,7 +13,6 @@ governing permissions and limitations under the License.
 const fetch = require('node-fetch')
 const path = require('path')
 const config = require('@adobe/aio-cli-config')
-const { cli } = require('cli-ux')
 const debug = require('debug')('aio-cli-plugin-console')
 const fs = require('fs')
 
@@ -164,25 +163,7 @@ function getConfig () {
   return { ...getWskProps(), ...config.get('runtime') }
 }
 
-/**
- * Wrapper for cli.prompt because cli.confirm does not support options
- *
- * @param {*} message The message to output
- * @param {*} options cli.prompt options
- */
-async function confirm (message, options) {
-  try {
-    options = options || { required: false, timeout: 20000, default: 'n' }
-    let response = await cli.prompt(`${message} (y/n)`, options)
-
-    if (['n', 'no'].includes(response)) return false
-    if (['y', 'yes'].includes(response)) return true
-  } catch (e) { }
-  return false
-}
-
 module.exports = {
-  confirm,
   getOrgs,
   getOrgsUrl,
   getWskPropsFilePath,

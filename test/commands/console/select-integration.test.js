@@ -12,17 +12,18 @@ governing permissions and limitations under the License.
 
 const fs = require('fs')
 const config = require('@adobe/aio-cli-config')
-let helpers = require('../../../src/console-helpers')
-helpers.confirm = jest.fn(() => true)
+jest.mock('cli-ux')
+const { cli } = require('cli-ux')
+cli.confirm = jest.fn(() => true)
 const SelectIntegrationCommand = require('../../../src/commands/console/select-integration')
 const path = require('path')
-
 let mockResult
 jest.mock('node-fetch', () => jest.fn().mockImplementation(() => mockResult))
 const fetch = require('node-fetch')
 
 beforeEach(() => {
   jest.clearAllMocks()
+  cli.confirm.mockImplementation(() => true)
   mockResult = Promise.resolve({
     ok: true,
     json: () => Promise.resolve({})
@@ -94,7 +95,7 @@ test('select-integration - mock success', async () => {
   let runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
-  expect(helpers.confirm).toHaveBeenCalledWith(`The OpenWhisk properties file '${path.resolve(require('os').homedir(), '.wskprops')}' already exists. Do you want to overwrite it?`)
+  expect(cli.confirm).toHaveBeenCalledWith(`The OpenWhisk properties file '${path.resolve(require('os').homedir(), '.wskprops')}' already exists. Do you want to overwrite it`)
   expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5', { 'headers': { 'Authorization': 'Bearer fake-token', 'X-Api-Key': 1234, 'accept': 'application/json', 'x-ims-org-id': 'asd' } })
 })
 
@@ -250,9 +251,9 @@ test('select-integration - mock success and overwrite .wskprops', async () => {
 })
 
 test('select-integration - mock success and dont overwrite .wskprops', async () => {
-  helpers.confirm.mockImplementationOnce(() => false)
   jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
   jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => false)
+  cli.confirm.mockImplementation(() => false)
 
   config.get
     .mockImplementation(() => {
