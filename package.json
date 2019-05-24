@@ -62,7 +62,7 @@
   "scripts": {
     "eslint": "eslint .",
     "test": "npm run eslint && npm run unit-tests",
-    "unit-tests": "jest",
+    "unit-tests": "jest --ci -w=2",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
     "version": "oclif-dev readme && git add README.md"
