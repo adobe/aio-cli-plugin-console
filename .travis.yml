@@ -3,6 +3,10 @@ sudo: false
 git:
   depth: 10
 
+env:
+  global:
+    - NODE_OPTIONS="--max_old_space_size=4096"
+
 os:
   - windows
   - linux
