@@ -11,13 +11,15 @@ governing permissions and limitations under the License.
 */
 
 const { Command, flags } = require('@oclif/command')
-const rp = require('request-promise-native')
-const dedent = require('dedent-js')
+const fetch = require('node-fetch')
+const config = require('@adobe/aio-cli-config')
 const fs = require('fs')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { confirm, getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
+const { getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
+const debug = require('debug')('aio-cli-plugin-console')
+const { confirm } = require('cli-ux').cli
 
-async function _selectIntegration (integrationId, passphrase, overwrite) {
+async function _selectIntegration (integrationId, passphrase, force, dest) {
   if (!integrationId) {
     return Promise.reject(new Error('missing expected integration identifier.'))
   }
@@ -27,54 +29,51 @@ async function _selectIntegration (integrationId, passphrase, overwrite) {
     return Promise.reject(new Error('integration identifier does not appear to be valid.'))
   }
 
-  try {
-    let namespaceUrl = await getNamespaceUrl()
-    const FORWARD_SLASH = '/'
-    // ensure namespaceUrl ends with '/'
-    namespaceUrl += namespaceUrl.endsWith(FORWARD_SLASH) ? '' : FORWARD_SLASH
-    const tempUrl = `${namespaceUrl}${keys.join(FORWARD_SLASH)}`
-    const accessToken = await getAccessToken(passphrase)
-    const apiKey = await getApiKey()
-    const imsOrgId = await getIMSOrgId()
+  let namespaceUrl = await getNamespaceUrl()
+  const FORWARD_SLASH = '/'
+  // ensure namespaceUrl ends with '/'
+  namespaceUrl += namespaceUrl.endsWith(FORWARD_SLASH) ? '' : FORWARD_SLASH
+  const tempUrl = `${namespaceUrl}${keys.join(FORWARD_SLASH)}`
+  const accessToken = await getAccessToken(passphrase)
+  const apiKey = await getApiKey()
+  const imsOrgId = await getIMSOrgId()
 
-    const options = {
-      uri: tempUrl,
-      method: 'POST',
-      headers: {
-        'X-Api-Key': apiKey,
-        'x-ims-org-id': imsOrgId,
-        Authorization: `Bearer ${accessToken}`,
-        accept: 'application/json'
-      },
-      json: true
+  const options = {
+    headers: {
+      'X-Api-Key': apiKey,
+      'x-ims-org-id': imsOrgId,
+      Authorization: `Bearer ${accessToken}`,
+      accept: 'application/json'
     }
-
-    const result = await rp(options)
-
-    const wskProps = dedent`
-      APIHOST=https://adobeioruntime.net
-      NAMESPACE=${result.name}
-      AUTH=${result.auth}`
-
-    const filePath = getWskPropsFilePath()
-    let writeToFile = true
-
-    if (fs.existsSync(filePath)) {
-      if (overwrite) {
-        writeToFile = true
-      } else {
-        writeToFile = await confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it?`)
-      }
-    }
-
-    if (writeToFile) {
-      fs.writeFileSync(filePath, wskProps)
-    }
-
-    return result
-  } catch (error) {
-    return Promise.reject(error)
   }
+
+  debug(`fetch: ${tempUrl}`)
+  const res = await fetch(tempUrl, options)
+  if (!res.ok) throw new Error(`Cannot retrieve integration: ${tempUrl} (${res.status} ${res.statusText})`)
+  const result = await res.json()
+
+  if (dest === 'local' || dest === 'global') {
+    config.set('runtime', {
+      apihost: 'https://adobeioruntime.net',
+      namespace: result.name,
+      auth: result.auth
+    }, dest === 'local')
+  } else {
+    const wskProps = `APIHOST=https://adobeioruntime.net
+NAMESPACE=${result.name}
+AUTH=${result.auth}`
+
+    let filePath = getWskPropsFilePath()
+
+    if (fs.existsSync(filePath) && !force) {
+      let confirmed = await confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it`)
+      if (!confirmed) return
+    }
+
+    fs.writeFileSync(filePath, wskProps)
+  }
+
+  return result
 }
 
 class SelectIntegrationCommand extends Command {
@@ -83,16 +82,20 @@ class SelectIntegrationCommand extends Command {
     const { flags } = this.parse(SelectIntegrationCommand)
     let result
 
+    let dest = 'wskprops'
+    if (flags.local) dest = 'local'
+    else if (flags.global) dest = 'global'
+
     try {
-      result = await this.selectIntegration(args.integration_Id, flags.passphrase, flags.overwrite)
+      result = await this.selectIntegration(args.integration_Id, flags.passphrase, flags.force, dest)
     } catch (error) {
       this.error(error.message)
     }
     return result
   }
 
-  async selectIntegration (integrationId, passphrase, overwrite) {
-    return _selectIntegration(integrationId, passphrase, overwrite)
+  async selectIntegration (integrationId, passphrase, force, dest) {
+    return _selectIntegration(integrationId, passphrase, force, dest)
   }
 }
 
@@ -102,7 +105,10 @@ SelectIntegrationCommand.args = [
 
 SelectIntegrationCommand.flags = {
   passphrase: flags.string({ char: 'p', description: 'the passphrase for the private-key', default: null }),
-  overwrite: flags.boolean({ char: 'w', description: 'overwrite the .wskprops file if it exists', default: false })
+  force: flags.boolean({ char: 'f', description: 'do not prompt if the .wskprops file exists', default: false }),
+  local: flags.boolean({ char: 'l', description: 'save selected integration to local config', exclusive: ['global', 'wskprops'] }),
+  global: flags.boolean({ char: 'g', description: 'save selected integration to global config', exclusive: ['local', 'wskprops'] }),
+  wskprops: flags.boolean({ char: 'w', description: 'save selected integration to .wskprops file (default)', exclusive: ['global', 'local'] })
 }
 
 SelectIntegrationCommand.description = `selects an integration and writes the .wskprops file to the local machine
@@ -111,7 +117,8 @@ The .wskprops file will be written to your home folder, and you will be prompted
 `
 
 SelectIntegrationCommand.aliases = [
-  'console:sel'
+  'console:sel',
+  'console:select'
 ]
 
 module.exports = SelectIntegrationCommand

@@ -33,7 +33,7 @@ $ npm install -g @adobe/aio-cli-plugin-console
 $ ./bin/run COMMAND
 running command...
 $ ./bin/run (-v|--version|version)
-@adobe/aio-cli-plugin-console/1.4.0 darwin-x64 node-v8.15.0
+@adobe/aio-cli-plugin-console/1.5.0-rc1 darwin-x64 node-v8.10.0
 $ ./bin/run --help [COMMAND]
 USAGE
   $ ./bin/run COMMAND
@@ -42,10 +42,12 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`./bin/run console`](#bin-run-console)
-* [`./bin/run console:list-integrations`](#bin-run-consolelist-integrations)
-* [`./bin/run console:reset-integration [INTEGRATION_ID]`](#bin-run-consolereset-integration-integration-id)
-* [`./bin/run console:select-integration [INTEGRATION_ID]`](#bin-run-consoleselect-integration-integration-id)
+* [`./bin/run console`](#binrun-console)
+* [`./bin/run console:current-integration`](#binrun-consolecurrent-integration)
+* [`./bin/run console:integration NAMESPACE`](#binrun-consoleintegration-namespace)
+* [`./bin/run console:list-integrations`](#binrun-consolelist-integrations)
+* [`./bin/run console:reset-integration [INTEGRATION_ID]`](#binrun-consolereset-integration-integration_id)
+* [`./bin/run console:select-integration [INTEGRATION_ID]`](#binrun-consoleselect-integration-integration_id)
 
 ## `./bin/run console`
 
@@ -56,7 +58,13 @@ USAGE
   $ ./bin/run console
 
 OPTIONS
-  -p, --passphrase=passphrase  the passphrase for the private-key
+  -n, --name                   sort results by name
+  -r, --passphrase=passphrase  the passphrase for the private-key
+
+ALIASES
+  $ ./bin/run console:ls
+  $ ./bin/run console:list
+  $ ./bin/run boop
 
 EXAMPLES
   $ aio console:list-integrations
@@ -68,9 +76,50 @@ EXAMPLES
   $ aio console:reset-integration INTEGRATION_ID
   $ aio console:reset INTEGRATION_ID
   $ aio console reset-integration INTEGRATION_ID
+  $ aio console:current-integration
+  $ aio console:current
+  $ aio console current-integration
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.4.0/src/commands/console/index.js)_
+_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.5.0-rc1/src/commands/console/index.js)_
+
+## `./bin/run console:current-integration`
+
+lists the currently selected integration for use with Adobe I/O Runtime serverless functions
+
+```
+USAGE
+  $ ./bin/run console:current-integration
+
+OPTIONS
+  -p, --passphrase=passphrase  the passphrase for the private-key
+
+ALIASES
+  $ ./bin/run console:current
+```
+
+_See code: [src/commands/console/current-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.5.0-rc1/src/commands/console/current-integration.js)_
+
+## `./bin/run console:integration NAMESPACE`
+
+Views an integration for use with Adobe I/O Runtime serverless functions
+
+```
+USAGE
+  $ ./bin/run console:integration NAMESPACE
+
+ARGUMENTS
+  NAMESPACE  namespace of an integration
+
+OPTIONS
+  -p, --passphrase=passphrase  the passphrase for the private-key
+
+ALIASES
+  $ ./bin/run console:get
+  $ ./bin/run console:int
+```
+
+_See code: [src/commands/console/integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.5.0-rc1/src/commands/console/integration.js)_
 
 ## `./bin/run console:list-integrations`
 
@@ -81,15 +130,16 @@ USAGE
   $ ./bin/run console:list-integrations
 
 OPTIONS
-  -p, --page=page              [default: 1] page number
+  -n, --name                   sort results by name
   -r, --passphrase=passphrase  the passphrase for the private-key
-  -s, --pageSize=pageSize      [default: 20] size of a page (max 50)
 
 ALIASES
   $ ./bin/run console:ls
+  $ ./bin/run console:list
+  $ ./bin/run boop
 ```
 
-_See code: [src/commands/console/list-integrations.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.4.0/src/commands/console/list-integrations.js)_
+_See code: [src/commands/console/list-integrations.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.5.0-rc1/src/commands/console/list-integrations.js)_
 
 ## `./bin/run console:reset-integration [INTEGRATION_ID]`
 
@@ -107,7 +157,7 @@ ALIASES
   $ ./bin/run console:reset
 ```
 
-_See code: [src/commands/console/reset-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.4.0/src/commands/console/reset-integration.js)_
+_See code: [src/commands/console/reset-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.5.0-rc1/src/commands/console/reset-integration.js)_
 
 ## `./bin/run console:select-integration [INTEGRATION_ID]`
 
@@ -118,8 +168,11 @@ USAGE
   $ ./bin/run console:select-integration [INTEGRATION_ID]
 
 OPTIONS
+  -f, --force                  do not prompt if the .wskprops file exists
+  -g, --global                 save selected integration to global config
+  -l, --local                  save selected integration to local config
   -p, --passphrase=passphrase  the passphrase for the private-key
-  -w, --overwrite              overwrite the .wskprops file if it exists
+  -w, --wskprops               save selected integration to .wskprops file (default)
 
 DESCRIPTION
   Run 'console:ls' to get a list of integrations to select from.
@@ -128,7 +181,8 @@ DESCRIPTION
 
 ALIASES
   $ ./bin/run console:sel
+  $ ./bin/run console:select
 ```
 
-_See code: [src/commands/console/select-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.4.0/src/commands/console/select-integration.js)_
+_See code: [src/commands/console/select-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v1.5.0-rc1/src/commands/console/select-integration.js)_
 <!-- commandsstop -->

@@ -11,9 +11,10 @@ governing permissions and limitations under the License.
 */
 
 const { Command } = require('@oclif/command')
-const rp = require('request-promise-native')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
 const { getNamespaceUrl, getApiKey, getIMSOrgId } = require('../../console-helpers')
+const fetch = require('node-fetch')
+const debug = require('debug')('aio-cli-plugin-console')
 
 async function _resetIntegration (integrationId, passphrase) {
   if (!integrationId) {
@@ -24,38 +25,29 @@ async function _resetIntegration (integrationId, passphrase) {
   if (keys.length < 2) {
     return Promise.reject(new Error('integration identifier does not appear to be valid.'))
   }
+  let namespaceUrl = await getNamespaceUrl()
+  const FORWARD_SLASH = '/'
+  // ensure namespaceUrl ends with '/'
+  namespaceUrl += namespaceUrl.endsWith(FORWARD_SLASH) ? '' : FORWARD_SLASH
+  const tempUrl = `${namespaceUrl}${keys.join(FORWARD_SLASH)}/reset`
+  const accessToken = await getAccessToken(passphrase)
+  const apiKey = await getApiKey()
+  const imsOrgId = await getIMSOrgId()
 
-  try {
-    let namespaceUrl = await getNamespaceUrl()
-    const FORWARD_SLASH = '/'
-    // ensure namespaceUrl ends with '/'
-    namespaceUrl += namespaceUrl.endsWith(FORWARD_SLASH) ? '' : FORWARD_SLASH
-    const tempUrl = `${namespaceUrl}${keys.join(FORWARD_SLASH)}/reset`
-    const accessToken = await getAccessToken(passphrase)
-    const apiKey = await getApiKey()
-    const imsOrgId = await getIMSOrgId()
-
-    const options = {
-      uri: tempUrl,
-      method: 'POST',
-      headers: {
-        'X-Api-Key': apiKey,
-        'x-ims-org-id': imsOrgId,
-        Authorization: `Bearer ${accessToken}`,
-        accept: 'application/json'
-      },
-      json: true
+  const options = {
+    headers: {
+      'X-Api-Key': apiKey,
+      'x-ims-org-id': imsOrgId,
+      Authorization: `Bearer ${accessToken}`,
+      accept: 'application/json'
     }
-
-    const result = await rp(options)
-
-    // eslint-disable-next-line no-warning-comments
-    // todo: is there anything else?
-
-    return result
-  } catch (error) {
-    return Promise.reject(error)
   }
+
+  debug(`fetch: ${tempUrl}`)
+  return fetch(tempUrl, options).then((res) => {
+    if (res.ok) return res.json()
+    else throw new Error(`Cannot retrieve integration: ${tempUrl} (${res.status} ${res.statusText})`)
+  })
 }
 
 class ResetIntegrationCommand extends Command {
