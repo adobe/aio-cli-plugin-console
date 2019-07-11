@@ -86,7 +86,7 @@ class ListIntegrationsCommand extends Command {
 ListIntegrationsCommand.description = 'lists integrations for use with Adobe I/O Runtime serverless functions'
 
 ListIntegrationsCommand.flags = {
-  passphrase: flags.string({ char: 'r', description: 'the passphrase for the private-key' }),
+  passphrase: flags.string({ char: 'p', description: 'the passphrase for the private-key' }),
   name: flags.boolean({ char: 'n', description: 'sort results by name' })
 }
 
