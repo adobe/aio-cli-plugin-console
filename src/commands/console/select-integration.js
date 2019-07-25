@@ -16,7 +16,7 @@ const config = require('@adobe/aio-cna-core-config')
 const fs = require('fs')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
 const { getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
-const debug = require('debug')('aio-cli-plugin-console')
+const debug = require('debug')('aio-cli-plugin-console:select-integration')
 const { confirm } = require('cli-ux').cli
 
 async function _selectIntegration (integrationId, passphrase, force, dest) {
@@ -89,6 +89,7 @@ class SelectIntegrationCommand extends Command {
     try {
       result = await this.selectIntegration(args.integration_Id, flags.passphrase, flags.force, dest)
     } catch (error) {
+      debug(error)
       this.error(error.message)
     }
     return result

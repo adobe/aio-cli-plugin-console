@@ -14,7 +14,7 @@ const { Command } = require('@oclif/command')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
 const { getNamespaceUrl, getApiKey, getIMSOrgId } = require('../../console-helpers')
 const fetch = require('node-fetch')
-const debug = require('debug')('aio-cli-plugin-console')
+const debug = require('debug')('aio-cli-plugin-console:reset-integration')
 
 async function _resetIntegration (integrationId, passphrase) {
   if (!integrationId) {
@@ -59,6 +59,7 @@ class ResetIntegrationCommand extends Command {
     try {
       result = await this.resetIntegration(args.integration_Id, flags.passphrase, flags.overwrite)
     } catch (error) {
+      debug(error)
       this.error(error.message)
     }
     return result
