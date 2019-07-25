@@ -29,7 +29,7 @@ jest.mock('node-fetch', () => jest.fn().mockImplementationOnce(() => {
       )
     })
   }))
-const config = require('@adobe/aio-cli-config')
+const config = require('@adobe/aio-cna-core-config')
 
 jest.mock('@adobe/aio-cli-plugin-jwt-auth', () => {
   return {

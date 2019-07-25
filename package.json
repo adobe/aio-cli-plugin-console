@@ -5,7 +5,7 @@
   "author": "Adobe Systems Inc.",
   "bugs": "https://github.com/adobe/aio-cli-plugin-console/issues",
   "dependencies": {
-    "@adobe/aio-cli-config": "^1.0.7",
+    "@adobe/aio-cna-core-config": "^1.0.13",
     "@adobe/aio-cli-plugin-jwt-auth": "^2.0.0",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
