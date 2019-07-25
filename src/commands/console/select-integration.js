@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 const { Command, flags } = require('@oclif/command')
 const fetch = require('node-fetch')
-const config = require('@adobe/aio-cli-config')
+const config = require('@adobe/aio-cna-core-config')
 const fs = require('fs')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
 const { getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
