@@ -14,6 +14,7 @@ const { Command, flags } = require('@oclif/command')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
 const { getApiKey, getOrgs, getIntegrations, getConfig } = require('../../console-helpers')
 const { cli } = require('cli-ux')
+const debug = require('debug')('aio-cli-plugin-console:list-integrations')
 
 const PAGE_SIZE = 50
 
@@ -46,6 +47,7 @@ class ListIntegrationsCommand extends Command {
     try {
       result = await this.listIntegrations(flags.passphrase)
     } catch (error) {
+      debug(error)
       this.error(error.message)
     }
 

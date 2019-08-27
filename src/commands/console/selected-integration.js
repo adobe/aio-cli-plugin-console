@@ -14,6 +14,7 @@ const { Command, flags } = require('@oclif/command')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
 const { getIntegration, getConfig, getApiKey } = require('../../console-helpers')
 const util = require('util')
+const debug = require('debug')('aio-cli-plugin-console:selected-integration')
 
 // simplified to include only id+orgId, and name. Formatted for output.
 async function _selectedIntegration (namespace, passphrase) {
@@ -43,6 +44,7 @@ class SelectedIntegrationCommand extends Command {
       result = await this.selectedIntegration(currentConfig['namespace'], flags.passphrase)
       this.log(util.inspect(result, { colors: true, maxArrayLength: null, breakLength: 75, depth: 50 }))
     } catch (error) {
+      debug(error)
       this.error(error.message)
     }
 
