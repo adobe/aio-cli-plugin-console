@@ -1,13 +1,13 @@
 module.exports = {
-  'collectCoverage': true,
+  collectCoverage: true,
   testRegex: '/test/[^_]*/*.js$',
   collectCoverageFrom: ['./src/**/*.js'],
-  'reporters': [
+  reporters: [
     'default',
     'jest-junit'
   ],
-  'testEnvironment': 'node',
-  'setupFilesAfterEnv': [
+  testEnvironment: 'node',
+  setupFilesAfterEnv: [
     './test/__setup__/jest.setup.js'
   ]
 }

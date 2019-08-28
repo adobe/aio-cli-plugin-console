@@ -63,10 +63,10 @@ async function _selectIntegration (integrationId, passphrase, force, dest) {
 NAMESPACE=${result.name}
 AUTH=${result.auth}`
 
-    let filePath = getWskPropsFilePath()
+    const filePath = getWskPropsFilePath()
 
     if (fs.existsSync(filePath) && !force) {
-      let confirmed = await confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it`)
+      const confirmed = await confirm(`The OpenWhisk properties file '${filePath}' already exists. Do you want to overwrite it`)
       if (!confirmed) return
     }
 

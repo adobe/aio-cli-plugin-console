@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-let helpers = require('../../../src/console-helpers')
+const helpers = require('../../../src/console-helpers')
 helpers.getConfig = jest.fn(() => { return { namespace: '12_5' } })
 
 const Command = require('../../../src/commands/console/selected-integration')
@@ -42,7 +42,7 @@ jest.mock('@adobe/aio-cli-plugin-jwt-auth', () => {
 test('selected-integrations - missing config', async () => {
   expect.assertions(2)
 
-  let runResult = Command.run([])
+  const runResult = Command.run([])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
 })
@@ -58,7 +58,7 @@ test('selected-integrations - mock success', async () => {
 
   jest.mock('node-fetch', () => jest.fn().mockImplementation(() => null))
 
-  let runResult = Command.run([])
+  const runResult = Command.run([])
   await expect(runResult).resolves.toEqual({ id: 0 })
 })
 
@@ -66,7 +66,7 @@ test('selected-integrations - mock failure', async () => {
   helpers.getConfig.mockImplementation(() => { return {} })
   jest.mock('node-fetch', () => jest.fn().mockImplementation(() => null))
 
-  let runResult = Command.run([])
+  const runResult = Command.run([])
   await expect(runResult).rejects.toEqual(new Error('No integration is selected'))
 })
 
