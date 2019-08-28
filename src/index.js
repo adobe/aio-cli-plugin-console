@@ -30,5 +30,5 @@ module.exports = {
   'select-integration': new SelectIntegrationCommand().selectIntegration,
   'reset-integration': new ResetIntegrationCommand().resetIntegration,
   'selected-integration': new SelectedIntegrationCommand().selectedIntegration,
-  'integration': new IntegrationCommand().integration
+  integration: new IntegrationCommand().integration
 }

@@ -37,7 +37,7 @@ jest.mock('@adobe/aio-cli-plugin-jwt-auth', () => {
 test('reset-integration - no args', async () => {
   expect.assertions(2)
 
-  let runResult = ResetIntegrationCommand.run([])
+  const runResult = ResetIntegrationCommand.run([])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing expected integration identifier.'))
 })
@@ -45,7 +45,7 @@ test('reset-integration - no args', async () => {
 test('reset-integration - bad args', async () => {
   expect.assertions(2)
 
-  let runResult = ResetIntegrationCommand.run(['7'])
+  const runResult = ResetIntegrationCommand.run(['7'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('integration identifier does not appear to be valid.'))
 })
@@ -55,7 +55,7 @@ test('reset-integration - console_get_namespaces_url, does not end with forward 
   jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => false)
 
   config.get.mockImplementation(() => {
-    return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar', 'jwt_payload': { 'iss': 'asd' } }
+    return { client_id: 1234, console_get_namespaces_url: 'http://foo.bar', jwt_payload: { iss: 'asd' } }
   })
 
   mockResult = Promise.resolve({
@@ -65,7 +65,7 @@ test('reset-integration - console_get_namespaces_url, does not end with forward 
 
   expect.assertions(2)
 
-  let runResult = ResetIntegrationCommand.run(['5_5'])
+  const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
 })
@@ -75,7 +75,7 @@ test('reset-integration - mock success', async () => {
   jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   config.get.mockImplementation(key => {
-    return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
+    return { client_id: 1234, console_get_namespaces_url: 'http://foo.bar/', jwt_payload: { iss: 'asd' } }
   })
 
   mockResult = Promise.resolve({
@@ -86,10 +86,10 @@ test('reset-integration - mock success', async () => {
   expect.assertions(3)
   // expect(opts.headers['x-ims-org-id']).toEqual('asd')
 
-  let runResult = ResetIntegrationCommand.run(['5_5'])
+  const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
-  expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5/reset', { 'headers': { 'Authorization': 'Bearer fake-token', 'X-Api-Key': 1234, 'accept': 'application/json', 'x-ims-org-id': 'asd' } })
+  expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5/reset', { headers: { Authorization: 'Bearer fake-token', 'X-Api-Key': 1234, accept: 'application/json', 'x-ims-org-id': 'asd' } })
 })
 
 test('reset-integration - config error', async () => {
@@ -98,12 +98,12 @@ test('reset-integration - config error', async () => {
 
   config.get
     .mockImplementation(key => {
-      return { 'not_client_id': '1234' }
+      return { not_client_id: '1234' }
     })
 
   expect.assertions(2)
 
-  let runResult = ResetIntegrationCommand.run(['5_5'])
+  const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: client_id'))
 })
@@ -114,12 +114,12 @@ test('reset-integration - config error missing jwt_payload', async () => {
 
   config.get
     .mockImplementation(key => {
-      return { 'client_id': '1234' }
+      return { client_id: '1234' }
     })
 
   expect.assertions(2)
 
-  let runResult = ResetIntegrationCommand.run(['5_5'])
+  const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload'))
 })
@@ -128,7 +128,7 @@ test('reset-integration - config error missing jwt_payload pre-condition', async
   jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
   jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
-  let goodValue = { 'client_id': 1234 }
+  const goodValue = { client_id: 1234 }
   // first mock is for getNamespaceUrl
   // second mock is for getAccessToken
   // third mock we want to fail so we can get full test coverage
@@ -143,7 +143,7 @@ test('reset-integration - config error missing jwt_payload pre-condition', async
 
   expect.assertions(2)
 
-  let runResult = ResetIntegrationCommand.run(['5_5'])
+  const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
 })
@@ -155,13 +155,13 @@ test('reset-integration - config error missing jwt_payload.iss', async () => {
   config.get
     .mockImplementation(key => {
       if (key === 'jwt-auth') {
-        return { 'client_id': '1234', 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': {} }
+        return { client_id: '1234', console_get_namespaces_url: 'http://foo.bar/', jwt_payload: {} }
       }
     })
 
   expect.assertions(2)
 
-  let runResult = ResetIntegrationCommand.run(['5_5'])
+  const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload.iss'))
 })
@@ -173,7 +173,7 @@ test('reset-integration - bad fetch', async () => {
   config.get
     .mockImplementation(key => {
       if (key === 'jwt-auth') {
-        return { 'client_id': '1234', 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
+        return { client_id: '1234', console_get_namespaces_url: 'http://foo.bar/', jwt_payload: { iss: 'asd' } }
       }
     })
 
@@ -181,7 +181,7 @@ test('reset-integration - bad fetch', async () => {
 
   mockResult = Promise.resolve({ ok: false, status: 404, statusText: 'Not Found' })
 
-  let runResult = ResetIntegrationCommand.run(['5_5'])
+  const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('Cannot retrieve integration: http://foo.bar/5/5/reset (404 Not Found)'))
 })

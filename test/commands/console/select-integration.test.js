@@ -45,7 +45,7 @@ afterAll(() => {
 test('select-integration - no args', async () => {
   expect.assertions(2)
 
-  let runResult = SelectIntegrationCommand.run([])
+  const runResult = SelectIntegrationCommand.run([])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing expected integration identifier.'))
 })
@@ -53,7 +53,7 @@ test('select-integration - no args', async () => {
 test('select-integration - bad args', async () => {
   expect.assertions(2)
 
-  let runResult = SelectIntegrationCommand.run(['7'])
+  const runResult = SelectIntegrationCommand.run(['7'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('integration identifier does not appear to be valid.'))
 })
@@ -63,7 +63,7 @@ test('select-integration - console_get_namespaces_url, does not end with forward
   jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => false)
 
   config.get.mockImplementation(key => {
-    return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar', 'jwt_payload': { 'iss': 'asd' } }
+    return { client_id: 1234, console_get_namespaces_url: 'http://foo.bar', jwt_payload: { iss: 'asd' } }
   })
 
   mockResult = Promise.resolve({
@@ -73,7 +73,7 @@ test('select-integration - console_get_namespaces_url, does not end with forward
 
   expect.assertions(2)
 
-  let runResult = SelectIntegrationCommand.run(['5_5'])
+  const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
 })
@@ -83,7 +83,7 @@ test('select-integration - mock success', async () => {
   jest.spyOn(fs, 'existsSync').mockImplementation(() => true)
 
   config.get.mockImplementation(() => {
-    return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
+    return { client_id: 1234, console_get_namespaces_url: 'http://foo.bar/', jwt_payload: { iss: 'asd' } }
   })
 
   expect.assertions(4)
@@ -92,11 +92,11 @@ test('select-integration - mock success', async () => {
     json: () => Promise.resolve({ name: 'Basil', auth: '======' })
   })
 
-  let runResult = SelectIntegrationCommand.run(['5_5'])
+  const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
   expect(cli.confirm).toHaveBeenCalledWith(`The OpenWhisk properties file '${path.resolve(require('os').homedir(), '.wskprops')}' already exists. Do you want to overwrite it`)
-  expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5', { 'headers': { 'Authorization': 'Bearer fake-token', 'X-Api-Key': 1234, 'accept': 'application/json', 'x-ims-org-id': 'asd' } })
+  expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5', { headers: { Authorization: 'Bearer fake-token', 'X-Api-Key': 1234, accept: 'application/json', 'x-ims-org-id': 'asd' } })
 })
 
 test('select-integration - write local', async () => {
@@ -104,7 +104,7 @@ test('select-integration - write local', async () => {
   jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   config.get.mockImplementation(() => {
-    return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
+    return { client_id: 1234, console_get_namespaces_url: 'http://foo.bar/', jwt_payload: { iss: 'asd' } }
   })
 
   expect.assertions(4)
@@ -113,11 +113,11 @@ test('select-integration - write local', async () => {
     json: () => Promise.resolve({ name: 'Basil', auth: '======' })
   })
 
-  let runResult = SelectIntegrationCommand.run(['5_5', '--local'])
+  const runResult = SelectIntegrationCommand.run(['5_5', '--local'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
-  expect(config.set).toHaveBeenCalledWith('runtime', { 'apihost': 'https://adobeioruntime.net', 'auth': '======', 'namespace': 'Basil' }, true)
-  expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5', { 'headers': { 'Authorization': 'Bearer fake-token', 'X-Api-Key': 1234, 'accept': 'application/json', 'x-ims-org-id': 'asd' } })
+  expect(config.set).toHaveBeenCalledWith('runtime', { apihost: 'https://adobeioruntime.net', auth: '======', namespace: 'Basil' }, true)
+  expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5', { headers: { Authorization: 'Bearer fake-token', 'X-Api-Key': 1234, accept: 'application/json', 'x-ims-org-id': 'asd' } })
 })
 
 test('select-integration - write global', async () => {
@@ -125,7 +125,7 @@ test('select-integration - write global', async () => {
   jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
   config.get.mockImplementation(() => {
-    return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
+    return { client_id: 1234, console_get_namespaces_url: 'http://foo.bar/', jwt_payload: { iss: 'asd' } }
   })
 
   expect.assertions(4)
@@ -134,11 +134,11 @@ test('select-integration - write global', async () => {
     json: () => Promise.resolve({ name: 'Basil', auth: '======' })
   })
 
-  let runResult = SelectIntegrationCommand.run(['5_5', '--global'])
+  const runResult = SelectIntegrationCommand.run(['5_5', '--global'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
-  expect(config.set).toHaveBeenCalledWith('runtime', { 'apihost': 'https://adobeioruntime.net', 'auth': '======', 'namespace': 'Basil' }, false)
-  expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5', { 'headers': { 'Authorization': 'Bearer fake-token', 'X-Api-Key': 1234, 'accept': 'application/json', 'x-ims-org-id': 'asd' } })
+  expect(config.set).toHaveBeenCalledWith('runtime', { apihost: 'https://adobeioruntime.net', auth: '======', namespace: 'Basil' }, false)
+  expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5', { headers: { Authorization: 'Bearer fake-token', 'X-Api-Key': 1234, accept: 'application/json', 'x-ims-org-id': 'asd' } })
 })
 
 test('select-integration - config error', async () => {
@@ -147,12 +147,12 @@ test('select-integration - config error', async () => {
 
   config.get
     .mockImplementation(key => {
-      return { 'not_client_id': '1234' }
+      return { not_client_id: '1234' }
     })
 
   expect.assertions(2)
 
-  let runResult = SelectIntegrationCommand.run(['5_5'])
+  const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: client_id'))
 })
@@ -163,12 +163,12 @@ test('select-integration - config error missing jwt_payload', async () => {
 
   config.get
     .mockImplementation(() => {
-      return { 'client_id': '1234', 'console_get_namespaces_url': 'http://foo.bar/' }
+      return { client_id: '1234', console_get_namespaces_url: 'http://foo.bar/' }
     })
 
   expect.assertions(2)
 
-  let runResult = SelectIntegrationCommand.run(['5_5'])
+  const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload'))
 })
@@ -177,7 +177,7 @@ test('select-integration - config error missing jwt_payload pre-condition', asyn
   jest.spyOn(fs, 'writeFileSync').mockImplementationOnce(() => null)
   jest.spyOn(fs, 'existsSync').mockImplementationOnce(() => true)
 
-  let goodValue = { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/' }
+  const goodValue = { client_id: 1234, console_get_namespaces_url: 'http://foo.bar/' }
 
   config.get
     .mockImplementationOnce(() => {
@@ -190,7 +190,7 @@ test('select-integration - config error missing jwt_payload pre-condition', asyn
 
   expect.assertions(2)
 
-  let runResult = SelectIntegrationCommand.run(['5_5'])
+  const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
 })
@@ -201,12 +201,12 @@ test('select-integration - config error missing jwt_payload.iss', async () => {
 
   config.get
     .mockImplementation(key => {
-      return { 'client_id': '1234', 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': {} }
+      return { client_id: '1234', console_get_namespaces_url: 'http://foo.bar/', jwt_payload: {} }
     })
 
   expect.assertions(2)
 
-  let runResult = SelectIntegrationCommand.run(['5_5'])
+  const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload.iss'))
 })
@@ -217,14 +217,14 @@ test('select-integration - bad fetch', async () => {
 
   config.get
     .mockImplementation(key => {
-      return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
+      return { client_id: 1234, console_get_namespaces_url: 'http://foo.bar/', jwt_payload: { iss: 'asd' } }
     })
 
   expect.assertions(2)
 
   mockResult = Promise.resolve({ ok: false, status: 404, statusText: 'Not Found' })
 
-  let runResult = SelectIntegrationCommand.run(['5_5'])
+  const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).rejects.toEqual(new Error('Cannot retrieve integration: http://foo.bar/5/5 (404 Not Found)'))
 })
@@ -235,7 +235,7 @@ test('select-integration - mock success and overwrite .wskprops', async () => {
 
   config.get
     .mockImplementation(() => {
-      return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
+      return { client_id: 1234, console_get_namespaces_url: 'http://foo.bar/', jwt_payload: { iss: 'asd' } }
     })
 
   mockResult = Promise.resolve({
@@ -245,7 +245,7 @@ test('select-integration - mock success and overwrite .wskprops', async () => {
 
   expect.assertions(2)
 
-  let runResult = SelectIntegrationCommand.run(['5_5', '--force'])
+  const runResult = SelectIntegrationCommand.run(['5_5', '--force'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
 })
@@ -257,7 +257,7 @@ test('select-integration - mock success and dont overwrite .wskprops', async () 
 
   config.get
     .mockImplementation(() => {
-      return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
+      return { client_id: 1234, console_get_namespaces_url: 'http://foo.bar/', jwt_payload: { iss: 'asd' } }
     })
 
   mockResult = Promise.resolve({
@@ -267,7 +267,7 @@ test('select-integration - mock success and dont overwrite .wskprops', async () 
 
   expect.assertions(3)
 
-  let runResult = SelectIntegrationCommand.run(['5_5'])
+  const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual(undefined)
   expect(fs.writeFileSync).not.toHaveBeenCalled()
@@ -279,7 +279,7 @@ test('select-integration - mock .wskprops does not exist', async () => {
 
   config.get
     .mockImplementation(key => {
-      return { 'client_id': 1234, 'console_get_namespaces_url': 'http://foo.bar/', 'jwt_payload': { 'iss': 'asd' } }
+      return { client_id: 1234, console_get_namespaces_url: 'http://foo.bar/', jwt_payload: { iss: 'asd' } }
     })
 
   mockResult = Promise.resolve({
@@ -289,7 +289,7 @@ test('select-integration - mock .wskprops does not exist', async () => {
 
   expect.assertions(2)
 
-  let runResult = SelectIntegrationCommand.run(['5_5'])
+  const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
 })

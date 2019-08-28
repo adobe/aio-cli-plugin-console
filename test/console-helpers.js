@@ -169,7 +169,7 @@ test('getWskProps', async () => {
   expect(getWskProps()).toEqual({})
 
   jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => 'A=B\n# a commend\nFOO=BAR     # a comment')
-  expect(getWskProps()).toEqual({ a: 'B', 'foo': 'BAR' })
+  expect(getWskProps()).toEqual({ a: 'B', foo: 'BAR' })
 
   jest.spyOn(fs, 'readFileSync').mockImplementationOnce(() => { throw new Error('no file') })
   expect(getWskProps()).toEqual({})
