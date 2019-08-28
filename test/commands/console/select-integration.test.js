@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 const fs = require('fs')
-const config = require('@adobe/aio-cli-config')
+const config = require('@adobe/aio-cna-core-config')
 jest.mock('cli-ux')
 const { cli } = require('cli-ux')
 cli.confirm = jest.fn(() => true)
