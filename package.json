@@ -30,7 +30,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "jest": "^24.1.0",
     "jest-haste-map": "^24.5.0",
-    "jest-junit": "^6.3.0",
+    "jest-junit": "^7.0.0",
     "stdout-stderr": "^0.1.9"
   },
   "engines": {
