@@ -82,12 +82,12 @@ class ListIntegrationsCommand extends Command {
       cli.table(result, {
         namespace: { },
         name: {
-          minWidth: 25,
+          minWidth: 25
         },
         apiKey: {
           header: 'API Key',
           minWidth: 15,
-          get: row => (row.apiKey) ? `${row.apiKey.substr(0,5)}...` : ''
+          get: row => (row.apiKey) ? `${row.apiKey.substr(0, 5)}...` : ''
         },
         status: {},
         current: {
