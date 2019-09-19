@@ -10,6 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const yaml = require('js-yaml')
 const { Command, flags } = require('@oclif/command')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
 const { getApiKey, getOrgs, getIntegrations, getConfig } = require('../../console-helpers')
@@ -40,6 +41,14 @@ async function _listIntegrations (passphrase) {
 }
 
 class ListIntegrationsCommand extends Command {
+  logJSON (obj) {
+    this.log(JSON.stringify(obj, null, 2))
+  }
+
+  logYAML (obj) {
+    this.log(yaml.safeDump(obj, { noCompatMode: true }))
+  }
+
   async run () {
     const { flags } = this.parse(ListIntegrationsCommand)
     let result
@@ -65,18 +74,30 @@ class ListIntegrationsCommand extends Command {
       result = result.sort((a, b) => a.namespace.localeCompare(b.namespace))
     }
 
-    cli.table(result, {
-      namespace: { },
-      name: { },
-      status: {},
-      current: {
-        header: '',
-        get: row => (row.selected) ? '(currently selected)' : ''
-      }
-    }, {
-      printLine: this.log
-    })
-
+    if (flags.json) {
+      this.logJSON(result)
+    } else if (flags.yaml) {
+      this.logYAML(result)
+    } else {
+      cli.table(result, {
+        namespace: { },
+        name: {
+          minWidth: 25,
+        },
+        apiKey: {
+          header: 'API Key',
+          minWidth: 15,
+          get: row => (row.apiKey) ? `${row.apiKey.substr(0,5)}...` : ''
+        },
+        status: {},
+        current: {
+          header: '',
+          get: row => (row.selected) ? '(currently selected)' : ''
+        }
+      }, {
+        printLine: this.log
+      })
+    }
     return result
   }
 
@@ -89,7 +110,9 @@ ListIntegrationsCommand.description = 'lists integrations for use with Adobe I/O
 
 ListIntegrationsCommand.flags = {
   passphrase: flags.string({ char: 'p', description: 'the passphrase for the private-key' }),
-  name: flags.boolean({ char: 'n', description: 'sort results by name' })
+  name: flags.boolean({ char: 'n', description: 'sort results by name' }),
+  json: flags.boolean({ char: 'j', description: 'output raw json' }),
+  yaml: flags.boolean({ char: 'y', description: 'output yaml' })
 }
 
 ListIntegrationsCommand.aliases = [
