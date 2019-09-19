@@ -13,12 +13,13 @@ governing permissions and limitations under the License.
 const helpers = require('../../../src/console-helpers')
 helpers.getOrgs = jest.fn(() => Promise.resolve([{ id: 0 }]))
 helpers.getIntegrations = jest.fn()
-helpers.getIntegrations.mockImplementation(() => Promise.resolve({ page: 1,
+helpers.getIntegrations.mockImplementation(() => Promise.resolve({
+  page: 1,
   pages: 2,
   total: 3,
   content: [{ orgId: 0, id: 3, name: 'A', status: 'ENABLED' },
-    { orgId: 0, id: 2, name: 'B', status: 'ENABLED' },
-    { orgId: 0, id: 1, name: 'C', status: 'ENABLED', apiKey: '123456' }]
+  { orgId: 0, id: 2, name: 'B', status: 'ENABLED' },
+  { orgId: 0, id: 1, name: 'C', status: 'ENABLED', apiKey: '123456' }]
 }))
 
 const ListIntegrationsCommand = require('../../../src/commands/console/list-integrations')
@@ -57,12 +58,12 @@ test('list-integrations - mock success', async () => {
 
   let runResult = ListIntegrationsCommand.run([])
   return expect(runResult).resolves.toEqual([
-    { 'apiKey': '123456', 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' },
-    { 'apiKey': '123456', 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' },
-    { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }])
+    { apiKey: '123456', id: 1, name: 'C', namespace: '0_1', orgId: 0, selected: true, status: 'ENABLED' },
+    { apiKey: '123456', id: 1, name: 'C', namespace: '0_1', orgId: 0, selected: true, status: 'ENABLED' },
+    { id: 2, name: 'B', namespace: '0_2', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 2, name: 'B', namespace: '0_2', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 3, name: 'A', namespace: '0_3', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 3, name: 'A', namespace: '0_3', orgId: 0, selected: false, status: 'ENABLED' }])
 })
 
 test('list-integrations - mock success --yaml', async () => {
@@ -78,12 +79,12 @@ test('list-integrations - mock success --yaml', async () => {
 
   let runResult = ListIntegrationsCommand.run(['-y'])
   return expect(runResult).resolves.toEqual([
-    { 'apiKey': '123456', 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' },
-    { 'apiKey': '123456', 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' },
-    { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }])
+    { apiKey: '123456', id: 1, name: 'C', namespace: '0_1', orgId: 0, selected: true, status: 'ENABLED' },
+    { apiKey: '123456', id: 1, name: 'C', namespace: '0_1', orgId: 0, selected: true, status: 'ENABLED' },
+    { id: 2, name: 'B', namespace: '0_2', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 2, name: 'B', namespace: '0_2', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 3, name: 'A', namespace: '0_3', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 3, name: 'A', namespace: '0_3', orgId: 0, selected: false, status: 'ENABLED' }])
 })
 
 test('list-integrations - mock success --json', async () => {
@@ -99,12 +100,12 @@ test('list-integrations - mock success --json', async () => {
 
   let runResult = ListIntegrationsCommand.run(['-j'])
   return expect(runResult).resolves.toEqual([
-    { 'apiKey': '123456', 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' }, 
-    { 'apiKey': '123456', 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' },
-    { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }])
+    { apiKey: '123456', id: 1, name: 'C', namespace: '0_1', orgId: 0, selected: true, status: 'ENABLED' },
+    { apiKey: '123456', id: 1, name: 'C', namespace: '0_1', orgId: 0, selected: true, status: 'ENABLED' },
+    { id: 2, name: 'B', namespace: '0_2', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 2, name: 'B', namespace: '0_2', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 3, name: 'A', namespace: '0_3', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 3, name: 'A', namespace: '0_3', orgId: 0, selected: false, status: 'ENABLED' }])
 })
 
 test('list-integrations - mock success sort by name', async () => {
@@ -121,12 +122,12 @@ test('list-integrations - mock success sort by name', async () => {
 
   let runResult = ListIntegrationsCommand.run(['--name'])
   return expect(runResult).resolves.toEqual([
-    { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'apiKey': '123456', 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' }, 
-    { 'apiKey': '123456', 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' }])
+    { id: 3, name: 'A', namespace: '0_3', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 3, name: 'A', namespace: '0_3', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 2, name: 'B', namespace: '0_2', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 2, name: 'B', namespace: '0_2', orgId: 0, selected: false, status: 'ENABLED' },
+    { apiKey: '123456', id: 1, name: 'C', namespace: '0_1', orgId: 0, selected: true, status: 'ENABLED' },
+    { apiKey: '123456', id: 1, name: 'C', namespace: '0_1', orgId: 0, selected: true, status: 'ENABLED' }])
 })
 
 test('list-integrations - mock success, multiple pages', async () => {
@@ -142,17 +143,17 @@ test('list-integrations - mock success, multiple pages', async () => {
 
   let runResult = ListIntegrationsCommand.run([])
   return expect(runResult).resolves.toEqual([
-    { 'apiKey': '123456', 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' },
-    { 'apiKey': '123456', 'id': 1, 'name': 'C', 'namespace': '0_1', 'orgId': 0, 'selected': true, 'status': 'ENABLED' },
-    { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 2, 'name': 'B', 'namespace': '0_2', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' },
-    { 'id': 3, 'name': 'A', 'namespace': '0_3', 'orgId': 0, 'selected': false, 'status': 'ENABLED' }])
+    { apiKey: '123456', id: 1, name: 'C', namespace: '0_1', orgId: 0, selected: true, status: 'ENABLED' },
+    { apiKey: '123456', id: 1, name: 'C', namespace: '0_1', orgId: 0, selected: true, status: 'ENABLED' },
+    { id: 2, name: 'B', namespace: '0_2', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 2, name: 'B', namespace: '0_2', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 3, name: 'A', namespace: '0_3', orgId: 0, selected: false, status: 'ENABLED' },
+    { id: 3, name: 'A', namespace: '0_3', orgId: 0, selected: false, status: 'ENABLED' }])
 })
 
 test('ls missing client_id', async () => {
   config.get.mockImplementation(() => {
-    return { }
+    return {}
   })
 
   expect.assertions(2)
