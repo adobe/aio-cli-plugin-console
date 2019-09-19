@@ -20,8 +20,8 @@ const debug = require('debug')('aio-cli-plugin-console:select-integration')
 const { confirm } = require('cli-ux').cli
 
 async function _selectIntegration (integrationId, passphrase, force, dest) {
-
   debug('_selectIntegration integrationId', integrationId)
+  
   if (!integrationId) {
     return Promise.reject(new Error('missing expected integration identifier.'))
   }
