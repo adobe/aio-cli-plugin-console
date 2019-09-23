@@ -17,6 +17,18 @@ const debug = require('debug')('aio-cli-plugin-console')
 const fs = require('fs')
 
 /**
+ * Convenience wrapper for fetch for logging purposes.
+ *
+ * @param {string} url the url to fetch from
+ * @param {object} options the options for fetch
+ */
+async function fetchWrapper (url, options) {
+  debug(`fetch: ${url}`)
+  debug(`fetch options: ${JSON.stringify(options, null, 2)}`)
+  return fetch(url, options)
+}
+
+/**
  * @description Calls the server api to get a list of orgs
  * @param {string} accessToken a valid token from jwt-auth command
  * @param {Sting} apiKey a valid api_key for this api
@@ -33,8 +45,7 @@ async function getOrgs (accessToken, apiKey) {
     }
   }
 
-  debug(`fetch: ${orgsUrl}`)
-  return fetch(orgsUrl, options).then((res) => {
+  return fetchWrapper(orgsUrl, options).then((res) => {
     if (res.ok) return res.json()
     else throw new Error(`Cannot retrieve organizations: ${orgsUrl} (${res.status} ${res.statusText})`)
   })
@@ -123,8 +134,7 @@ async function getIntegrations (orgId, accessToken, apiKey, { pageNum = 1, pageS
     }
   }
 
-  debug(`fetch: ${integrationsUrl}`)
-  return fetch(integrationsUrl, options).then((res) => {
+  return fetchWrapper(integrationsUrl, options).then((res) => {
     if (res.ok) return res.json()
     else throw new Error(`Cannot retrieve integrations: ${integrationsUrl} (${res.status} ${res.statusText})`)
   })
@@ -149,8 +159,7 @@ async function getIntegration (namespace, accessToken, apiKey) {
     }
   }
 
-  debug(`fetch: ${integrationUrl}`)
-  return fetch(integrationUrl, options).then((res) => {
+  return fetchWrapper(integrationUrl, options).then((res) => {
     if (res.ok) return res.json()
     else throw new Error(`Cannot retrieve integration: ${integrationUrl} (${res.status} ${res.statusText})`)
   })
@@ -173,5 +182,6 @@ module.exports = {
   getIMSOrgId,
   getWskProps,
   getIntegration,
-  getConfig
+  getConfig,
+  fetchWrapper
 }
