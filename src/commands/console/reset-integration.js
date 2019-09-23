@@ -34,6 +34,7 @@ async function _resetIntegration (integrationId, passphrase) {
   const imsOrgId = await getIMSOrgId()
 
   const options = {
+    method: 'post',
     headers: {
       'X-Api-Key': apiKey,
       'x-ims-org-id': imsOrgId,

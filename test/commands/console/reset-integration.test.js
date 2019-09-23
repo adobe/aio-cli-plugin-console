@@ -85,10 +85,20 @@ test('reset-integration - mock success', async () => {
 
   expect.assertions(3)
 
+  const options = {
+    method: 'post',
+    headers: {
+      Authorization: 'Bearer fake-token',
+      'X-Api-Key': 1234,
+      accept: 'application/json',
+      'x-ims-org-id': 'asd'
+    }
+  }
+
   const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
   await expect(runResult).resolves.toEqual({ name: 'Basil', auth: '======' })
-  expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5/reset', { headers: { Authorization: 'Bearer fake-token', 'X-Api-Key': 1234, accept: 'application/json', 'x-ims-org-id': 'asd' } })
+  expect(fetch).toHaveBeenCalledWith('http://foo.bar/5/5/reset', options)
 })
 
 test('reset-integration - config error', async () => {
