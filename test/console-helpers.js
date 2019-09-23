@@ -15,7 +15,7 @@ jest.mock('node-fetch', () => jest.fn().mockImplementation(() => mockResult))
 const fs = require('fs')
 const path = require('path')
 const config = require('@adobe/aio-cna-core-config')
-const { getApiKey, getIntegrations, getOrgs, getOrgsUrl, getIntegration, getWskProps, getConfig, getWskPropsFilePath, getNamespaceUrl, getIMSOrgId } = require('../src/console-helpers')
+const { responseInterceptor, getApiKey, getIntegrations, getOrgs, getOrgsUrl, getIntegration, getWskProps, getConfig, getWskPropsFilePath, getNamespaceUrl, getIMSOrgId } = require('../src/console-helpers')
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -23,6 +23,16 @@ beforeEach(() => {
     ok: true,
     json: () => Promise.resolve({})
   })
+})
+
+test('responseInterceptor', () => {
+  let response = { ok: true, text: () => '{}' }
+  let newResponse = responseInterceptor(response)
+  expect(newResponse).toEqual(response)
+
+  response = { ok: true }
+  newResponse = responseInterceptor(response)
+  expect(newResponse).toEqual(response)
 })
 
 test('getWskPropsFilePath', () => {

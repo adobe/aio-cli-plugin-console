@@ -17,6 +17,25 @@ const debug = require('debug')('aio-cli-plugin-console')
 const fs = require('fs')
 
 /**
+ * Response interceptor for logging purposes
+ *
+ * @param {string} url the url to fetch from
+ * @param {object} options the options for fetch
+ */
+function responseInterceptor (response) {
+  debug('RESPONSE', response)
+  if (response.ok) {
+    const text = (response.text instanceof Function) ? response.text() : ''
+    try {
+      debug('DATA\n', JSON.stringify(JSON.parse(text), null, 2))
+    } catch (e) {
+      debug('DATA\n', text)
+    }
+  }
+  return response
+}
+
+/**
  * Convenience wrapper for fetch for logging purposes.
  *
  * @param {string} url the url to fetch from
@@ -46,6 +65,7 @@ async function getOrgs (accessToken, apiKey) {
   }
 
   return fetchWrapper(orgsUrl, options).then((res) => {
+    responseInterceptor(res)
     if (res.ok) return res.json()
     else throw new Error(`Cannot retrieve organizations: ${orgsUrl} (${res.status} ${res.statusText})`)
   })
@@ -135,6 +155,7 @@ async function getIntegrations (orgId, accessToken, apiKey, { pageNum = 1, pageS
   }
 
   return fetchWrapper(integrationsUrl, options).then((res) => {
+    responseInterceptor(res)
     if (res.ok) return res.json()
     else throw new Error(`Cannot retrieve integrations: ${integrationsUrl} (${res.status} ${res.statusText})`)
   })
@@ -160,6 +181,7 @@ async function getIntegration (namespace, accessToken, apiKey) {
   }
 
   return fetchWrapper(integrationUrl, options).then((res) => {
+    responseInterceptor(res)
     if (res.ok) return res.json()
     else throw new Error(`Cannot retrieve integration: ${integrationUrl} (${res.status} ${res.statusText})`)
   })
@@ -183,5 +205,6 @@ module.exports = {
   getWskProps,
   getIntegration,
   getConfig,
-  fetchWrapper
+  fetchWrapper,
+  responseInterceptor
 }

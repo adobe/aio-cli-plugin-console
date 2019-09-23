@@ -84,7 +84,6 @@ test('reset-integration - mock success', async () => {
   })
 
   expect.assertions(3)
-  // expect(opts.headers['x-ims-org-id']).toEqual('asd')
 
   const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
