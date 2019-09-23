@@ -14,7 +14,7 @@ const { Command, flags } = require('@oclif/command')
 const config = require('@adobe/aio-cna-core-config')
 const fs = require('fs')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { fetchWrapper, getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
+const { responseInterceptor, fetchWrapper, getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
 const debug = require('debug')('aio-cli-plugin-console:select-integration')
 const { confirm } = require('cli-ux').cli
 
@@ -50,7 +50,7 @@ async function _selectIntegration (integrationId, passphrase, force, dest) {
 
   debug('calling with options:', options)
 
-  const res = await fetchWrapper(tempUrl, options)
+  const res = responseInterceptor(await fetchWrapper(tempUrl, options))
   if (!res.ok) throw new Error(`Cannot retrieve integration: ${tempUrl} (${res.status} ${res.statusText})`)
   const result = await res.json()
 

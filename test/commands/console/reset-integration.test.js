@@ -84,7 +84,7 @@ test('reset-integration - mock success', async () => {
   })
 
   expect.assertions(3)
-  // expect(opts.headers['x-ims-org-id']).toEqual('asd')
+
   const options = {
     method: 'post',
     headers: {
