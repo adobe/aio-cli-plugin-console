@@ -60,7 +60,7 @@ test('reset-integration - console_get_namespaces_url, does not end with forward 
 
   mockResult = Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ name: 'Basil', auth: '======' })
+    text: () => Promise.resolve(JSON.stringify({ name: 'Basil', auth: '======' }))
   })
 
   expect.assertions(2)
@@ -80,7 +80,7 @@ test('reset-integration - mock success', async () => {
 
   mockResult = Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ name: 'Basil', auth: '======' })
+    text: () => Promise.resolve(JSON.stringify({ name: 'Basil', auth: '======' }))
   })
 
   expect.assertions(3)
