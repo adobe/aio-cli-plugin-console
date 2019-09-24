@@ -65,7 +65,7 @@ async function getOrgs (accessToken, apiKey) {
   }
 
   return fetchWrapper(orgsUrl, options).then((res) => {
-    responseInterceptor(res)
+    // responseInterceptor(res)
     if (res.ok) return res.json()
     else throw new Error(`Cannot retrieve organizations: ${orgsUrl} (${res.status} ${res.statusText})`)
   })
@@ -155,7 +155,7 @@ async function getIntegrations (orgId, accessToken, apiKey, { pageNum = 1, pageS
   }
 
   return fetchWrapper(integrationsUrl, options).then((res) => {
-    responseInterceptor(res)
+    // responseInterceptor(res)
     if (res.ok) return res.json()
     else throw new Error(`Cannot retrieve integrations: ${integrationsUrl} (${res.status} ${res.statusText})`)
   })
@@ -169,22 +169,12 @@ async function getIntegrations (orgId, accessToken, apiKey, { pageNum = 1, pageS
  * @return {Promise} resolves with a list of integrations
  */
 async function getIntegration (namespace, accessToken, apiKey) {
-  const orgsUrl = await getOrgsUrl()
-  const [org, integration] = namespace.split('_')
-  const integrationUrl = `${orgsUrl}/${org}/integrations/${integration}`
-  const options = {
-    headers: {
-      'X-Api-Key': apiKey,
-      Authorization: `Bearer ${accessToken}`,
-      accept: 'application/json'
-    }
-  }
-
-  return fetchWrapper(integrationUrl, options).then((res) => {
-    responseInterceptor(res)
-    if (res.ok) return res.json()
-    else throw new Error(`Cannot retrieve integration: ${integrationUrl} (${res.status} ${res.statusText})`)
+  const [orgId, integration] = namespace.split('_').map(id => parseInt(id))
+  const results = await getIntegrations(orgId, accessToken, apiKey)
+  const result = results.content.find((elem) => {
+    return (elem.orgId === orgId && elem.id === integration)
   })
+  return result
 }
 
 /**
