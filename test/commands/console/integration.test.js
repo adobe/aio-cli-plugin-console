@@ -14,14 +14,14 @@ const CurrentIntegrationCommand = require('../../../src/commands/console/integra
 jest.mock('node-fetch', () => jest.fn().mockImplementationOnce(() => {
   return Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ id: 0 })
+    text: () => Promise.resolve('{ "id": 0 }')
   })
 })
   .mockImplementationOnce(() => {
     return Promise.resolve({
       ok: true,
-      json: () => Promise.resolve(
-        { orgId: 0, id: 3, name: 'C' }
+      text: () => Promise.resolve(
+        '{ "orgId": 0, "id": 3, "name": "C" }'
       )
     })
   }))
@@ -37,7 +37,7 @@ jest.mock('@adobe/aio-cli-plugin-jwt-auth', () => {
   }
 })
 
-test('list-integrations - missing config', async () => {
+test('current-integration - missing config', async () => {
   expect.assertions(2)
 
   const runResult = CurrentIntegrationCommand.run(['org_int'])
@@ -45,7 +45,7 @@ test('list-integrations - missing config', async () => {
   await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
 })
 
-test('list-integrations - mock success', async () => {
+test('current-integration - mock success', async () => {
   config.get.mockImplementation(() => {
     return {
       client_id: '1234',

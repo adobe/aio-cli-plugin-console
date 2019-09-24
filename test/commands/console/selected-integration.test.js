@@ -18,14 +18,14 @@ const Command = require('../../../src/commands/console/selected-integration')
 jest.mock('node-fetch', () => jest.fn().mockImplementationOnce(() => {
   return Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ id: 0 })
+    text: () => Promise.resolve('{ "id": 0 }')
   })
 })
   .mockImplementationOnce(() => {
     return Promise.resolve({
       ok: true,
-      json: () => Promise.resolve(
-        { orgId: 0, id: 3, name: 'C' }
+      text: () => Promise.resolve(
+        '{ "orgId": 0, "id": 3, "name": "C" }'
       )
     })
   }))
