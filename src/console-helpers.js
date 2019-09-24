@@ -21,18 +21,23 @@ const fs = require('fs')
  *
  * @param {string} url the url to fetch from
  * @param {object} options the options for fetch
+* @return {object} the JSON response, if any
  */
-function responseInterceptor (response) {
+async function consumeResponseJson (response) {
   debug('RESPONSE', response)
+  let json = {}
+
   if (response.ok) {
-    const text = (response.text instanceof Function) ? response.text() : ''
+    const text = (response.text instanceof Function) ? (await response.text()) : ''
     try {
-      debug('DATA\n', JSON.stringify(JSON.parse(text), null, 2))
+      // try to parse
+      json = JSON.parse(text)
+      debug('DATA\n', JSON.stringify(json, null, 2))
     } catch (e) {
       debug('DATA\n', text)
     }
   }
-  return response
+  return json
 }
 
 /**
@@ -64,10 +69,12 @@ async function getOrgs (accessToken, apiKey) {
     }
   }
 
-  return fetchWrapper(orgsUrl, options).then((res) => {
-    responseInterceptor(res)
-    if (res.ok) return res.json()
-    else throw new Error(`Cannot retrieve organizations: ${orgsUrl} (${res.status} ${res.statusText})`)
+  return fetchWrapper(orgsUrl, options).then(res => {
+    if (res.ok) {
+      return consumeResponseJson(res)
+    } else {
+      throw new Error(`Cannot retrieve organizations: ${orgsUrl} (${res.status} ${res.statusText})`)
+    }
   })
 }
 
@@ -154,10 +161,12 @@ async function getIntegrations (orgId, accessToken, apiKey, { pageNum = 1, pageS
     }
   }
 
-  return fetchWrapper(integrationsUrl, options).then((res) => {
-    responseInterceptor(res)
-    if (res.ok) return res.json()
-    else throw new Error(`Cannot retrieve integrations: ${integrationsUrl} (${res.status} ${res.statusText})`)
+  return fetchWrapper(integrationsUrl, options).then(res => {
+    if (res.ok) {
+      return consumeResponseJson(res)
+    } else {
+      throw new Error(`Cannot retrieve integrations: ${integrationsUrl} (${res.status} ${res.statusText})`)
+    }
   })
 }
 
@@ -180,10 +189,12 @@ async function getIntegration (namespace, accessToken, apiKey) {
     }
   }
 
-  return fetchWrapper(integrationUrl, options).then((res) => {
-    responseInterceptor(res)
-    if (res.ok) return res.json()
-    else throw new Error(`Cannot retrieve integration: ${integrationUrl} (${res.status} ${res.statusText})`)
+  return fetchWrapper(integrationUrl, options).then(res => {
+    if (res.ok) {
+      return consumeResponseJson(res)
+    } else {
+      throw new Error(`Cannot retrieve integration: ${integrationUrl} (${res.status} ${res.statusText})`)
+    }
   })
 }
 
@@ -206,5 +217,5 @@ module.exports = {
   getIntegration,
   getConfig,
   fetchWrapper,
-  responseInterceptor
+  consumeResponseJson
 }

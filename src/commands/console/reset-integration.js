@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 const { Command } = require('@oclif/command')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { responseInterceptor, fetchWrapper, getNamespaceUrl, getApiKey, getIMSOrgId } = require('../../console-helpers')
+const { consumeResponseJson, fetchWrapper, getNamespaceUrl, getApiKey, getIMSOrgId } = require('../../console-helpers')
 const debug = require('debug')('aio-cli-plugin-console:reset-integration')
 
 async function _resetIntegration (integrationId, passphrase) {
@@ -43,10 +43,12 @@ async function _resetIntegration (integrationId, passphrase) {
     }
   }
 
-  return fetchWrapper(tempUrl, options).then((res) => {
-    responseInterceptor(res)
-    if (res.ok) return res.json()
-    else throw new Error(`Cannot retrieve integration: ${tempUrl} (${res.status} ${res.statusText})`)
+  return fetchWrapper(tempUrl, options).then(res => {
+    if (res.ok) {
+      return consumeResponseJson(res)
+    } else {
+      throw new Error(`Cannot retrieve integration: ${tempUrl} (${res.status} ${res.statusText})`)
+    }
   })
 }
 
