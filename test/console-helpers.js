@@ -12,13 +12,14 @@ governing permissions and limitations under the License.
 
 let mockResult
 jest.mock('node-fetch', () => jest.fn().mockImplementation(() => mockResult))
+
 const fs = require('fs')
 const path = require('path')
 const config = require('@adobe/aio-cna-core-config')
 const { consumeResponseJson, getApiKey, getIntegrations, getOrgs, getOrgsUrl, getIntegration, getWskProps, getConfig, getWskPropsFilePath, getNamespaceUrl, getIMSOrgId } = require('../src/console-helpers')
 
 beforeEach(() => {
-  jest.clearAllMocks()
+  jest.restoreAllMocks()
   mockResult = Promise.resolve({
     ok: true,
     json: () => Promise.resolve({})
@@ -150,19 +151,25 @@ test('getIntegrations', async () => {
   await expect(getIntegrations('myOrg', 'myAccessToken', 'myApiKey', { pageNum: -1, pageSize: 51 })).resolves.toEqual({})
 
   mockResult = Promise.resolve({ ok: false, status: 404, statusText: 'Not Found' })
-  await expect(getIntegrations('x', 'y')).rejects.toEqual(new Error('Cannot retrieve integrations: https://api.adobe.io/console/organizations/x/integrations?page=0&size=20 (404 Not Found)'))
+  await expect(getIntegrations('x', 'y')).rejects.toThrow('(404 Not Found)')
 })
 
 test('getIntegration', async () => {
   config.get
     .mockImplementation(() => '{"client_id":1234, "console_get_orgs_url":"http://foo.bar"}')
 
-  expect.assertions(2)
+  mockResult = Promise.resolve({ ok: true,
+    text: () => Promise.resolve('{"content": [{ "orgId": 111, "id": 222 }]}') })
 
-  await expect(getIntegration('a_b', 'myAccessToken', 'myApiKey')).resolves.toEqual({})
+  await expect(getIntegration('111_222', 'myAccessToken', 'myApiKey')).resolves.toMatchObject({ orgId: 111, id: 222 })
+})
+
+test('getIntegration - not found', async () => {
+  config.get
+    .mockImplementation(() => '{"client_id":1234, "console_get_orgs_url":"http://foo.bar"}')
 
   mockResult = Promise.resolve({ ok: false, status: 404, statusText: 'Not Found' })
-  await expect(getIntegration('a_b', 'y')).rejects.toEqual(new Error('Cannot retrieve integration: https://api.adobe.io/console/organizations/a/integrations/b (404 Not Found)'))
+  await expect(getIntegration('a_b', 'y')).rejects.toThrow('(404 Not Found)')
 })
 
 test('getConfig', async () => {

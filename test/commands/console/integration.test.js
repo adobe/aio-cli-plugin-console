@@ -14,14 +14,14 @@ const CurrentIntegrationCommand = require('../../../src/commands/console/integra
 jest.mock('node-fetch', () => jest.fn().mockImplementationOnce(() => {
   return Promise.resolve({
     ok: true,
-    text: () => Promise.resolve('{ "id": 0 }')
+    text: () => Promise.resolve('{"content": [{ "orgId": 123, "id": 456 }]}')
   })
 })
   .mockImplementationOnce(() => {
     return Promise.resolve({
       ok: true,
       text: () => Promise.resolve(
-        '{ "orgId": 0, "id": 3, "name": "C" }'
+        '{"content": [{ "orgId": 0, "id": 3, "name": "C" }]}'
       )
     })
   }))
@@ -56,8 +56,8 @@ test('current-integration - mock success', async () => {
 
   jest.mock('node-fetch', () => jest.fn().mockImplementation(() => null))
 
-  const runResult = CurrentIntegrationCommand.run(['org_int'])
-  await expect(runResult).resolves.toEqual({ id: 0 })
+  const runResult = CurrentIntegrationCommand.run(['123_456'])
+  await expect(runResult).resolves.toEqual({ id: 456, orgId: 123 })
 })
 
 describe('basic command properties', () => {
