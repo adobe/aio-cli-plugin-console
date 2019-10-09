@@ -31,14 +31,11 @@ class IntegrationCommand extends Command {
 
     try {
       result = await this.integration(args.namespace, flags.passphrase)
-      
-      if(result) {
+      if (result) {
         this.log(util.inspect(result, { colors: true, maxArrayLength: null, breakLength: 75, depth: 50 }))
-      }
-      else {
+      } else {
         throw new Error('Integration not found')
       }
-      
     } catch (error) {
       debug(error)
       this.error(error.message)

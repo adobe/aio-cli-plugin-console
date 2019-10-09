@@ -55,7 +55,7 @@ test('getOrgs', async () => {
 
   // no jwt-auth key
   config.get.mockImplementation(() => null)
-  await expect(getOrgs('x', 'y')).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(getOrgs('x', 'y')).rejects.toThrow('missing config data: jwt-auth')
 
   // jwt-auth available
   config.get.mockImplementation(() => { return {} })
@@ -71,7 +71,7 @@ test('getOrgs', async () => {
   await expect(getOrgs('x', 'y')).resolves.toEqual({})
 
   mockResult = Promise.resolve({ ok: false, status: 404, statusText: 'Not Found' })
-  await expect(getOrgs('x', 'y')).rejects.toEqual(new Error('Cannot retrieve organizations: http://foo.bar (404 Not Found)'))
+  await expect(getOrgs('x', 'y')).rejects.toThrow('Cannot retrieve organizations: http://foo.bar (404 Not Found)')
 })
 
 test('getOrgsUrl', async () => {
@@ -79,7 +79,7 @@ test('getOrgsUrl', async () => {
 
   // no jwt-auth key
   config.get.mockImplementation(() => null)
-  await expect(getOrgsUrl()).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(getOrgsUrl()).rejects.toThrow('missing config data: jwt-auth')
 
   // jwt-auth available
   config.get.mockImplementation(() => { return {} })
@@ -95,7 +95,7 @@ test('getNamespaceUrl', async () => {
 
   // no jwt-auth key
   config.get.mockImplementation(() => null)
-  await expect(getNamespaceUrl()).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(getNamespaceUrl()).rejects.toThrow('missing config data: jwt-auth')
 
   config.get.mockImplementation(() => { return {} })
   await expect(getNamespaceUrl('x', 'y')).resolves.toEqual('https://api.adobe.io/runtime/admin/namespaces/')
@@ -110,11 +110,11 @@ test('getApiKey', async () => {
 
   // no jwt-auth key
   config.get.mockImplementation(() => null)
-  await expect(getApiKey()).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(getApiKey()).rejects.toThrow('missing config data: jwt-auth')
 
   // jwt-auth available
   config.get.mockImplementation(() => { return {} })
-  await expect(getApiKey()).rejects.toEqual(new Error('missing config data: client_id'))
+  await expect(getApiKey()).rejects.toThrow('missing config data: client_id')
 
   // jwt-auth, client_id available
   config.get.mockImplementation(() => { return { client_id: 1234 } })
@@ -126,15 +126,15 @@ test('getIMSOrgId', async () => {
 
   // no jwt-auth key
   config.get.mockImplementation(() => null)
-  await expect(getIMSOrgId()).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(getIMSOrgId()).rejects.toThrow('missing config data: jwt-auth')
 
   // jwt-auth available
   config.get.mockImplementation(() => { return {} })
-  await expect(getIMSOrgId()).rejects.toEqual(new Error('missing config data: jwt_payload'))
+  await expect(getIMSOrgId()).rejects.toThrow('missing config data: jwt_payload')
 
   // jwt-auth available
   config.get.mockImplementation(() => { return { jwt_payload: {} } })
-  await expect(getIMSOrgId()).rejects.toEqual(new Error('missing config data: jwt_payload.iss'))
+  await expect(getIMSOrgId()).rejects.toThrow('missing config data: jwt_payload.iss')
 
   // jwt-auth, client_id available
   config.get.mockImplementation(() => { return { jwt_payload: { iss: 'adobe.com' } } })

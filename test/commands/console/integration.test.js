@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const CurrentIntegrationCommand = require('../../../src/commands/console/integration')
+const IntegrationCommand = require('../../../src/commands/console/integration')
 jest.mock('node-fetch', () => jest.fn().mockImplementationOnce(() => {
   return Promise.resolve({
     ok: true,
@@ -37,15 +37,15 @@ jest.mock('@adobe/aio-cli-plugin-jwt-auth', () => {
   }
 })
 
-test('current-integration - missing config', async () => {
+test('get-integration - missing config', async () => {
   expect.assertions(2)
 
-  const runResult = CurrentIntegrationCommand.run(['org_int'])
+  const runResult = IntegrationCommand.run(['org_int'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(runResult).rejects.toThrow('missing config data: jwt-auth')
 })
 
-test('current-integration - mock success', async () => {
+test('get-integration - mock success', async () => {
   config.get.mockImplementation(() => {
     return {
       client_id: '1234',
@@ -56,20 +56,38 @@ test('current-integration - mock success', async () => {
 
   jest.mock('node-fetch', () => jest.fn().mockImplementation(() => null))
 
-  const runResult = CurrentIntegrationCommand.run(['123_456'])
+  const runResult = IntegrationCommand.run(['123_456'])
   await expect(runResult).resolves.toEqual({ id: 456, orgId: 123 })
+})
+
+test('get-integration - mock 404', async () => {
+  config.get.mockImplementation(() => {
+    return {
+      client_id: '1234',
+      console_get_orgs_url: '...',
+      namespace: '0_1'
+    }
+  })
+
+  jest.mock('node-fetch', () => jest.fn().mockImplementation(() => Promise.resolve({ ok: false,
+    status: 404,
+    statusText: 'Not Found' })))
+
+  const runResult = IntegrationCommand.run(['123_456'])
+  await expect(runResult instanceof Promise).toBeTruthy()
+  await expect(runResult).rejects.toThrow('Integration not found')
 })
 
 describe('basic command properties', () => {
   test('has a description', () => {
-    expect(CurrentIntegrationCommand.description).toBeDefined()
+    expect(IntegrationCommand.description).toBeDefined()
   })
 
   test('has aliases', () => {
-    expect(CurrentIntegrationCommand.aliases).toBeDefined()
+    expect(IntegrationCommand.aliases).toBeDefined()
   })
 
   test('has flags', () => {
-    expect(CurrentIntegrationCommand.flags).toBeDefined()
+    expect(IntegrationCommand.flags).toBeDefined()
   })
 })
