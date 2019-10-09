@@ -42,7 +42,7 @@ test('list-integrations - missing config', async () => {
 
   const runResult = ListIntegrationsCommand.run([])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(runResult).rejects.toThrow('missing config data: jwt-auth')
 })
 
 test('list-integrations - mock success', async () => {
@@ -159,10 +159,10 @@ test('ls missing client_id', async () => {
   expect.assertions(2)
 
   let runResult = ListIntegrationsCommand.run([])
-  await expect(runResult).rejects.toEqual(new Error('missing config data: client_id'))
+  await expect(runResult).rejects.toThrow('missing config data: client_id')
 
   runResult = new ListIntegrationsCommand().listIntegrations()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: client_id'))
+  await expect(runResult).rejects.toThrow('missing config data: client_id')
 })
 
 describe('basic command properties', () => {

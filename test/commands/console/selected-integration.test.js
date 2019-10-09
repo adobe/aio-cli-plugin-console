@@ -18,7 +18,7 @@ const Command = require('../../../src/commands/console/selected-integration')
 jest.mock('node-fetch', () => jest.fn().mockImplementationOnce(() => {
   return Promise.resolve({
     ok: true,
-    text: () => Promise.resolve('{ "id": 0 }')
+    text: () => Promise.resolve('{"content": [{ "id": 1, "orgId": 0 }, { "id": 5, "orgId": 12 }]}')
   })
 })
   .mockImplementationOnce(() => {
@@ -44,7 +44,7 @@ test('selected-integrations - missing config', async () => {
 
   const runResult = Command.run([])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(runResult).rejects.toThrow('missing config data: jwt-auth')
 })
 
 test('selected-integrations - mock success', async () => {
@@ -52,14 +52,19 @@ test('selected-integrations - mock success', async () => {
     return {
       client_id: '1234',
       console_get_orgs_url: '...',
-      namespace: '0_1'
+      namespace: '12_5'
     }
   })
 
-  jest.mock('node-fetch', () => jest.fn().mockImplementation(() => null))
+  jest.mock('node-fetch', () => jest.fn().mockImplementationOnce(() => {
+    return Promise.resolve({
+      ok: true,
+      text: () => Promise.resolve('{"content": [{ "orgId": 12, "id": 5 }]}')
+    })
+  }))
 
   const runResult = Command.run([])
-  await expect(runResult).resolves.toEqual({ id: 0 })
+  await expect(runResult).resolves.toEqual({ id: 5, orgId: 12 })
 })
 
 test('selected-integrations - mock failure', async () => {
@@ -67,7 +72,7 @@ test('selected-integrations - mock failure', async () => {
   jest.mock('node-fetch', () => jest.fn().mockImplementation(() => null))
 
   const runResult = Command.run([])
-  await expect(runResult).rejects.toEqual(new Error('No integration is selected'))
+  await expect(runResult).rejects.toThrow('No integration is selected')
 })
 
 describe('basic command properties', () => {

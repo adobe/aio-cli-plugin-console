@@ -39,7 +39,7 @@ test('reset-integration - no args', async () => {
 
   const runResult = ResetIntegrationCommand.run([])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing expected integration identifier.'))
+  await expect(runResult).rejects.toThrow('missing expected integration identifier.')
 })
 
 test('reset-integration - bad args', async () => {
@@ -47,7 +47,7 @@ test('reset-integration - bad args', async () => {
 
   const runResult = ResetIntegrationCommand.run(['7'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('integration identifier does not appear to be valid.'))
+  await expect(runResult).rejects.toThrow('integration identifier does not appear to be valid.')
 })
 
 test('reset-integration - console_get_namespaces_url, does not end with forward slash', async () => {
@@ -114,7 +114,7 @@ test('reset-integration - config error', async () => {
 
   const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: client_id'))
+  await expect(runResult).rejects.toThrow('missing config data: client_id')
 })
 
 test('reset-integration - config error missing jwt_payload', async () => {
@@ -130,7 +130,7 @@ test('reset-integration - config error missing jwt_payload', async () => {
 
   const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload'))
+  await expect(runResult).rejects.toThrow('missing config data: jwt_payload')
 })
 
 test('reset-integration - config error missing jwt_payload pre-condition', async () => {
@@ -154,7 +154,7 @@ test('reset-integration - config error missing jwt_payload pre-condition', async
 
   const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(runResult).rejects.toThrow('missing config data: jwt-auth')
 })
 
 test('reset-integration - config error missing jwt_payload.iss', async () => {
@@ -172,7 +172,7 @@ test('reset-integration - config error missing jwt_payload.iss', async () => {
 
   const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload.iss'))
+  await expect(runResult).rejects.toThrow('missing config data: jwt_payload.iss')
 })
 
 test('reset-integration - bad fetch', async () => {
@@ -192,7 +192,7 @@ test('reset-integration - bad fetch', async () => {
 
   const runResult = ResetIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('Cannot retrieve integration: http://foo.bar/5/5/reset (404 Not Found)'))
+  await expect(runResult).rejects.toThrow('Cannot retrieve integration: http://foo.bar/5/5/reset (404 Not Found)')
 })
 
 describe('ResetIntegrationCommand : basic command properties', () => {
