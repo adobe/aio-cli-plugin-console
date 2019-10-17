@@ -33,7 +33,7 @@ $ npm install -g @adobe/aio-cli-plugin-console
 $ ./bin/run COMMAND
 running command...
 $ ./bin/run (-v|--version|version)
-@adobe/aio-cli-plugin-console/2.0.3 darwin-x64 node-v10.16.1
+@adobe/aio-cli-plugin-console/2.0.3 darwin-x64 node-v12.3.1
 $ ./bin/run --help [COMMAND]
 USAGE
   $ ./bin/run COMMAND
@@ -42,12 +42,12 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`./bin/run console`](#bin-run-console)
-* [`./bin/run console:integration NAMESPACE`](#bin-run-consoleintegration-namespace)
-* [`./bin/run console:list-integrations`](#bin-run-consolelist-integrations)
-* [`./bin/run console:reset-integration [INTEGRATION_ID]`](#bin-run-consolereset-integration-integration-id)
-* [`./bin/run console:select-integration [INTEGRATION_ID]`](#bin-run-consoleselect-integration-integration-id)
-* [`./bin/run console:selected-integration`](#bin-run-consoleselected-integration)
+* [`./bin/run console`](#binrun-console)
+* [`./bin/run console:integration NAMESPACE`](#binrun-consoleintegration-namespace)
+* [`./bin/run console:list-integrations`](#binrun-consolelist-integrations)
+* [`./bin/run console:reset-integration [INTEGRATION_ID]`](#binrun-consolereset-integration-integration_id)
+* [`./bin/run console:select-integration [INTEGRATION_ID]`](#binrun-consoleselect-integration-integration_id)
+* [`./bin/run console:selected-integration`](#binrun-consoleselected-integration)
 
 ## `./bin/run console`
 
