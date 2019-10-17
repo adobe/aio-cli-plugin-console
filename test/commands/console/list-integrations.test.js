@@ -23,7 +23,7 @@ helpers.getIntegrations.mockImplementation(() => Promise.resolve({
 }))
 
 const ListIntegrationsCommand = require('../../../src/commands/console/list-integrations')
-const config = require('@adobe/aio-cna-core-config')
+const config = require('@adobe/aio-lib-core-config')
 
 afterEach(() => {
   jest.clearAllMocks()

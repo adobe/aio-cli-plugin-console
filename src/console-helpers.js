@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 const fetch = require('node-fetch')
 const path = require('path')
-const config = require('@adobe/aio-cna-core-config')
+const config = require('@adobe/aio-lib-core-config')
 const debug = require('debug')('aio-cli-plugin-console')
 const fs = require('fs')
 

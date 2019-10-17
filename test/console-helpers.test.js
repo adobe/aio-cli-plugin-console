@@ -15,7 +15,7 @@ jest.mock('node-fetch', () => jest.fn().mockImplementation(() => mockResult))
 
 const fs = require('fs')
 const path = require('path')
-const config = require('@adobe/aio-cna-core-config')
+const config = require('@adobe/aio-lib-core-config')
 const { consumeResponseJson, getApiKey, getIntegrations, getOrgs, getOrgsUrl, getIntegration, getWskProps, getConfig, getWskPropsFilePath, getNamespaceUrl, getIMSOrgId } = require('../src/console-helpers')
 
 beforeEach(() => {

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 const fs = require('fs')
-const config = require('@adobe/aio-cna-core-config')
+const config = require('@adobe/aio-lib-core-config')
 const ResetIntegrationCommand = require('../../../src/commands/console/reset-integration')
 
 let mockResult
