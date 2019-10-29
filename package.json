@@ -1,16 +1,17 @@
 {
   "name": "@adobe/aio-cli-plugin-console",
   "description": "Console integration plugin for the Adobe I/O CLI",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "author": "Adobe Inc.",
   "bugs": "https://github.com/adobe/aio-cli-plugin-console/issues",
   "dependencies": {
-    "@adobe/aio-cna-core-config": "^1.0.14",
-    "@adobe/aio-cli-plugin-jwt-auth": "^2.0.1",
+    "@adobe/aio-cli-plugin-jwt-auth": "^2.0.3",
+    "@adobe/aio-lib-core-config": "^1.0.15",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/errors": "^1.1.2",
     "cli-ux": "^5.1.0",
+    "js-yaml": "^3.13.1",
     "node-fetch": "^2.3.0"
   },
   "devDependencies": {
@@ -30,7 +31,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "jest": "^24.9.0",
     "jest-haste-map": "^24.5.0",
-    "jest-junit": "^7.0.0",
+    "jest-junit": "^9.0.0",
     "stdout-stderr": "^0.1.9"
   },
   "engines": {

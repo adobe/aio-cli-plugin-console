@@ -11,15 +11,16 @@ governing permissions and limitations under the License.
 */
 
 const { Command, flags } = require('@oclif/command')
-const fetch = require('node-fetch')
-const config = require('@adobe/aio-cna-core-config')
+const config = require('@adobe/aio-lib-core-config')
 const fs = require('fs')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
+const { consumeResponseJson, fetchWrapper, getNamespaceUrl, getApiKey, getWskPropsFilePath, getIMSOrgId } = require('../../console-helpers')
 const debug = require('debug')('aio-cli-plugin-console:select-integration')
 const { confirm } = require('cli-ux').cli
 
 async function _selectIntegration (integrationId, passphrase, force, dest) {
+  debug('_selectIntegration integrationId', integrationId)
+
   if (!integrationId) {
     return Promise.reject(new Error('missing expected integration identifier.'))
   }
@@ -47,10 +48,16 @@ async function _selectIntegration (integrationId, passphrase, force, dest) {
     }
   }
 
-  debug(`fetch: ${tempUrl}`)
-  const res = await fetch(tempUrl, options)
-  if (!res.ok) throw new Error(`Cannot retrieve integration: ${tempUrl} (${res.status} ${res.statusText})`)
-  const result = await res.json()
+  debug('calling with options:', options)
+
+  const res = await fetchWrapper(tempUrl, options)
+  let result
+
+  if (res.ok) {
+    result = await consumeResponseJson(res)
+  } else {
+    throw new Error(`Cannot retrieve integration: ${tempUrl} (${res.status} ${res.statusText})`)
+  }
 
   if (dest === 'local' || dest === 'global') {
     config.set('runtime', {

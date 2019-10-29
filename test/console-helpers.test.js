@@ -12,17 +12,32 @@ governing permissions and limitations under the License.
 
 let mockResult
 jest.mock('node-fetch', () => jest.fn().mockImplementation(() => mockResult))
+
 const fs = require('fs')
 const path = require('path')
-const config = require('@adobe/aio-cna-core-config')
-const { getApiKey, getIntegrations, getOrgs, getOrgsUrl, getIntegration, getWskProps, getConfig, getWskPropsFilePath, getNamespaceUrl, getIMSOrgId } = require('../src/console-helpers')
+const config = require('@adobe/aio-lib-core-config')
+const { consumeResponseJson, getApiKey, getIntegrations, getOrgs, getOrgsUrl, getIntegration, getWskProps, getConfig, getWskPropsFilePath, getNamespaceUrl, getIMSOrgId } = require('../src/console-helpers')
 
 beforeEach(() => {
-  jest.clearAllMocks()
+  jest.restoreAllMocks()
   mockResult = Promise.resolve({
     ok: true,
     json: () => Promise.resolve({})
   })
+})
+
+test('consumeResponseJson', async () => {
+  let response = { ok: true, text: () => '{ "foo": "bar" }' }
+  let json = await consumeResponseJson(response)
+  expect(json).toEqual({ foo: 'bar' })
+
+  response = { ok: true }
+  json = await consumeResponseJson(response)
+  expect(json).toEqual({})
+
+  response = {}
+  json = await consumeResponseJson(response)
+  expect(json).toEqual({})
 })
 
 test('getWskPropsFilePath', () => {
@@ -40,7 +55,7 @@ test('getOrgs', async () => {
 
   // no jwt-auth key
   config.get.mockImplementation(() => null)
-  await expect(getOrgs('x', 'y')).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(getOrgs('x', 'y')).rejects.toThrow('missing config data: jwt-auth')
 
   // jwt-auth available
   config.get.mockImplementation(() => { return {} })
@@ -56,7 +71,7 @@ test('getOrgs', async () => {
   await expect(getOrgs('x', 'y')).resolves.toEqual({})
 
   mockResult = Promise.resolve({ ok: false, status: 404, statusText: 'Not Found' })
-  await expect(getOrgs('x', 'y')).rejects.toEqual(new Error('Cannot retrieve organizations: http://foo.bar (404 Not Found)'))
+  await expect(getOrgs('x', 'y')).rejects.toThrow('Cannot retrieve organizations: http://foo.bar (404 Not Found)')
 })
 
 test('getOrgsUrl', async () => {
@@ -64,7 +79,7 @@ test('getOrgsUrl', async () => {
 
   // no jwt-auth key
   config.get.mockImplementation(() => null)
-  await expect(getOrgsUrl()).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(getOrgsUrl()).rejects.toThrow('missing config data: jwt-auth')
 
   // jwt-auth available
   config.get.mockImplementation(() => { return {} })
@@ -80,7 +95,7 @@ test('getNamespaceUrl', async () => {
 
   // no jwt-auth key
   config.get.mockImplementation(() => null)
-  await expect(getNamespaceUrl()).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(getNamespaceUrl()).rejects.toThrow('missing config data: jwt-auth')
 
   config.get.mockImplementation(() => { return {} })
   await expect(getNamespaceUrl('x', 'y')).resolves.toEqual('https://api.adobe.io/runtime/admin/namespaces/')
@@ -95,11 +110,11 @@ test('getApiKey', async () => {
 
   // no jwt-auth key
   config.get.mockImplementation(() => null)
-  await expect(getApiKey()).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(getApiKey()).rejects.toThrow('missing config data: jwt-auth')
 
   // jwt-auth available
   config.get.mockImplementation(() => { return {} })
-  await expect(getApiKey()).rejects.toEqual(new Error('missing config data: client_id'))
+  await expect(getApiKey()).rejects.toThrow('missing config data: client_id')
 
   // jwt-auth, client_id available
   config.get.mockImplementation(() => { return { client_id: 1234 } })
@@ -111,15 +126,15 @@ test('getIMSOrgId', async () => {
 
   // no jwt-auth key
   config.get.mockImplementation(() => null)
-  await expect(getIMSOrgId()).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(getIMSOrgId()).rejects.toThrow('missing config data: jwt-auth')
 
   // jwt-auth available
   config.get.mockImplementation(() => { return {} })
-  await expect(getIMSOrgId()).rejects.toEqual(new Error('missing config data: jwt_payload'))
+  await expect(getIMSOrgId()).rejects.toThrow('missing config data: jwt_payload')
 
   // jwt-auth available
   config.get.mockImplementation(() => { return { jwt_payload: {} } })
-  await expect(getIMSOrgId()).rejects.toEqual(new Error('missing config data: jwt_payload.iss'))
+  await expect(getIMSOrgId()).rejects.toThrow('missing config data: jwt_payload.iss')
 
   // jwt-auth, client_id available
   config.get.mockImplementation(() => { return { jwt_payload: { iss: 'adobe.com' } } })
@@ -136,19 +151,25 @@ test('getIntegrations', async () => {
   await expect(getIntegrations('myOrg', 'myAccessToken', 'myApiKey', { pageNum: -1, pageSize: 51 })).resolves.toEqual({})
 
   mockResult = Promise.resolve({ ok: false, status: 404, statusText: 'Not Found' })
-  await expect(getIntegrations('x', 'y')).rejects.toEqual(new Error('Cannot retrieve integrations: https://api.adobe.io/console/organizations/x/integrations?page=0&size=20 (404 Not Found)'))
+  await expect(getIntegrations('x', 'y')).rejects.toThrow('(404 Not Found)')
 })
 
 test('getIntegration', async () => {
   config.get
     .mockImplementation(() => '{"client_id":1234, "console_get_orgs_url":"http://foo.bar"}')
 
-  expect.assertions(2)
+  mockResult = Promise.resolve({ ok: true,
+    text: () => Promise.resolve('{"content": [{ "orgId": 111, "id": 222 }]}') })
 
-  await expect(getIntegration('a_b', 'myAccessToken', 'myApiKey')).resolves.toEqual({})
+  await expect(getIntegration('111_222', 'myAccessToken', 'myApiKey')).resolves.toMatchObject({ orgId: 111, id: 222 })
+})
+
+test('getIntegration - not found', async () => {
+  config.get
+    .mockImplementation(() => '{"client_id":1234, "console_get_orgs_url":"http://foo.bar"}')
 
   mockResult = Promise.resolve({ ok: false, status: 404, statusText: 'Not Found' })
-  await expect(getIntegration('a_b', 'y')).rejects.toEqual(new Error('Cannot retrieve integration: https://api.adobe.io/console/organizations/a/integrations/b (404 Not Found)'))
+  await expect(getIntegration('a_b', 'y')).rejects.toThrow('(404 Not Found)')
 })
 
 test('getConfig', async () => {

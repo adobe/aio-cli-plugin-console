@@ -33,7 +33,7 @@ $ npm install -g @adobe/aio-cli-plugin-console
 $ ./bin/run COMMAND
 running command...
 $ ./bin/run (-v|--version|version)
-@adobe/aio-cli-plugin-console/2.0.2 darwin-x64 node-v10.16.0
+@adobe/aio-cli-plugin-console/2.0.3 darwin-x64 node-v12.3.1
 $ ./bin/run --help [COMMAND]
 USAGE
   $ ./bin/run COMMAND
@@ -58,8 +58,10 @@ USAGE
   $ ./bin/run console
 
 OPTIONS
+  -j, --json                   output raw json
   -n, --name                   sort results by name
   -p, --passphrase=passphrase  the passphrase for the private-key
+  -y, --yaml                   output yaml
 
 ALIASES
   $ ./bin/run console:ls
@@ -80,7 +82,7 @@ EXAMPLES
   $ aio console current-integration
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.2/src/commands/console/index.js)_
+_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.3/src/commands/console/index.js)_
 
 ## `./bin/run console:integration NAMESPACE`
 
@@ -101,7 +103,7 @@ ALIASES
   $ ./bin/run console:int
 ```
 
-_See code: [src/commands/console/integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.2/src/commands/console/integration.js)_
+_See code: [src/commands/console/integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.3/src/commands/console/integration.js)_
 
 ## `./bin/run console:list-integrations`
 
@@ -112,15 +114,17 @@ USAGE
   $ ./bin/run console:list-integrations
 
 OPTIONS
+  -j, --json                   output raw json
   -n, --name                   sort results by name
   -p, --passphrase=passphrase  the passphrase for the private-key
+  -y, --yaml                   output yaml
 
 ALIASES
   $ ./bin/run console:ls
   $ ./bin/run console:list
 ```
 
-_See code: [src/commands/console/list-integrations.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.2/src/commands/console/list-integrations.js)_
+_See code: [src/commands/console/list-integrations.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.3/src/commands/console/list-integrations.js)_
 
 ## `./bin/run console:reset-integration [INTEGRATION_ID]`
 
@@ -138,7 +142,7 @@ ALIASES
   $ ./bin/run console:reset
 ```
 
-_See code: [src/commands/console/reset-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.2/src/commands/console/reset-integration.js)_
+_See code: [src/commands/console/reset-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.3/src/commands/console/reset-integration.js)_
 
 ## `./bin/run console:select-integration [INTEGRATION_ID]`
 
@@ -165,7 +169,7 @@ ALIASES
   $ ./bin/run console:select
 ```
 
-_See code: [src/commands/console/select-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.2/src/commands/console/select-integration.js)_
+_See code: [src/commands/console/select-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.3/src/commands/console/select-integration.js)_
 
 ## `./bin/run console:selected-integration`
 
@@ -183,5 +187,5 @@ ALIASES
   $ ./bin/run console:current
 ```
 
-_See code: [src/commands/console/selected-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.2/src/commands/console/selected-integration.js)_
+_See code: [src/commands/console/selected-integration.js](https://github.com/adobe/aio-cli-plugin-console/blob/v2.0.3/src/commands/console/selected-integration.js)_
 <!-- commandsstop -->

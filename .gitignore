@@ -9,3 +9,5 @@ node_modules
 /coverage
 /junit.xml
 .DS_Store
+
+oclif.manifest.json
