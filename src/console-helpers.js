@@ -12,9 +12,45 @@ governing permissions and limitations under the License.
 
 const fetch = require('node-fetch')
 const path = require('path')
-const config = require('@adobe/aio-cna-core-config')
+const config = require('@adobe/aio-lib-core-config')
 const debug = require('debug')('aio-cli-plugin-console')
 const fs = require('fs')
+
+/**
+ * Response interceptor for logging purposes
+ *
+ * @param {string} url the url to fetch from
+ * @param {object} options the options for fetch
+* @return {object} the JSON response, if any
+ */
+async function consumeResponseJson (response) {
+  debug('RESPONSE', response)
+  let json = {}
+
+  if (response.ok) {
+    const text = (response.text instanceof Function) ? (await response.text()) : ''
+    try {
+      // try to parse
+      json = JSON.parse(text)
+      debug('DATA\n', JSON.stringify(json, null, 2))
+    } catch (e) {
+      debug('DATA\n', text)
+    }
+  }
+  return json
+}
+
+/**
+ * Convenience wrapper for fetch for logging purposes.
+ *
+ * @param {string} url the url to fetch from
+ * @param {object} options the options for fetch
+ */
+async function fetchWrapper (url, options) {
+  debug(`fetch: ${url}`)
+  debug(`fetch options: ${JSON.stringify(options, null, 2)}`)
+  return fetch(url, options)
+}
 
 /**
  * @description Calls the server api to get a list of orgs
@@ -33,10 +69,12 @@ async function getOrgs (accessToken, apiKey) {
     }
   }
 
-  debug(`fetch: ${orgsUrl}`)
-  return fetch(orgsUrl, options).then((res) => {
-    if (res.ok) return res.json()
-    else throw new Error(`Cannot retrieve organizations: ${orgsUrl} (${res.status} ${res.statusText})`)
+  return fetchWrapper(orgsUrl, options).then(res => {
+    if (res.ok) {
+      return consumeResponseJson(res)
+    } else {
+      throw new Error(`Cannot retrieve organizations: ${orgsUrl} (${res.status} ${res.statusText})`)
+    }
   })
 }
 
@@ -123,10 +161,12 @@ async function getIntegrations (orgId, accessToken, apiKey, { pageNum = 1, pageS
     }
   }
 
-  debug(`fetch: ${integrationsUrl}`)
-  return fetch(integrationsUrl, options).then((res) => {
-    if (res.ok) return res.json()
-    else throw new Error(`Cannot retrieve integrations: ${integrationsUrl} (${res.status} ${res.statusText})`)
+  return fetchWrapper(integrationsUrl, options).then(res => {
+    if (res.ok) {
+      return consumeResponseJson(res)
+    } else {
+      throw new Error(`Cannot retrieve integrations: ${integrationsUrl} (${res.status} ${res.statusText})`)
+    }
   })
 }
 
@@ -138,22 +178,12 @@ async function getIntegrations (orgId, accessToken, apiKey, { pageNum = 1, pageS
  * @return {Promise} resolves with a list of integrations
  */
 async function getIntegration (namespace, accessToken, apiKey) {
-  const orgsUrl = await getOrgsUrl()
-  const [org, integration] = namespace.split('_')
-  const integrationUrl = `${orgsUrl}/${org}/integrations/${integration}`
-  const options = {
-    headers: {
-      'X-Api-Key': apiKey,
-      Authorization: `Bearer ${accessToken}`,
-      accept: 'application/json'
-    }
-  }
-
-  debug(`fetch: ${integrationUrl}`)
-  return fetch(integrationUrl, options).then((res) => {
-    if (res.ok) return res.json()
-    else throw new Error(`Cannot retrieve integration: ${integrationUrl} (${res.status} ${res.statusText})`)
+  const [orgId, integration] = namespace.split('_').map(id => parseInt(id))
+  const results = await getIntegrations(orgId, accessToken, apiKey)
+  const result = results.content.find((elem) => {
+    return (elem.orgId === orgId && elem.id === integration)
   })
+  return result
 }
 
 /**
@@ -173,5 +203,7 @@ module.exports = {
   getIMSOrgId,
   getWskProps,
   getIntegration,
-  getConfig
+  getConfig,
+  fetchWrapper,
+  consumeResponseJson
 }

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 const fs = require('fs')
-const config = require('@adobe/aio-cna-core-config')
+const config = require('@adobe/aio-lib-core-config')
 jest.mock('cli-ux')
 const { cli } = require('cli-ux')
 cli.confirm = jest.fn(() => true)
@@ -26,7 +26,7 @@ beforeEach(() => {
   cli.confirm.mockImplementation(() => true)
   mockResult = Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({})
+    text: () => Promise.resolve('{}')
   })
 })
 
@@ -47,7 +47,7 @@ test('select-integration - no args', async () => {
 
   const runResult = SelectIntegrationCommand.run([])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing expected integration identifier.'))
+  await expect(runResult).rejects.toThrow('missing expected integration identifier.')
 })
 
 test('select-integration - bad args', async () => {
@@ -55,7 +55,7 @@ test('select-integration - bad args', async () => {
 
   const runResult = SelectIntegrationCommand.run(['7'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('integration identifier does not appear to be valid.'))
+  await expect(runResult).rejects.toThrow('integration identifier does not appear to be valid.')
 })
 
 test('select-integration - console_get_namespaces_url, does not end with forward slash', async () => {
@@ -68,7 +68,7 @@ test('select-integration - console_get_namespaces_url, does not end with forward
 
   mockResult = Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ name: 'Basil', auth: '======' })
+    text: () => Promise.resolve(JSON.stringify({ name: 'Basil', auth: '======' }))
   })
 
   expect.assertions(2)
@@ -89,7 +89,7 @@ test('select-integration - mock success', async () => {
   expect.assertions(4)
   mockResult = Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ name: 'Basil', auth: '======' })
+    text: () => Promise.resolve(JSON.stringify({ name: 'Basil', auth: '======' }))
   })
 
   const runResult = SelectIntegrationCommand.run(['5_5'])
@@ -110,7 +110,7 @@ test('select-integration - write local', async () => {
   expect.assertions(4)
   mockResult = Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ name: 'Basil', auth: '======' })
+    text: () => Promise.resolve(JSON.stringify({ name: 'Basil', auth: '======' }))
   })
 
   const runResult = SelectIntegrationCommand.run(['5_5', '--local'])
@@ -131,7 +131,7 @@ test('select-integration - write global', async () => {
   expect.assertions(4)
   mockResult = Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ name: 'Basil', auth: '======' })
+    text: () => Promise.resolve(JSON.stringify({ name: 'Basil', auth: '======' }))
   })
 
   const runResult = SelectIntegrationCommand.run(['5_5', '--global'])
@@ -154,7 +154,7 @@ test('select-integration - config error', async () => {
 
   const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: client_id'))
+  await expect(runResult).rejects.toThrow('missing config data: client_id')
 })
 
 test('select-integration - config error missing jwt_payload', async () => {
@@ -170,7 +170,7 @@ test('select-integration - config error missing jwt_payload', async () => {
 
   const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload'))
+  await expect(runResult).rejects.toThrow('missing config data: jwt_payload')
 })
 
 test('select-integration - config error missing jwt_payload pre-condition', async () => {
@@ -192,7 +192,7 @@ test('select-integration - config error missing jwt_payload pre-condition', asyn
 
   const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+  await expect(runResult).rejects.toThrow('missing config data: jwt-auth')
 })
 
 test('select-integration - config error missing jwt_payload.iss', async () => {
@@ -208,7 +208,7 @@ test('select-integration - config error missing jwt_payload.iss', async () => {
 
   const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('missing config data: jwt_payload.iss'))
+  await expect(runResult).rejects.toThrow('missing config data: jwt_payload.iss')
 })
 
 test('select-integration - bad fetch', async () => {
@@ -226,7 +226,7 @@ test('select-integration - bad fetch', async () => {
 
   const runResult = SelectIntegrationCommand.run(['5_5'])
   await expect(runResult instanceof Promise).toBeTruthy()
-  await expect(runResult).rejects.toEqual(new Error('Cannot retrieve integration: http://foo.bar/5/5 (404 Not Found)'))
+  await expect(runResult).rejects.toThrow('(404 Not Found)')
 })
 
 test('select-integration - mock success and overwrite .wskprops', async () => {
@@ -240,7 +240,7 @@ test('select-integration - mock success and overwrite .wskprops', async () => {
 
   mockResult = Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ name: 'Basil', auth: '======' })
+    text: () => Promise.resolve(JSON.stringify({ name: 'Basil', auth: '======' }))
   })
 
   expect.assertions(2)
@@ -262,7 +262,7 @@ test('select-integration - mock success and dont overwrite .wskprops', async () 
 
   mockResult = Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ name: 'Basil', auth: '======' })
+    text: () => Promise.resolve(JSON.stringify({ name: 'Basil', auth: '======' }))
   })
 
   expect.assertions(3)
@@ -284,7 +284,7 @@ test('select-integration - mock .wskprops does not exist', async () => {
 
   mockResult = Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({ name: 'Basil', auth: '======' })
+    text: () => Promise.resolve(JSON.stringify({ name: 'Basil', auth: '======' }))
   })
 
   expect.assertions(2)
