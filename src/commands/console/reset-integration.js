@@ -79,7 +79,7 @@ ResetIntegrationCommand.args = [
 ResetIntegrationCommand.flags = {}
 
 ResetIntegrationCommand.description = `resets an integration's .wskprops auth hash.
-after running this command all clients will need to run \`console:select-integration\` 
+after running this command all clients will need to run 'console:select-integration'
 to get a new auth hash in their .wskprops file
 `
 
