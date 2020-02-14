@@ -14,10 +14,9 @@ const chalk = require('chalk')
 const { stdout } = require('stdout-stderr')
 const fs = require('fs')
 
-stdout.print = true 
+stdout.print = true
 
 test('list integrations test', async () => {
-
   const packagejson = JSON.parse(fs.readFileSync('package.json').toString())
   const name = `${packagejson.name}`
   console.log(chalk.blue(`> e2e tests for ${chalk.bold(name)}`))
@@ -26,4 +25,4 @@ test('list integrations test', async () => {
   expect(() => { execa.sync('./bin/run', ['console:list-integrations', '-p', 'abc'], { stderr: 'inherit' }) }).not.toThrow()
 
   console.log(chalk.green(`    - done for ${chalk.bold(name)}`))
-});
+})
