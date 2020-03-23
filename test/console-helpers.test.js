@@ -158,8 +158,10 @@ test('getIntegration', async () => {
   config.get
     .mockImplementation(() => '{"client_id":1234, "console_get_orgs_url":"http://foo.bar"}')
 
-  mockResult = Promise.resolve({ ok: true,
-    text: () => Promise.resolve('{"content": [{ "orgId": 111, "id": 222 }]}') })
+  mockResult = Promise.resolve({
+    ok: true,
+    text: () => Promise.resolve('{"content": [{ "orgId": 111, "id": 222 }]}')
+  })
 
   await expect(getIntegration('111_222', 'myAccessToken', 'myApiKey')).resolves.toMatchObject({ orgId: 111, id: 222 })
 })

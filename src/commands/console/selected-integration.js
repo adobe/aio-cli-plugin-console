@@ -30,18 +30,18 @@ class SelectedIntegrationCommand extends Command {
     let result
 
     const currentConfig = getConfig()
-    if (!currentConfig['namespace']) {
+    if (!currentConfig.namespace) {
       this.error('No integration is selected')
     }
 
-    this.log(`----`)
-    this.log(`APIHOST=${currentConfig['apihost']}`)
-    this.log(`NAMESPACE=${currentConfig['namespace']}`)
-    this.log(`AUTH=${currentConfig['auth']}`)
-    this.log(`----`)
+    this.log('----')
+    this.log(`APIHOST=${currentConfig.apihost}`)
+    this.log(`NAMESPACE=${currentConfig.namespace}`)
+    this.log(`AUTH=${currentConfig.auth}`)
+    this.log('----')
 
     try {
-      result = await this.selectedIntegration(currentConfig['namespace'], flags.passphrase)
+      result = await this.selectedIntegration(currentConfig.namespace, flags.passphrase)
       this.log(util.inspect(result, { colors: true, maxArrayLength: null, breakLength: 75, depth: 50 }))
     } catch (error) {
       debug(error)

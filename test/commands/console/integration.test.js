@@ -69,9 +69,11 @@ test('get-integration - mock 404', async () => {
     }
   })
 
-  jest.mock('node-fetch', () => jest.fn().mockImplementation(() => Promise.resolve({ ok: false,
+  jest.mock('node-fetch', () => jest.fn().mockImplementation(() => Promise.resolve({
+    ok: false,
     status: 404,
-    statusText: 'Not Found' })))
+    statusText: 'Not Found'
+  })))
 
   const runResult = IntegrationCommand.run(['123_456'])
   await expect(runResult instanceof Promise).toBeTruthy()

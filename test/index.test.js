@@ -11,6 +11,6 @@ describe('index', () => {
     expect(index['reset-integration'].name).toBe('resetIntegration')
     expect(index['list-integrations'].name).toBe('listIntegrations')
     expect(index['selected-integration'].name).toBe('selectedIntegration')
-    expect(index['integration'].name).toBe('integration')
+    expect(index.integration.name).toBe('integration')
   })
 })

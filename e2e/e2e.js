@@ -21,7 +21,7 @@ test('list integrations test', async () => {
   const name = `${packagejson.name}`
   console.log(chalk.blue(`> e2e tests for ${chalk.bold(name)}`))
 
-  console.log(chalk.dim(`    - list-integrations..`))
+  console.log(chalk.dim('    - list-integrations..'))
   expect(() => { execa.sync('./bin/run', ['console:list-integrations', '-p', 'abc'], { stderr: 'inherit' }) }).not.toThrow()
 
   console.log(chalk.green(`    - done for ${chalk.bold(name)}`))
