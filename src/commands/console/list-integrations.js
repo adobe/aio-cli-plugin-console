@@ -60,7 +60,7 @@ class ListIntegrationsCommand extends Command {
       this.error(error.message)
     }
 
-    const currentNamespace = getConfig()['namespace']
+    const currentNamespace = getConfig().namespace
 
     result.forEach(obj => {
       obj.selected = `${obj.orgId}_${obj.id}` === currentNamespace
