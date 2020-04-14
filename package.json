@@ -8,7 +8,7 @@
     "@adobe/aio-cli-plugin-jwt-auth": "^2.0.3",
     "@adobe/aio-lib-core-config": "^1.0.15",
     "@oclif/command": "^1",
-    "@oclif/config": "1.13.3",
+    "@oclif/config": "1.15.0",
     "@oclif/errors": "^1.1.2",
     "cli-ux": "^5.1.0",
     "js-yaml": "^3.13.1",
