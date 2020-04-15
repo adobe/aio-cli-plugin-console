@@ -57,7 +57,8 @@
       "console": {
         "description": "List or select console integrations for the Adobe I/O Runtime"
       }
-    }
+    },
+    "repositoryPrefix": "<%- repo %>/blob/<%- version %>/<%- commandPath %>"
   },
   "repository": "adobe/aio-cli-plugin-console",
   "scripts": {
