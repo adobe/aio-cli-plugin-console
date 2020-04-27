@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
-    "@oclif/plugin-help": "^2.1.4",
+    "@oclif/plugin-help": "^3.0.0",
     "@oclif/test": "^1",
     "acorn": "^7.0.0",
     "chalk": "^4.0.0",
