@@ -7,7 +7,7 @@
   "dependencies": {
     "@adobe/aio-cli-plugin-jwt-auth": "^2.0.3",
     "@adobe/aio-lib-core-config": "^1.0.15",
-    "@oclif/command": "1.5.20",
+    "@oclif/command": "1.6.1",
     "@oclif/config": "1.13.3",
     "@oclif/errors": "^1.1.2",
     "cli-ux": "^5.1.0",
