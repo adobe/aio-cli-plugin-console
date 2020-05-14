@@ -1,5 +1,5 @@
 <!--
-Copyright 2018 Adobe. All rights reserved.
+Copyright 2020 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -42,10 +42,13 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`./bin/run console`](#binrun-console)
-* [`./bin/run console:org:list`](#binrun-consoleorglist)
-* [`./bin/run console:project:list`](#binrun-consoleprojectlist)
-* [`./bin/run console:workspace:list`](#binrun-consoleworkspacelist)
+- [aio-cli-plugin-console](#aio-cli-plugin-console)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`./bin/run console`](#binrun-console)
+  - [`./bin/run console:org:list`](#binrun-consoleorglist)
+  - [`./bin/run console:project:list`](#binrun-consoleprojectlist)
+  - [`./bin/run console:workspace:list`](#binrun-consoleworkspacelist)
 
 ## `./bin/run console`
 
