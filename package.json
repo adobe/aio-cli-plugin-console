@@ -1,35 +1,46 @@
 {
   "name": "@adobe/aio-cli-plugin-console",
-  "description": "Adobe I/O Console plugin for the Adobe I/O CLI",
-  "version": "2.0.4",
+  "description": "Console plugin for the Adobe I/O CLI",
+  "version": "3.0.0",
   "author": "Adobe Inc.",
   "bugs": "https://github.com/adobe/aio-cli-plugin-console/issues",
   "dependencies": {
+    "@adobe/aio-cli-config": "^1.0.12",
+    "@adobe/aio-lib-console": "^1.1.0",
     "@adobe/aio-lib-core-config": "^1.0.15",
-    "@oclif/command": "1.5.20",
+    "@adobe/aio-lib-core-logging": "^1.1.0",
+    "@adobe/aio-lib-ims": "^2.1.0",
+    "@oclif/command": "^1",
     "@oclif/config": "1.13.3",
-    "@oclif/errors": "^1.1.2"
+    "@oclif/errors": "^1.1.2",
+    "@oclif/plugin-help": "^2.2.3",
+    "cli-ux": "^5.4.5",
+    "js-yaml": "^3.13.1"
   },
   "devDependencies": {
     "@adobe/eslint-config-aio-lib-config": "^1.2.0",
+    "@babel/core": "^7.9.6",
     "@oclif/dev-cli": "^1",
-    "@oclif/plugin-help": "^2.1.4",
     "@oclif/test": "^1",
+    "babel-jest": "^26.0.1",
+    "babel-runtime": "^6.26.0",
     "chalk": "^4.0.0",
     "codecov": "^3.2.0",
+    "eol": "^0.9.1",
     "eslint": "^6.0.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-jest": "^23.11.0",
+    "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-jsdoc": "^21.0.0",
-    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "execa": "^4.0.1",
+    "execa": "^4.0.0",
     "jest": "^24.9.0",
-    "jest-haste-map": "^26.0.0",
+    "jest-haste-map": "^25.1.0",
     "jest-junit": "^10.0.0",
+    "jest-plugin-fs": "^2.9.0",
     "stdout-stderr": "^0.1.9"
   },
   "engines": {
@@ -37,7 +48,8 @@
   },
   "main": "src/index.js",
   "files": [
-    "/oclif.manifest.json"
+    "/oclif.manifest.json",
+    "/src"
   ],
   "homepage": "https://github.com/adobe/aio-cli-plugin-console",
   "keywords": [
@@ -52,16 +64,15 @@
     ],
     "topics": {
       "console": {
-        "description": "Adobe I/O Console API the Adobe I/O Runtime"
+        "description": "Console plugin for the Adobe I/O Console"
       }
     },
     "repositoryPrefix": "<%- repo %>/blob/<%- version %>/<%- commandPath %>"
   },
   "repository": "adobe/aio-cli-plugin-console",
   "scripts": {
-    "lint": "eslint src test e2e",
-    "pretest": "npm run lint",
-    "test": "npm run unit-tests",
+    "eslint": "eslint src test e2e",
+    "test": "npm run eslint && npm run unit-tests",
     "unit-tests": "jest --ci -w=2",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",

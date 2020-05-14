@@ -33,7 +33,7 @@ $ npm install -g @adobe/aio-cli-plugin-console
 $ ./bin/run COMMAND
 running command...
 $ ./bin/run (-v|--version|version)
-@adobe/aio-cli-plugin-console/2.0.4 darwin-x64 node-v10.18.1
+@adobe/aio-cli-plugin-console/3.0.0 darwin-x64 node-v10.18.1
 $ ./bin/run --help [COMMAND]
 USAGE
   $ ./bin/run COMMAND
@@ -43,15 +43,63 @@ USAGE
 # Commands
 <!-- commands -->
 * [`./bin/run console`](#binrun-console)
+* [`./bin/run console:org:list`](#binrun-consoleorglist)
+* [`./bin/run console:project:list`](#binrun-consoleprojectlist)
+* [`./bin/run console:workspace:list`](#binrun-consoleworkspacelist)
 
 ## `./bin/run console`
 
-your description here
+Console plugin for the Adobe I/O Console
 
 ```
 USAGE
   $ ./bin/run console
+
+EXAMPLE
+  $ aio console:org:list
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/2.0.4/src/commands/console/index.js)_
+_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/index.js)_
+
+## `./bin/run console:org:list`
+
+add your description here
+
+```
+USAGE
+  $ ./bin/run console:org:list
+
+ALIASES
+  $ ./bin/run org:list
+```
+
+_See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/org/list.js)_
+
+## `./bin/run console:project:list`
+
+add your description here
+
+```
+USAGE
+  $ ./bin/run console:project:list
+
+ALIASES
+  $ ./bin/run project:list
+```
+
+_See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/project/list.js)_
+
+## `./bin/run console:workspace:list`
+
+add your description here
+
+```
+USAGE
+  $ ./bin/run console:workspace:list
+
+ALIASES
+  $ ./bin/run workspace:list
+```
+
+_See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/workspace/list.js)_
 <!-- commandsstop -->

@@ -16,13 +16,13 @@ const fs = require('fs')
 
 stdout.print = true
 
-test('list integrations test', async () => {
+test('org:list test', async () => {
   const packagejson = JSON.parse(fs.readFileSync('package.json').toString())
   const name = `${packagejson.name}`
   console.log(chalk.blue(`> e2e tests for ${chalk.bold(name)}`))
 
-  console.log(chalk.dim('    - where..'))
-  expect(() => { execa.sync('./bin/run', ['console:where', '-p', 'abc'], { stderr: 'inherit' }) }).not.toThrow()
+  console.log(chalk.dim('    - org:list..'))
+  expect(() => { execa.sync('./bin/run', ['console:org:list'], { stderr: 'inherit' }) }).not.toThrow()
 
   console.log(chalk.green(`    - done for ${chalk.bold(name)}`))
 })

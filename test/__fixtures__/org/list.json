@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "code": "CODE01",
+    "name": "ORG01"
+  },
+  {
+    "id": 2,
+    "code": "CODE02",
+    "name": "ORG02"
+  },
+  {
+    "id": 3,
+    "code": "CODE03",
+    "name": "ORG03"
+  }
+]
