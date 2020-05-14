@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Adobe. All rights reserved.
+Copyright 2020 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -10,32 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const ListIntegrationsCommand = require('./list-integrations')
+const { Command } = require('@oclif/command')
 
-class ConsoleCommand extends ListIntegrationsCommand { }
+class IndexCommand extends Command {
 
-// this is set in package.json, see https://github.com/oclif/oclif/issues/120
-// if not set it will get the first (alphabetical) topic's help description
-ConsoleCommand.description = 'List or select console integrations for the Adobe I/O Runtime'
+}
 
-ConsoleCommand.examples = [
-  '$ aio console:list-integrations',
-  '$ aio console:ls',
-  '$ aio console list-integrations',
+IndexCommand.description = 'your description here'
 
-  '$ aio console:select-integration INTEGRATION_ID',
-  '$ aio console:sel INTEGRATION_ID',
-  '$ aio console select-integration INTEGRATION_ID',
-
-  '$ aio console:reset-integration INTEGRATION_ID',
-  '$ aio console:reset INTEGRATION_ID',
-  '$ aio console reset-integration INTEGRATION_ID',
-
-  '$ aio console:current-integration',
-  '$ aio console:current',
-  '$ aio console current-integration'
-]
-
-ConsoleCommand.flags = ListIntegrationsCommand.flags
-
-module.exports = ConsoleCommand
+module.exports = IndexCommand
