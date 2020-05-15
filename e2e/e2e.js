@@ -1,5 +1,5 @@
 /*
-Copyright 2019 Adobe. All rights reserved.
+Copyright 2020 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -16,13 +16,13 @@ const fs = require('fs')
 
 stdout.print = true
 
-test('list integrations test', async () => {
+test('org:list test', async () => {
   const packagejson = JSON.parse(fs.readFileSync('package.json').toString())
   const name = `${packagejson.name}`
   console.log(chalk.blue(`> e2e tests for ${chalk.bold(name)}`))
 
-  console.log(chalk.dim('    - where..'))
-  expect(() => { execa.sync('./bin/run', ['console:where', '-p', 'abc'], { stderr: 'inherit' }) }).not.toThrow()
+  console.log(chalk.dim('    - org:list..'))
+  expect(() => { execa.sync('./bin/run', ['console:org:list'], { stderr: 'inherit' }) }).not.toThrow()
 
   console.log(chalk.green(`    - done for ${chalk.bold(name)}`))
 })

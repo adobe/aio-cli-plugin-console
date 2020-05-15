@@ -1,0 +1,9 @@
+[
+  { "id": 1,
+    "name": "WRKSPC1",
+    "enabled": 1
+},{ "id": 2,
+  "name": "WRKSPC2",
+  "enabled": 1
+}
+]
