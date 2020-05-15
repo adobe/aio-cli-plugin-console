@@ -124,6 +124,9 @@ describe('console:workspace:list', () => {
       if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
         return { name: 'THE_ORG', id: 123 }
       }
+      if (key === `${ConsoleCommand.CONFIG_KEYS.ORG}.name`) {
+        return 'THE_ORG'
+      }
       return null
     })
     await command.run()

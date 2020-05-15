@@ -24,7 +24,7 @@ class SelectCommand extends ConsoleCommand {
     await this.initSdk()
 
     if (!orgId) {
-      this.log('You have not selected any organization. Please select an organization before selecting a project')
+      this.log('You have not selected an Organization. Please select first.')
       this.printConsoleConfig()
       return
     }
