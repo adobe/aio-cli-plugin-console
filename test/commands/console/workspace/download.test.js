@@ -13,6 +13,7 @@ const { Command } = require('@oclif/command')
 const sdk = require('@adobe/aio-lib-console')
 const path = require('path')
 const fs = require('fs')
+const { stdout } = require('stdout-stderr')
 jest.mock('fs')
 const DownloadCommand = require('../../../../src/commands/console/workspace/download')
 const ConsoleCommand = require('../../../../src/commands/console')
@@ -119,7 +120,8 @@ describe('console:workspace:download', () => {
         }
         return null
       })
-      await expect(command.run()).rejects.toThrow('No Workspace selected')
+      await command.run()
+      expect(stdout.output).toMatchFixture('workspace/download-error3.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
     })
@@ -131,7 +133,8 @@ describe('console:workspace:download', () => {
         }
         return null
       })
-      await expect(command.run()).rejects.toThrow('No Project selected,No Workspace selected')
+      await command.run()
+      expect(stdout.output).toMatchFixture('workspace/download-error2.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
     })
@@ -140,7 +143,8 @@ describe('console:workspace:download', () => {
       command.getConfig.mockImplementation(key => {
         return null
       })
-      await expect(command.run()).rejects.toThrow('No Organization selected,No Project selected,No Workspace selected')
+      await command.run()
+      expect(stdout.output).toMatchFixture('workspace/download-error1.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
     })

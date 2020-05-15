@@ -13,15 +13,11 @@ const { Command } = require('@oclif/command')
 const { stdout } = require('stdout-stderr')
 const sdk = require('@adobe/aio-lib-console')
 const SelectCommand = require('../../../../src/commands/console/workspace/select')
+const ConsoleCommand = require('../../../../src/commands/console')
 
 const getWorkspace = () => ({
   ok: true,
   body: { id: 111, name: 'workspace1', enabled: 1 }
-})
-
-const getWorkspaceError = () => ({
-  ok: false,
-  body: []
 })
 
 test('exports', async () => {
@@ -85,36 +81,36 @@ describe('console:workspace:select', () => {
   })
 
   describe('fail to select workspaces', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getWorkspacesForProject: getWorkspaceError }))
-    })
-
     afterEach(() => {
       jest.clearAllMocks()
     })
 
     test('should throw error no org selected', async () => {
-      let error
-      try {
-        command.argv = ['1']
-        await command.run()
-      } catch (e) {
-        error = e
-      }
-      expect(error.toString()).toEqual('Error: No Organization selected,No Project selected')
+      command.argv = ['111']
+      await command.run()
+      expect(stdout.output).toMatchFixture('workspace/select-error1.txt')
     })
 
     test('should throw error no project selected', async () => {
-      let error
+      command.argv = ['111']
       command.getConfig = jest.fn()
-      command.getConfig.mockReturnValueOnce('111')
-      try {
-        command.argv = ['1']
-        await command.run()
-      } catch (e) {
-        error = e
-      }
-      expect(error.toString()).toEqual('Error: No Project selected')
+      command.getConfig.mockImplementation(key => {
+        if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
+          return { name: 'THE_ORG', id: 123 }
+        }
+        return null
+      })
+      await command.run()
+      expect(stdout.output).toMatchFixture('workspace/select-error2.txt')
+    })
+
+    test('should throw Error retrieving Project', async () => {
+      command.argv = ['1']
+      command.getConfig = jest.fn()
+      command.getConfig.mockImplementation(key => {
+        throw new Error('Some Error')
+      })
+      await expect(command.run()).rejects.toThrow('Some Error')
     })
   })
 })

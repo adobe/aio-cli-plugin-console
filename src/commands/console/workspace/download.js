@@ -25,21 +25,23 @@ class DownloadCommand extends ConsoleCommand {
 
       const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
       if (!org) {
-        errorMessage.push('No Organization selected')
+        errorMessage.push('Organization')
       }
 
       const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
       if (!project) {
-        errorMessage.push('No Project selected')
+        errorMessage.push('Project')
       }
 
       const workspace = this.getConfig(ConsoleCommand.CONFIG_KEYS.WORKSPACE)
       if (!workspace) {
-        errorMessage.push('No Workspace selected')
+        errorMessage.push('Workspace')
       }
 
       if (errorMessage.length > 0) {
-        throw new Error(errorMessage.toString())
+        this.log('You have not selected any the of following - ' + errorMessage.toString())
+        this.printConsoleConfig()
+        return
       }
 
       cli.action.start(`Downloading configuration for Workspace ${workspace.name}`)
