@@ -73,33 +73,25 @@ class ConsoleCommand extends Command {
    */
   printConsoleConfig (options = {}) {
     const config = {}
-    config.org = this.getConfig('org.name')
-    config.project = this.getConfig('project.name')
-    config.workspace = this.getConfig('workspace.name')
+    config.org = this.getConfig('org.name') || '<no org selected>'
+    config.project = this.getConfig('project.name') || '<no project selected>'
+    config.workspace = this.getConfig('workspace.name') || '<no workspace selected>'
 
     // handling json output
     if (options.alternativeFormat === 'json') {
       this.printJson(config)
       return
     }
+
     if (options.alternativeFormat === 'yml') {
       this.printYaml(config)
       return
     }
 
-    // handling text output
-    if (!config.org) {
-      this.log('You have not selected any organization.\n You can use `aio org list` and `aio org select <org-name>` to select your org.')
-      return
-    }
     this.log('You are currently in:')
     this.log(`1. Org: ${config.org}`)
-    if (config.project) {
-      this.log(`2. Project: ${config.project}`)
-    }
-    if (config.workspace) {
-      this.log(`3. Workspace: ${config.workspace}`)
-    }
+    this.log(`2. Project: ${config.project}`)
+    this.log(`3. Workspace: ${config.workspace}`)
   }
 
   /**
