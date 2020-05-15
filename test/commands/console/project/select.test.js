@@ -139,21 +139,18 @@ describe('console:project:select', () => {
 
     test('should throw error if org not set', async () => {
       config.get.mockReturnValue(undefined)
-      let error
       try {
         // Project id
         command.argv = ['1001']
         await command.run()
       } catch (e) {
-        error = e
         console.log(e)
       }
-      expect(error.toString()).toEqual('Error: No Organization selected')
+      expect(stdout.output).toMatchFixture('project/select-error.txt')
     })
 
     test('should throw Error retrieving Project', async () => {
       sdk.init.mockImplementation(() => ({ getProject: getProjectError }))
-
       let error
       try {
         // Project id

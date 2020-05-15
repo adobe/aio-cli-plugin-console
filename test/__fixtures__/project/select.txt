@@ -2,3 +2,4 @@ Project selected name1
 You are currently in:
 1. Org: ORG01
 2. Project: name1
+3. Workspace: <no workspace selected>
