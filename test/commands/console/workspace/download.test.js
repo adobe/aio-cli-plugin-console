@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 
 const { Command } = require('@oclif/command')
 const sdk = require('@adobe/aio-lib-console')
+const path = require('path')
 const fs = require('fs')
 jest.mock('fs')
 const DownloadCommand = require('../../../../src/commands/console/workspace/download')
@@ -88,7 +89,8 @@ describe('console:workspace:download', () => {
     })
 
     test('should download the config at specific destination', async () => {
-      command.argv = ['/Users/testuser/temp']
+      const destination = '/Users/testuser/temp'
+      command.argv = [destination]
       command.getConfig.mockImplementation(key => {
         if (key === 'org') {
           return { name: 'THE_ORG', id: 123 }
@@ -102,7 +104,8 @@ describe('console:workspace:download', () => {
         return null
       })
       await command.run()
-      expect(fs.writeFileSync).toHaveBeenCalledWith('/Users/testuser/temp/123-THE_PROJECT-THE_WORKSPACE.json', JSON.stringify(fakeDownloadData, null, 2))
+      const fileName = path.join(destination, '123-THE_PROJECT-THE_WORKSPACE.json')
+      expect(fs.writeFileSync).toHaveBeenCalledWith(fileName, JSON.stringify(fakeDownloadData, null, 2))
       expect(downloadWorkspaceJson).toHaveBeenCalledWith(123, 456, 789)
     })
 
