@@ -13,6 +13,7 @@ const { Command } = require('@oclif/command')
 const { stdout } = require('stdout-stderr')
 const sdk = require('@adobe/aio-lib-console')
 const ListCommand = require('../../../../src/commands/console/workspace/list')
+const ConsoleCommand = require('../../../../src/commands/console')
 
 const getWorkspacesForProject = () => ({
   ok: true,
@@ -20,12 +21,6 @@ const getWorkspacesForProject = () => ({
     { id: 1, name: 'WRKSPC1', enabled: 1 },
     { id: 2, name: 'WRKSPC2', enabled: 1 }
   ]
-})
-
-const getWorkspaceError = () => ({
-  ok: false,
-  body: [],
-  error: 'Some Error'
 })
 
 test('exports', async () => {
@@ -113,34 +108,33 @@ describe('console:workspace:list', () => {
   })
 
   describe('fail to list workspaces', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getWorkspacesForProject: getWorkspaceError }))
-    })
-
     afterEach(() => {
       jest.clearAllMocks()
     })
 
     test('should throw error no org selected', async () => {
-      let error
-      try {
-        await command.run()
-      } catch (e) {
-        error = e
-      }
-      expect(error.toString()).toEqual('Error: No Organization selected')
+      await command.run()
+      expect(stdout.output).toMatchFixture('workspace/list-error1.txt')
     })
   })
 
   test('should throw error no project selected', async () => {
-    let error
     command.getConfig = jest.fn()
-    command.getConfig.mockReturnValueOnce('111')
-    try {
-      await command.run()
-    } catch (e) {
-      error = e
-    }
-    expect(error.toString()).toEqual('Error: No Project selected')
+    command.getConfig.mockImplementation(key => {
+      if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
+        return { name: 'THE_ORG', id: 123 }
+      }
+      return null
+    })
+    await command.run()
+    expect(stdout.output).toMatchFixture('workspace/list-error2.txt')
+  })
+
+  test('should throw Error retrieving Project', async () => {
+    command.getConfig = jest.fn()
+    command.getConfig.mockImplementation(key => {
+      throw new Error('Some Error')
+    })
+    await expect(command.run()).rejects.toThrow('Some Error')
   })
 })

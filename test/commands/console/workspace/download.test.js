@@ -11,7 +11,9 @@ governing permissions and limitations under the License.
 
 const { Command } = require('@oclif/command')
 const sdk = require('@adobe/aio-lib-console')
+const path = require('path')
 const fs = require('fs')
+const { stdout } = require('stdout-stderr')
 jest.mock('fs')
 const DownloadCommand = require('../../../../src/commands/console/workspace/download')
 const ConsoleCommand = require('../../../../src/commands/console')
@@ -29,6 +31,13 @@ test('aliases', async () => {
   expect(DownloadCommand.aliases).toBeDefined()
   expect(DownloadCommand.aliases).toBeInstanceOf(Array)
   expect(DownloadCommand.aliases.length).toBeGreaterThan(0)
+})
+
+test('args', async () => {
+  const destination = DownloadCommand.args[0]
+  expect(destination.name).toEqual('destination')
+  expect(destination.required).toEqual(false)
+  expect(destination.description).toBeDefined()
 })
 
 describe('console:workspace:download', () => {
@@ -80,6 +89,27 @@ describe('console:workspace:download', () => {
       expect(downloadWorkspaceJson).toHaveBeenCalledWith(123, 456, 789)
     })
 
+    test('should download the config at specific destination', async () => {
+      const destination = '/Users/testuser/temp'
+      command.argv = [destination]
+      command.getConfig.mockImplementation(key => {
+        if (key === 'org') {
+          return { name: 'THE_ORG', id: 123 }
+        }
+        if (key === 'project') {
+          return { name: 'THE_PROJECT', id: 456 }
+        }
+        if (key === 'workspace') {
+          return { name: 'THE_WORKSPACE', id: 789 }
+        }
+        return null
+      })
+      await command.run()
+      const fileName = path.join(destination, '123-THE_PROJECT-THE_WORKSPACE.json')
+      expect(fs.writeFileSync).toHaveBeenCalledWith(fileName, JSON.stringify(fakeDownloadData, null, 2))
+      expect(downloadWorkspaceJson).toHaveBeenCalledWith(123, 456, 789)
+    })
+
     test('should fail if the workspace is missing', async () => {
       command.getConfig.mockImplementation(key => {
         if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
@@ -90,7 +120,8 @@ describe('console:workspace:download', () => {
         }
         return null
       })
-      await expect(command.run()).rejects.toThrow('No Workspace selected')
+      await command.run()
+      expect(stdout.output).toMatchFixture('workspace/download-error3.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
     })
@@ -102,7 +133,8 @@ describe('console:workspace:download', () => {
         }
         return null
       })
-      await expect(command.run()).rejects.toThrow('No Project selected')
+      await command.run()
+      expect(stdout.output).toMatchFixture('workspace/download-error2.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
     })
@@ -111,7 +143,8 @@ describe('console:workspace:download', () => {
       command.getConfig.mockImplementation(key => {
         return null
       })
-      await expect(command.run()).rejects.toThrow('No Organization selected')
+      await command.run()
+      expect(stdout.output).toMatchFixture('workspace/download-error1.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
     })
