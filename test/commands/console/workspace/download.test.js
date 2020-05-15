@@ -30,6 +30,13 @@ test('aliases', async () => {
   expect(DownloadCommand.aliases.length).toBeGreaterThan(0)
 })
 
+test('args', async () => {
+  const destination = DownloadCommand.args[0]
+  expect(destination.name).toEqual('destination')
+  expect(destination.required).toEqual(false)
+  expect(destination.description).toBeDefined()
+})
+
 describe('console:workspace:download', () => {
   let command
   beforeEach(() => {
@@ -76,6 +83,25 @@ describe('console:workspace:download', () => {
       })
       await command.run()
       expect(fs.writeFileSync).toHaveBeenCalledWith('123-THE_PROJECT-THE_WORKSPACE.json', JSON.stringify(fakeDownloadData, null, 2))
+      expect(downloadWorkspaceJson).toHaveBeenCalledWith(123, 456, 789)
+    })
+
+    test('should download the config at specific destination', async () => {
+      command.argv = ['/Users/testuser/temp']
+      command.getConfig.mockImplementation(key => {
+        if (key === 'org') {
+          return { name: 'THE_ORG', id: 123 }
+        }
+        if (key === 'project') {
+          return { name: 'THE_PROJECT', id: 456 }
+        }
+        if (key === 'workspace') {
+          return { name: 'THE_WORKSPACE', id: 789 }
+        }
+        return null
+      })
+      await command.run()
+      expect(fs.writeFileSync).toHaveBeenCalledWith('/Users/testuser/temp/123-THE_PROJECT-THE_WORKSPACE.json', JSON.stringify(fakeDownloadData, null, 2))
       expect(downloadWorkspaceJson).toHaveBeenCalledWith(123, 456, 789)
     })
 
