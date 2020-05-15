@@ -19,16 +19,16 @@ const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const Help = require('@oclif/plugin-help').default
 const yaml = require('js-yaml')
 
-const { CONSOLE_API_KEY = 'TransporterJaeger1' } = process.env
+const DEFAULT_ENV = 'prod'
+const API_KEYS = {
+  prod: 'aio-cli-console-auth',
+  stage: 'aio-cli-console-auth-stage'
+}
+
 const ORG_TYPE_ENTERPRISE = 'entp'
 const CONSOLE_CONFIG_KEY = '$console'
 
 class ConsoleCommand extends Command {
-  constructor (argv, config) {
-    super(argv, config)
-    this.apiKey = CONSOLE_API_KEY
-  }
-
   async run () {
     const help = new Help(this.config)
     help.showHelp(['console', '--help'])
@@ -36,7 +36,9 @@ class ConsoleCommand extends Command {
 
   async initSdk () {
     const currConfig = await context.getCli()
-    this.imsEnv = (currConfig && currConfig.env) || 'prod'
+    this.imsEnv = (currConfig && currConfig.env) || DEFAULT_ENV
+    this.apiKey = API_KEYS[this.imsEnv]
+
     await context.setCli({ '$cli.bare-output': true }, false) // set this globally
     aioConsoleLogger.debug('Retrieving Auth Token')
     this.accessToken = await getToken(CLI)
