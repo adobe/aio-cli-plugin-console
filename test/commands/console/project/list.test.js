@@ -102,7 +102,6 @@ describe('console:project:list', () => {
     })
 
     test('should throw error if org not set', async () => {
-      let error
       try {
         await command.run()
       } catch (e) {
