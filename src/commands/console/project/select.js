@@ -63,7 +63,7 @@ SelectCommand.args = [
   {
     name: 'projectId',
     required: true,
-    description: 'Adobe IO Project Id'
+    description: 'Adobe I/O Project Id'
   }
 ]
 
