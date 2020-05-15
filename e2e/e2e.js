@@ -10,19 +10,31 @@ governing permissions and limitations under the License.
 */
 
 const execa = require('execa')
-const chalk = require('chalk')
-const { stdout } = require('stdout-stderr')
+
 const fs = require('fs')
+process.env.DEBUG = 'aio-cli-config*'
+// set global config file
+process.env.AIO_CONFIG_FILE = '.e2e-aio-config'
 
-stdout.print = true
+beforeEach(async () => {
+  fs.writeFileSync('.e2e-aio-config', '')
+})
+afterAll(async () => {
+  fs.unlinkSync('.e2e-aio-config')
+})
 
-test('org:list test', async () => {
-  const packagejson = JSON.parse(fs.readFileSync('package.json').toString())
-  const name = `${packagejson.name}`
-  console.log(chalk.blue(`> e2e tests for ${chalk.bold(name)}`))
+describe('aio:where tests', () => {
+  test('no org selected', async () => {
+    await expect(execa('./bin/run', ['where'], { stderr: 'inherit' }))
+      .resolves.toEqual(expect.objectContaining({ exitCode: 0 }))
+  })
 
-  console.log(chalk.dim('    - org:list..'))
-  expect(() => { execa.sync('./bin/run', ['console:org:list'], { stderr: 'inherit' }) }).not.toThrow()
-
-  console.log(chalk.green(`    - done for ${chalk.bold(name)}`))
+  test('an org is selected', async () => {
+    fs.writeFileSync('.e2e-aio-config', JSON.stringify({ $console: { org: { name: 'E2e Test Org' } } }))
+    await expect(execa('./bin/run', ['where'], { stderr: 'inherit' }))
+      .resolves.toEqual(expect.objectContaining({
+        exitCode: 0,
+        stdout: expect.stringContaining('1. Org: E2e Test Org')
+      }))
+  })
 })
