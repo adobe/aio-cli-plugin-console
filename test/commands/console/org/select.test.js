@@ -58,7 +58,7 @@ test('aliases', async () => {
 test('args', async () => {
   const orgId = SelectCommand.args[0]
   expect(orgId.name).toEqual('orgId')
-  expect(orgId.required).toEqual(true)
+  expect(orgId.required).toEqual(false)
   expect(orgId.description).toBeDefined()
 })
 

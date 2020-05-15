@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:select', { provider: 'debug' })
 const { cli } = require('cli-ux')
 const { flags } = require('@oclif/command')
+const inquirer = require('inquirer')
 
 const ConsoleCommand = require('../index')
 
@@ -29,14 +30,28 @@ class SelectCommand extends ConsoleCommand {
 
     aioConsoleLogger.debug('Select Console Project')
 
-    cli.action.start(`Retrieving the Project with id: ${args.projectId}`)
-
-    const project = await this.getConsoleOrgProject(orgId, args.projectId)
+    // getProjectsForOrg
+    let project = null
+    if (args.projectId) {
+      cli.action.start(`Retrieving the Project with id: ${args.projectId}`)
+      project = await this.getConsoleOrgProject(orgId, args.projectId)
+      cli.action.stop()
+    } else {
+      cli.action.start('Retrieving projects')
+      const projectList = await this.getConsoleOrgProjects(orgId)
+      cli.action.stop()
+      const result = await inquirer.prompt([{
+        type: 'list',
+        name: 'name',
+        message: 'Pick a project',
+        choices: projectList
+      }])
+      project = projectList.find(proj => proj.name === result.name)
+    }
 
     if (!project) {
-      throw new Error('Invalid Project ID')
+      this.error('Invalid Project ID')
     }
-    cli.action.stop()
 
     try {
       aioConsoleLogger.debug('Selecting Console Project')
@@ -62,7 +77,7 @@ SelectCommand.description = 'Select a Project for the selected Organization'
 SelectCommand.args = [
   {
     name: 'projectId',
-    required: true,
+    required: false,
     description: 'Adobe IO Project Id'
   }
 ]

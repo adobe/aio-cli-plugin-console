@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:select', { provider: 'debug' })
 const { cli } = require('cli-ux')
+const inquirer = require('inquirer')
 
 const ORG_KEY = 'org'
 const PROJECT_KEY = 'project'
@@ -26,17 +27,36 @@ class SelectCommand extends ConsoleCommand {
 
       const org = this.getConfig(ORG_KEY)
       if (!org) {
-        throw new Error('No Organization selected')
+        this.error('No Organization selected')
       }
 
       const project = this.getConfig(PROJECT_KEY)
       if (!project) {
-        throw new Error('No Project selected')
+        this.error('No Project selected')
       }
 
-      cli.action.start(`Retrieving the Workspace with id: ${args.workspaceId}`)
-      const result = await this.consoleClient.getWorkspace(org.id, project.id, args.workspaceId)
-      const workspace = result.body
+      let workspace = null
+      if (args.workspaceId) {
+        cli.action.start(`Retrieving workspace with id: ${args.workspaceId}`)
+        const result = await this.consoleClient.getWorkspace(org.id, project.id, args.workspaceId)
+        workspace = result.body
+      } else {
+        cli.action.start('Retrieving workspaces')
+        const workspaceList = await this.getConsoleOrgProjectWorkspaces(org.id, project.id)
+        cli.action.stop()
+        if (workspaceList.length > 1) {
+          const result = await inquirer.prompt([{
+            type: 'list',
+            name: 'name',
+            message: 'Pick a workspace',
+            choices: workspaceList
+          }])
+          workspace = workspaceList.find(ws => ws.name === result.name)
+        } else {
+          workspace = workspaceList[0]
+        }
+      }
+
       aioConsoleLogger.debug('Found selected workspace')
       const obj = {
         id: workspace.id,
@@ -65,8 +85,9 @@ SelectCommand.aliases = [
   'console:ws:sel'
 ]
 
-SelectCommand.args = [
-  { name: 'workspaceId', required: true }
-]
+SelectCommand.args = [{
+  name: 'workspaceId',
+  required: false
+}]
 
 module.exports = SelectCommand

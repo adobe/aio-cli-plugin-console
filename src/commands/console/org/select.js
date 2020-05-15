@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:org:select', { provider: 'debug' })
 const { cli } = require('cli-ux')
+const inquirer = require('inquirer')
 
 const ConsoleCommand = require('../index')
 
@@ -23,11 +24,22 @@ class SelectCommand extends ConsoleCommand {
     aioConsoleLogger.debug('Select Console Orgs')
 
     cli.action.start(`Retrieving the Organization with id: ${args.orgId}`)
-    const [org] = await this.getConsoleOrgs(args.orgId)
-    if (!org) {
-      throw new Error('Invalid OrgId')
+    const orgList = await this.getConsoleOrgs(args.orgId)
+    let org = orgList[0]
+    if (!org && args.orgId) {
+      this.error('Invalid OrgId')
     }
     cli.action.stop()
+
+    if (orgList.length > 1) {
+      const answer = await inquirer.prompt([{
+        type: 'list',
+        name: 'name',
+        message: 'Pick an org',
+        choices: orgList
+      }])
+      org = orgList.find(org => org.name === answer.name)
+    }
 
     try {
       aioConsoleLogger.debug('Setting console Org')
@@ -53,7 +65,7 @@ SelectCommand.description = 'Select an Organization'
 SelectCommand.args = [
   {
     name: 'orgId',
-    required: true,
+    required: false,
     description: 'Adobe IO Org Id'
   }
 ]

@@ -190,5 +190,29 @@ describe('ConsoleCommand', () => {
       command.clearConfig()
       expect(config.delete).toBeCalledWith(CONSOLE_CONFIG_KEY)
     })
+
+    // todo: _test('getConsoleOrgs', async () => {
+    //   const command = new ConsoleCommand([])
+    //   await command.getConsoleOrgs()
+    //   expect()
+    // })
+
+    // todo: _test('getConsoleOrgProject', () => {
+    //   const command = new ConsoleCommand([])
+    //   command.getConsoleOrgProject('a', 'b')
+    //   expect()
+    // })
+
+    // todo: _test('getConsoleOrgProjects', () => {
+    //   const command = new ConsoleCommand([])
+    //   command.getConsoleOrgProject('a', 'b')
+    //   expect()
+    // })
+
+    // todo: _test('getConsoleOrgProjectWorkspaces', () => {
+    //   const command = new ConsoleCommand([])
+    //   command.getConsoleOrgProjectWorkspaces('a', 'b')
+    //   expect()
+    // })
   })
 })

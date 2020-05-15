@@ -42,7 +42,7 @@ test('aliases', async () => {
 test('args', async () => {
   const workspaceId = SelectCommand.args[0]
   expect(workspaceId.name).toEqual('workspaceId')
-  expect(workspaceId.required).toEqual(true)
+  expect(workspaceId.required).toEqual(false)
 })
 
 describe('console:workspace:select', () => {
