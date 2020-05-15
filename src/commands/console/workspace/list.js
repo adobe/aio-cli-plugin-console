@@ -20,17 +20,22 @@ class ListCommand extends ConsoleCommand {
   async run () {
     await this.initSdk()
     try {
+      const errorMessage = []
       aioConsoleLogger.debug('Listing workspaces')
       const { flags } = this.parse(ListCommand)
 
       const org = this.getConfig(Constants.ORG_KEY)
       if (!org) {
-        throw new Error('No Organization selected')
+        errorMessage.push('No Organization selected')
       }
 
       const project = this.getConfig(Constants.PROJECT_KEY)
       if (!project) {
-        throw new Error('No Project selected')
+        errorMessage.push('No Project selected')
+      }
+
+      if (errorMessage.length > 0) {
+        throw new Error(errorMessage.toString())
       }
 
       cli.action.start(`Retrieving Workspaces for Project: ${project.id}`)

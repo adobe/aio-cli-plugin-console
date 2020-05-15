@@ -127,7 +127,7 @@ describe('console:workspace:download', () => {
         }
         return null
       })
-      await expect(command.run()).rejects.toThrow('No Project selected')
+      await expect(command.run()).rejects.toThrow('No Project selected,No Workspace selected')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
     })
@@ -136,7 +136,7 @@ describe('console:workspace:download', () => {
       command.getConfig.mockImplementation(key => {
         return null
       })
-      await expect(command.run()).rejects.toThrow('No Organization selected')
+      await expect(command.run()).rejects.toThrow('No Organization selected,No Project selected,No Workspace selected')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
     })

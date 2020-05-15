@@ -101,7 +101,7 @@ describe('console:workspace:select', () => {
       } catch (e) {
         error = e
       }
-      expect(error.toString()).toEqual('Error: No Organization selected')
+      expect(error.toString()).toEqual('Error: No Organization selected,No Project selected')
     })
 
     test('should throw error no project selected', async () => {

@@ -128,7 +128,7 @@ describe('console:workspace:list', () => {
       } catch (e) {
         error = e
       }
-      expect(error.toString()).toEqual('Error: No Organization selected')
+      expect(error.toString()).toEqual('Error: No Organization selected,No Project selected')
     })
   })
 

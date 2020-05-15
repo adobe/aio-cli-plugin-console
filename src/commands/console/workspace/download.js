@@ -20,22 +20,27 @@ class DownloadCommand extends ConsoleCommand {
   async run () {
     await this.initSdk()
     try {
+      const errorMessage = []
       aioConsoleLogger.debug('Trying to fetch workspace configs')
       const { args } = this.parse(DownloadCommand)
 
       const org = this.getConfig(Constants.ORG_KEY)
       if (!org) {
-        throw new Error('No Organization selected')
+        errorMessage.push('No Organization selected')
       }
 
       const project = this.getConfig(Constants.PROJECT_KEY)
       if (!project) {
-        throw new Error('No Project selected')
+        errorMessage.push('No Project selected')
       }
 
       const workspace = this.getConfig(Constants.WORKSPACE_KEY)
       if (!workspace) {
-        throw new Error('No Workspace selected')
+        errorMessage.push('No Workspace selected')
+      }
+
+      if (errorMessage.length > 0) {
+        throw new Error(errorMessage.toString())
       }
 
       cli.action.start(`Downloading configuration for Workspace ${workspace.name}`)
