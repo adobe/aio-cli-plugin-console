@@ -19,7 +19,7 @@ class SelectCommand extends ConsoleCommand {
   async run () {
     const { args, flags } = this.parse(SelectCommand)
 
-    const orgId = flags.orgId || this.getConfig('org.id')
+    const orgId = flags.orgId || this.getConfig(`${ConsoleCommand.CONFIG_KEYS.ORG}.id`)
 
     await this.initSdk()
 
@@ -43,7 +43,8 @@ class SelectCommand extends ConsoleCommand {
     try {
       aioConsoleLogger.debug('Selecting Console Project')
 
-      this.setConfig('project', project)
+      this.setConfig(ConsoleCommand.CONFIG_KEYS.PROJECT, project)
+      this.clearConfigKey(ConsoleCommand.CONFIG_KEYS.WORKSPACE)
 
       this.log(`Project selected ${project.name}`)
 
