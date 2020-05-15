@@ -11,12 +11,9 @@ governing permissions and limitations under the License.
 */
 const fs = require('fs')
 const ConsoleCommand = require('../index')
+const Constants = require('../../../utils/constants')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:download', { provider: 'debug' })
 const { cli } = require('cli-ux')
-
-const ORG_KEY = 'org'
-const PROJECT_KEY = 'project'
-const WORKSPACE_KEY = 'workspace'
 
 class DownloadCommand extends ConsoleCommand {
   async run () {
@@ -24,17 +21,17 @@ class DownloadCommand extends ConsoleCommand {
     try {
       aioConsoleLogger.debug('Trying to fetch workspace configs')
 
-      const org = this.getConfig(ORG_KEY)
+      const org = this.getConfig(Constants.ORG_KEY)
       if (!org) {
         throw new Error('No Organization selected')
       }
 
-      const project = this.getConfig(PROJECT_KEY)
+      const project = this.getConfig(Constants.PROJECT_KEY)
       if (!project) {
         throw new Error('No Project selected')
       }
 
-      const workspace = this.getConfig(WORKSPACE_KEY)
+      const workspace = this.getConfig(Constants.WORKSPACE_KEY)
       if (!workspace) {
         throw new Error('No Workspace selected')
       }
