@@ -73,9 +73,9 @@ class ConsoleCommand extends Command {
    */
   printConsoleConfig (options = {}) {
     const config = {}
-    config.org = this.getConfig('org.name') || '<no org selected>'
-    config.project = this.getConfig('project.name') || '<no project selected>'
-    config.workspace = this.getConfig('workspace.name') || '<no workspace selected>'
+    config.org = this.getConfig('org.name')
+    config.project = this.getConfig('project.name')
+    config.workspace = this.getConfig('workspace.name')
 
     // handling json output
     if (options.alternativeFormat === 'json') {
@@ -89,9 +89,9 @@ class ConsoleCommand extends Command {
     }
 
     this.log('You are currently in:')
-    this.log(`1. Org: ${config.org}`)
-    this.log(`2. Project: ${config.project}`)
-    this.log(`3. Workspace: ${config.workspace}`)
+    this.log(`1. Org: ${config.org || '<no org selected>'}`)
+    this.log(`2. Project: ${config.project || '<no project selected>'}`)
+    this.log(`3. Workspace: ${config.workspace || '<no workspace selected>'}`)
   }
 
   /**

@@ -56,7 +56,6 @@ describe('ConsoleCommand', () => {
 
   describe('helper methods', () => {
     describe('printConsoleConfig', () => {
-      const noOrgErrorMessage = 'You have not selected any organization.\n You can use `aio console org list` and `aio console org select <org-name>` to select your org.'
       test('no selected org', () => {
         config.get.mockImplementation((key) => null)
         command.printConsoleConfig()
@@ -154,10 +153,7 @@ describe('ConsoleCommand', () => {
         })
         command.printConsoleConfig({ alternativeFormat: 'json' })
         expect(command.log).toHaveBeenCalledTimes(1)
-        expect(command.log).toHaveBeenCalledWith(JSON.stringify({ org: '<no org selected>',
-          project: '<no project selected>',
-          workspace: '<no workspace selected>'
-        }))
+        expect(command.log).toHaveBeenCalledWith('{}')
       })
       test('selected org, project and workspace in yml format', () => {
         config.get.mockImplementation(key => {
@@ -182,7 +178,7 @@ describe('ConsoleCommand', () => {
         })
         command.printConsoleConfig({ alternativeFormat: 'yml' })
         expect(command.log).toHaveBeenCalledTimes(1)
-        expect(command.log).toHaveBeenCalledWith(yaml.safeDump({ org: '<no org selected>', project: '<no project selected>', workspace: '<no workspace selected>' }))
+        expect(command.log).toHaveBeenCalledWith('{}\n')
       })
     })
 
