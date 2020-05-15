@@ -15,9 +15,6 @@ const { cli } = require('cli-ux')
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:list', { provider: 'debug' })
 
-const ORG_KEY = 'org'
-const PROJECT_KEY = 'project'
-
 class ListCommand extends ConsoleCommand {
   async run () {
     await this.initSdk()
@@ -25,12 +22,12 @@ class ListCommand extends ConsoleCommand {
       aioConsoleLogger.debug('Listing workspaces')
       const { flags } = this.parse(ListCommand)
 
-      const org = this.getConfig(ORG_KEY)
+      const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
       if (!org) {
         throw new Error('No Organization selected')
       }
 
-      const project = this.getConfig(PROJECT_KEY)
+      const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
       if (!project) {
         throw new Error('No Project selected')
       }

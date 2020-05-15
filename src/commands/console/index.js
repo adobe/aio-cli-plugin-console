@@ -192,10 +192,25 @@ class ConsoleCommand extends Command {
 
   /**
    * Clear $console config
+   *
+   * @param {string} key key to clear
+   */
+  clearConfigKey (key) {
+    config.delete(`${CONSOLE_CONFIG_KEY}.${key}`)
+  }
+
+  /**
+   * Clear $console config
    */
   clearConfig () {
     config.delete(CONSOLE_CONFIG_KEY)
   }
+}
+
+ConsoleCommand.CONFIG_KEYS = {
+  ORG: 'org',
+  PROJECT: 'project',
+  WORKSPACE: 'workspace'
 }
 
 // this is set in package.json, see https://github.com/oclif/oclif/issues/120

@@ -44,7 +44,9 @@ class SelectCommand extends ConsoleCommand {
     try {
       aioConsoleLogger.debug('Setting console Org')
 
-      this.setConfig('org', org)
+      this.setConfig(ConsoleCommand.CONFIG_KEYS.ORG, org)
+      this.clearConfigKey(ConsoleCommand.CONFIG_KEYS.PROJECT)
+      this.clearConfigKey(ConsoleCommand.CONFIG_KEYS.WORKSPACE)
 
       this.log(`Org selected ${org.name}`)
 

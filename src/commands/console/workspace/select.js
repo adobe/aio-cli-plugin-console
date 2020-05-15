@@ -14,10 +14,6 @@ const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-
 const { cli } = require('cli-ux')
 const inquirer = require('inquirer')
 
-const ORG_KEY = 'org'
-const PROJECT_KEY = 'project'
-const WORKSPACE_KEY = 'workspace'
-
 class SelectCommand extends ConsoleCommand {
   async run () {
     await this.initSdk()
@@ -25,12 +21,12 @@ class SelectCommand extends ConsoleCommand {
       aioConsoleLogger.debug('Trying to Select workspace')
       const { args } = this.parse(SelectCommand)
 
-      const org = this.getConfig(ORG_KEY)
+      const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
       if (!org) {
         this.error('No Organization selected')
       }
 
-      const project = this.getConfig(PROJECT_KEY)
+      const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
       if (!project) {
         this.error('No Project selected')
       }
@@ -63,7 +59,7 @@ class SelectCommand extends ConsoleCommand {
         name: workspace.name
       }
 
-      this.setConfig(WORKSPACE_KEY, obj)
+      this.setConfig(ConsoleCommand.CONFIG_KEYS.WORKSPACE, obj)
       aioConsoleLogger.debug('Selected workspace')
       this.log(`Workspace selected ${workspace.name}`)
 
