@@ -106,10 +106,9 @@ describe('console:project:list', () => {
       try {
         await command.run()
       } catch (e) {
-        error = e
         console.log(e)
       }
-      expect(error.toString()).toEqual('Error: No Organization selected')
+      expect(stdout.output).toMatchFixture('project/list-no-org.txt')
     })
   })
 
