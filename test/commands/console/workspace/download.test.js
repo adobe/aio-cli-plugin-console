@@ -75,7 +75,7 @@ describe('console:workspace:download', () => {
         return null
       })
       await command.run()
-      expect(fs.writeFileSync).toHaveBeenCalledWith('123-THE_PROJECT-THE_WORKSPACE.json', JSON.stringify(fakeDownloadData))
+      expect(fs.writeFileSync).toHaveBeenCalledWith('123-THE_PROJECT-THE_WORKSPACE.json', JSON.stringify(fakeDownloadData, null, 2))
       expect(downloadWorkspaceJson).toHaveBeenCalledWith(123, 456, 789)
     })
 

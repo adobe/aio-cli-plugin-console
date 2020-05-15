@@ -80,7 +80,7 @@ SelectCommand.description = 'Select a Workspace for the selected Project'
 
 SelectCommand.aliases = [
   'console:workspace:select',
-  'cosnole:workspace:sel',
+  'console:workspace:sel',
   'console:ws:select',
   'console:ws:sel'
 ]

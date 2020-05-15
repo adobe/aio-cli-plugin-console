@@ -44,7 +44,7 @@ class DownloadCommand extends ConsoleCommand {
       const consoleConfig = await this.consoleClient.downloadWorkspaceJson(org.id, project.id, workspace.id)
       const fileName = `${org.id}-${project.name}-${workspace.name}.json`
 
-      fs.writeFileSync(fileName, JSON.stringify(consoleConfig.body))
+      fs.writeFileSync(fileName, JSON.stringify(consoleConfig.body, null, 2))
       this.log(`Downloaded Workspace configuration to ${fileName}`)
     } catch (e) {
       this.error(e.message)

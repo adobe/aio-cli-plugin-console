@@ -66,7 +66,7 @@ SelectCommand.args = [
   {
     name: 'orgId',
     required: false,
-    description: 'Adobe IO Org Id'
+    description: 'Adobe I/O Org Id'
   }
 ]
 
