@@ -57,8 +57,10 @@ class DownloadCommand extends ConsoleCommand {
 DownloadCommand.description = 'Downloads the configuration for the selected Workspace'
 
 DownloadCommand.aliases = [
-  'workspace:download',
-  'workspace:dwn'
+  'console:workspace:download',
+  'console:workspace:dl',
+  'console:ws:download',
+  'console:ws:dl'
 ]
 
 module.exports = DownloadCommand

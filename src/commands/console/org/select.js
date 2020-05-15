@@ -59,7 +59,8 @@ SelectCommand.args = [
 ]
 
 SelectCommand.aliases = [
-  'org:select'
+  'console:org:select',
+  'console:org:sel'
 ]
 
 module.exports = SelectCommand

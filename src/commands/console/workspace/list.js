@@ -71,8 +71,10 @@ class ListCommand extends ConsoleCommand {
 ListCommand.description = 'List your Workspaces for your selected Project'
 
 ListCommand.aliases = [
-  'workspace:list',
-  'workspace:ls'
+  'console:workspace:list',
+  'console:workspace:ls',
+  'console:ws:list',
+  'console:ws:ls'
 ]
 
 ListCommand.flags = {

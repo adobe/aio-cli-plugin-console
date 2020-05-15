@@ -1,4 +1,4 @@
-const { stdout } = require('stdout-stderr')
+const { stdout, stderr } = require('stdout-stderr')
 const fs = require.requireActual('fs')
 const eol = require('eol')
 
@@ -10,8 +10,8 @@ jest.mock('fs', () => require('jest-plugin-fs/mock'))
 // clear env variables
 
 // trap console log
-beforeEach(() => { stdout.start() })
-afterEach(() => { stdout.stop() })
+beforeEach(() => { stdout.start(); stderr.start() })
+afterEach(() => { stdout.stop(); stderr.stop() })
 
 // helper for fixtures
 global.fixtureFile = (output) => {

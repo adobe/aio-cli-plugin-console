@@ -59,8 +59,10 @@ class SelectCommand extends ConsoleCommand {
 SelectCommand.description = 'Select a Workspace for the selected Project'
 
 SelectCommand.aliases = [
-  'workspace:select',
-  'workspace:sel'
+  'console:workspace:select',
+  'cosnole:workspace:sel',
+  'console:ws:select',
+  'console:ws:sel'
 ]
 
 SelectCommand.args = [

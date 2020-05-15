@@ -21,6 +21,6 @@ class IndexCommand extends ConsoleCommand {
 
 IndexCommand.description = 'Manage your Adobe I/O Console Workspaces'
 
-IndexCommand.aliases = ['workspace']
+IndexCommand.aliases = ['console:ws']
 
 module.exports = IndexCommand

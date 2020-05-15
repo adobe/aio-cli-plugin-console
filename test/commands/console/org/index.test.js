@@ -22,10 +22,6 @@ test('description', async () => {
   expect(TheCommand.description).toBeDefined()
 })
 
-test('aliases', async () => {
-  expect(TheCommand.aliases).toEqual(['org'])
-})
-
 test('args', async () => {
   expect(TheCommand.args).toBeUndefined()
 })

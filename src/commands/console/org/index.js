@@ -21,6 +21,6 @@ class IndexCommand extends ConsoleCommand {
 
 IndexCommand.description = 'Manage your Adobe I/O Console Organizations'
 
-IndexCommand.aliases = ['org']
+IndexCommand.aliases = []
 
 module.exports = IndexCommand

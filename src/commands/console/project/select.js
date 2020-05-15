@@ -75,7 +75,7 @@ SelectCommand.flags = {
 }
 
 SelectCommand.aliases = [
-  'project:select'
+  'console:project:sel'
 ]
 
 module.exports = SelectCommand
