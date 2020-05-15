@@ -65,34 +65,6 @@ describe('ConsoleCommand', () => {
         expect(command.log).toHaveBeenCalledWith('2. Project: <no project selected>')
         expect(command.log).toHaveBeenCalledWith('3. Workspace: <no workspace selected>')
       })
-      test('only selected project', () => {
-        config.get.mockImplementation(key => {
-          if (key === `${CONSOLE_CONFIG_KEY}.project.name`) {
-            return 'THE_PROJECT'
-          }
-          return null
-        })
-        command.printConsoleConfig()
-        expect(command.log).toHaveBeenCalledTimes(4)
-        expect(command.log).toHaveBeenCalledWith('You are currently in:')
-        expect(command.log).toHaveBeenCalledWith('1. Org: <no org selected>')
-        expect(command.log).toHaveBeenCalledWith('2. Project: THE_PROJECT')
-        expect(command.log).toHaveBeenCalledWith('3. Workspace: <no workspace selected>')
-      })
-      test('only selected workspace', () => {
-        config.get.mockImplementation(key => {
-          if (key === `${CONSOLE_CONFIG_KEY}.workspace.name`) {
-            return 'THE_WORKSPACE'
-          }
-          return null
-        })
-        command.printConsoleConfig()
-        expect(command.log).toHaveBeenCalledTimes(4)
-        expect(command.log).toHaveBeenCalledWith('You are currently in:')
-        expect(command.log).toHaveBeenCalledWith('1. Org: <no org selected>')
-        expect(command.log).toHaveBeenCalledWith('2. Project: <no project selected>')
-        expect(command.log).toHaveBeenCalledWith('3. Workspace: THE_WORKSPACE')
-      })
       test('only selected org and project', () => {
         config.get.mockImplementation(key => {
           if (key === `${CONSOLE_CONFIG_KEY}.org.name`) {

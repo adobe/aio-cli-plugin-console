@@ -24,7 +24,9 @@ class SelectCommand extends ConsoleCommand {
     await this.initSdk()
 
     if (!orgId) {
-      throw new Error('No Organization selected')
+      this.log('You have not selected any organization. Please select an organization before selecting a project')
+      this.printConsoleConfig()
+      return
     }
 
     aioConsoleLogger.debug('Select Console Project')
