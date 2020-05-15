@@ -21,7 +21,7 @@ class ListCommand extends ConsoleCommand {
     const orgId = flags.orgId || this.getConfig('org.id')
 
     if (!orgId) {
-      this.log('You have not selected any organization. Please select an organization before selecting a project')
+      this.log('You have not selected any organization. Please select an organization')
       this.printConsoleConfig()
       return
     }
