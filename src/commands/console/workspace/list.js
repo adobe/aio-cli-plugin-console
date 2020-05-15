@@ -13,7 +13,6 @@ const { flags } = require('@oclif/command')
 const { cli } = require('cli-ux')
 
 const ConsoleCommand = require('../index')
-const Constants = require('../../../utils/constants')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:list', { provider: 'debug' })
 
 class ListCommand extends ConsoleCommand {
@@ -24,12 +23,12 @@ class ListCommand extends ConsoleCommand {
       aioConsoleLogger.debug('Listing workspaces')
       const { flags } = this.parse(ListCommand)
 
-      const org = this.getConfig(Constants.ORG_KEY)
+      const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
       if (!org) {
         errorMessage.push('No Organization selected')
       }
 
-      const project = this.getConfig(Constants.PROJECT_KEY)
+      const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
       if (!project) {
         errorMessage.push('No Project selected')
       }

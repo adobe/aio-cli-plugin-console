@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const ConsoleCommand = require('../index')
-const Constants = require('../../../utils/constants')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:select', { provider: 'debug' })
 const { cli } = require('cli-ux')
 
@@ -22,12 +21,12 @@ class SelectCommand extends ConsoleCommand {
       aioConsoleLogger.debug('Trying to Select workspace')
       const { args } = this.parse(SelectCommand)
 
-      const org = this.getConfig(Constants.ORG_KEY)
+      const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
       if (!org) {
         errorMessage.push('No Organization selected')
       }
 
-      const project = this.getConfig(Constants.PROJECT_KEY)
+      const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
       if (!project) {
         errorMessage.push('No Project selected')
       }
@@ -45,7 +44,7 @@ class SelectCommand extends ConsoleCommand {
         name: workspace.name
       }
 
-      this.setConfig(Constants.WORKSPACE_KEY, obj)
+      this.setConfig(ConsoleCommand.CONFIG_KEYS.WORKSPACE, obj)
       aioConsoleLogger.debug('Selected workspace')
       this.log(`Workspace selected ${workspace.name}`)
 

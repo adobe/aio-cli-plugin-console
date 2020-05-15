@@ -14,6 +14,7 @@ const sdk = require('@adobe/aio-lib-console')
 const fs = require('fs')
 jest.mock('fs')
 const DownloadCommand = require('../../../../src/commands/console/workspace/download')
+const ConsoleCommand = require('../../../../src/commands/console')
 
 test('exports', async () => {
   expect(typeof DownloadCommand).toEqual('function')
@@ -70,13 +71,13 @@ describe('console:workspace:download', () => {
 
     test('should download the config for the selected workspace', async () => {
       command.getConfig.mockImplementation(key => {
-        if (key === 'org') {
+        if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
           return { name: 'THE_ORG', id: 123 }
         }
-        if (key === 'project') {
+        if (key === ConsoleCommand.CONFIG_KEYS.PROJECT) {
           return { name: 'THE_PROJECT', id: 456 }
         }
-        if (key === 'workspace') {
+        if (key === ConsoleCommand.CONFIG_KEYS.WORKSPACE) {
           return { name: 'THE_WORKSPACE', id: 789 }
         }
         return null
@@ -107,10 +108,10 @@ describe('console:workspace:download', () => {
 
     test('should fail if the workspace is missing', async () => {
       command.getConfig.mockImplementation(key => {
-        if (key === 'org') {
+        if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
           return { name: 'THE_ORG', id: 123 }
         }
-        if (key === 'project') {
+        if (key === ConsoleCommand.CONFIG_KEYS.PROJECT) {
           return { name: 'THE_PROJECT', id: 456 }
         }
         return null
@@ -122,7 +123,7 @@ describe('console:workspace:download', () => {
 
     test('should fail if the project is missing', async () => {
       command.getConfig.mockImplementation(key => {
-        if (key === 'org') {
+        if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
           return { name: 'THE_ORG', id: 123 }
         }
         return null
