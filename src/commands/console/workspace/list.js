@@ -37,8 +37,7 @@ class ListCommand extends ConsoleCommand {
 
       cli.action.start(`Retrieving Workspaces for Project: ${project.id}`)
 
-      const result = await this.consoleClient.getWorkspacesForProject(org.id, project.id)
-      const workspaces = result.body
+      const workspaces = await this.getConsoleOrgProjectWorkspaces(org.id, project.id)
 
       aioConsoleLogger.debug('Listing workspaces: Data received')
 

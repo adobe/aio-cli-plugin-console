@@ -154,6 +154,21 @@ class ConsoleCommand extends Command {
   }
 
   /**
+   * Retrieve workspace
+   *
+   * @param {string} orgId Ims Org ID
+   * @param {string} projectId Project Id to select project
+   * @returns {object} Workspace
+   */
+  async getConsoleOrgProjectWorkspaces (orgId, projectId) {
+    const response = await this.consoleClient.getWorkspacesForProject(orgId, projectId)
+    if (!response.ok) {
+      throw new Error('Error retrieving Project')
+    }
+    return response.body
+  }
+
+  /**
    * Set $console config
    *
    * @param {string} key key to store value
