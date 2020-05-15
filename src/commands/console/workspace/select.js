@@ -17,17 +17,24 @@ class SelectCommand extends ConsoleCommand {
   async run () {
     await this.initSdk()
     try {
+      const errorMessage = []
       aioConsoleLogger.debug('Trying to Select workspace')
       const { args } = this.parse(SelectCommand)
 
       const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
       if (!org) {
-        throw new Error('No Organization selected')
+        errorMessage.push('Organization')
       }
 
       const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
       if (!project) {
-        throw new Error('No Project selected')
+        errorMessage.push('Project')
+      }
+
+      if (errorMessage.length > 0) {
+        this.log('You have not selected any the of following - ' + errorMessage.toString())
+        this.printConsoleConfig()
+        return
       }
 
       cli.action.start(`Retrieving the Workspace with id: ${args.workspaceId}`)

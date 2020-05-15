@@ -56,34 +56,14 @@ describe('ConsoleCommand', () => {
 
   describe('helper methods', () => {
     describe('printConsoleConfig', () => {
-      const noOrgErrorMessage = 'You have not selected any organization.\n You can use `aio org list` and `aio org select <org-name>` to select your org.'
       test('no selected org', () => {
         config.get.mockImplementation((key) => null)
         command.printConsoleConfig()
-        expect(command.log).toHaveBeenCalledTimes(1)
-        expect(command.log).toHaveBeenCalledWith(noOrgErrorMessage)
-      })
-      test('only selected project', () => {
-        config.get.mockImplementation(key => {
-          if (key === `${CONSOLE_CONFIG_KEY}.project.name`) {
-            return 'THE_PROJECT'
-          }
-          return null
-        })
-        command.printConsoleConfig()
-        expect(command.log).toHaveBeenCalledTimes(1)
-        expect(command.log).toHaveBeenCalledWith(noOrgErrorMessage)
-      })
-      test('only selected workspace', () => {
-        config.get.mockImplementation(key => {
-          if (key === `${CONSOLE_CONFIG_KEY}.workspace.name`) {
-            return 'THE_WORKSPACE'
-          }
-          return null
-        })
-        command.printConsoleConfig()
-        expect(command.log).toHaveBeenCalledTimes(1)
-        expect(command.log).toHaveBeenCalledWith(noOrgErrorMessage)
+        expect(command.log).toHaveBeenCalledTimes(4)
+        expect(command.log).toHaveBeenCalledWith('You are currently in:')
+        expect(command.log).toHaveBeenCalledWith('1. Org: <no org selected>')
+        expect(command.log).toHaveBeenCalledWith('2. Project: <no project selected>')
+        expect(command.log).toHaveBeenCalledWith('3. Workspace: <no workspace selected>')
       })
       test('only selected org and project', () => {
         config.get.mockImplementation(key => {
@@ -96,10 +76,11 @@ describe('ConsoleCommand', () => {
           return null
         })
         command.printConsoleConfig()
-        expect(command.log).toHaveBeenCalledTimes(3)
+        expect(command.log).toHaveBeenCalledTimes(4)
         expect(command.log).toHaveBeenCalledWith('You are currently in:')
         expect(command.log).toHaveBeenCalledWith('1. Org: THE_ORG')
         expect(command.log).toHaveBeenCalledWith('2. Project: THE_PROJECT')
+        expect(command.log).toHaveBeenCalledWith('3. Workspace: <no workspace selected>')
       })
       test('selected org, project and workspace', () => {
         config.get.mockImplementation(key => {
@@ -144,7 +125,7 @@ describe('ConsoleCommand', () => {
         })
         command.printConsoleConfig({ alternativeFormat: 'json' })
         expect(command.log).toHaveBeenCalledTimes(1)
-        expect(command.log).toHaveBeenCalledWith(JSON.stringify({}))
+        expect(command.log).toHaveBeenCalledWith('{}')
       })
       test('selected org, project and workspace in yml format', () => {
         config.get.mockImplementation(key => {

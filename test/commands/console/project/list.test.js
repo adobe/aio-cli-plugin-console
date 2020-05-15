@@ -102,14 +102,12 @@ describe('console:project:list', () => {
     })
 
     test('should throw error if org not set', async () => {
-      let error
       try {
         await command.run()
       } catch (e) {
-        error = e
         console.log(e)
       }
-      expect(error.toString()).toEqual('Error: No Organization selected')
+      expect(stdout.output).toMatchFixture('project/list-no-org.txt')
     })
   })
 
