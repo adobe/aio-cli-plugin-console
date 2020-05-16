@@ -33,7 +33,7 @@ $ npm install -g @adobe/aio-cli-plugin-console
 $ aio COMMAND
 running command...
 $ aio (-v|--version|version)
-@adobe/aio-cli-plugin-console/3.0.0-dev darwin-x64 node-v10.18.1
+@adobe/aio-cli-plugin-console/3.0.0 darwin-x64 node-v10.16.1
 $ aio --help [COMMAND]
 USAGE
   $ aio COMMAND
@@ -51,7 +51,7 @@ USAGE
 * [`aio console:project:select PROJECTID`](#aio-consoleprojectselect-projectid)
 * [`aio console:where`](#aio-consolewhere)
 * [`aio console:workspace`](#aio-consoleworkspace)
-* [`aio console:workspace:download`](#aio-consoleworkspacedownload)
+* [`aio console:workspace:download [DESTINATION]`](#aio-consoleworkspacedownload-destination)
 * [`aio console:workspace:list`](#aio-consoleworkspacelist)
 * [`aio console:workspace:select WORKSPACEID`](#aio-consoleworkspaceselect-workspaceid)
 
@@ -67,7 +67,7 @@ OPTIONS
   --help  Show help
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/index.js)_
+_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/index.js)_
 
 ## `aio console:org`
 
@@ -81,7 +81,7 @@ OPTIONS
   --help  Show help
 ```
 
-_See code: [src/commands/console/org/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/org/index.js)_
+_See code: [src/commands/console/org/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/org/index.js)_
 
 ## `aio console:org:list`
 
@@ -100,7 +100,7 @@ ALIASES
   $ aio console:org:list
 ```
 
-_See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/org/list.js)_
+_See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/org/list.js)_
 
 ## `aio console:org:select ORGID`
 
@@ -111,7 +111,7 @@ USAGE
   $ aio console:org:select ORGID
 
 ARGUMENTS
-  ORGID  Adobe IO Org Id
+  ORGID  Adobe I/O Org Id
 
 OPTIONS
   --help  Show help
@@ -121,7 +121,7 @@ ALIASES
   $ aio console:org:sel
 ```
 
-_See code: [src/commands/console/org/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/org/select.js)_
+_See code: [src/commands/console/org/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/org/select.js)_
 
 ## `aio console:project`
 
@@ -135,7 +135,7 @@ OPTIONS
   --help  Show help
 ```
 
-_See code: [src/commands/console/project/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/project/index.js)_
+_See code: [src/commands/console/project/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/project/index.js)_
 
 ## `aio console:project:list`
 
@@ -155,7 +155,7 @@ ALIASES
   $ aio console:project:ls
 ```
 
-_See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/project/list.js)_
+_See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/project/list.js)_
 
 ## `aio console:project:select PROJECTID`
 
@@ -166,7 +166,7 @@ USAGE
   $ aio console:project:select PROJECTID
 
 ARGUMENTS
-  PROJECTID  Adobe IO Project Id
+  PROJECTID  Adobe I/O Project Id
 
 OPTIONS
   --help         Show help
@@ -176,7 +176,7 @@ ALIASES
   $ aio console:project:sel
 ```
 
-_See code: [src/commands/console/project/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/project/select.js)_
+_See code: [src/commands/console/project/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/project/select.js)_
 
 ## `aio console:where`
 
@@ -195,7 +195,7 @@ ALIASES
   $ aio where
 ```
 
-_See code: [src/commands/console/where/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/where/index.js)_
+_See code: [src/commands/console/where/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/where/index.js)_
 
 ## `aio console:workspace`
 
@@ -212,15 +212,18 @@ ALIASES
   $ aio console:ws
 ```
 
-_See code: [src/commands/console/workspace/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/workspace/index.js)_
+_See code: [src/commands/console/workspace/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/workspace/index.js)_
 
-## `aio console:workspace:download`
+## `aio console:workspace:download [DESTINATION]`
 
 Downloads the configuration for the selected Workspace
 
 ```
 USAGE
-  $ aio console:workspace:download
+  $ aio console:workspace:download [DESTINATION]
+
+ARGUMENTS
+  DESTINATION  path where workspace configuration file will be saved
 
 OPTIONS
   --help  Show help
@@ -232,7 +235,7 @@ ALIASES
   $ aio console:ws:dl
 ```
 
-_See code: [src/commands/console/workspace/download.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/workspace/download.js)_
+_See code: [src/commands/console/workspace/download.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/workspace/download.js)_
 
 ## `aio console:workspace:list`
 
@@ -254,7 +257,7 @@ ALIASES
   $ aio console:ws:ls
 ```
 
-_See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/workspace/list.js)_
+_See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/workspace/list.js)_
 
 ## `aio console:workspace:select WORKSPACEID`
 
@@ -274,5 +277,5 @@ ALIASES
   $ aio console:ws:sel
 ```
 
-_See code: [src/commands/console/workspace/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0-dev/src/commands/console/workspace/select.js)_
+_See code: [src/commands/console/workspace/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/workspace/select.js)_
 <!-- commandsstop -->
