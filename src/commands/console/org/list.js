@@ -26,8 +26,8 @@ class ListCommand extends ConsoleCommand {
       aioConsoleLogger.debug('Listing Console Orgs')
 
       cli.action.start('Retrieving Organizations')
-
       const orgs = await this.getConsoleOrgs()
+      cli.action.stop()
 
       aioConsoleLogger.debug('Listing Console Orgs: Data received')
 
@@ -38,11 +38,9 @@ class ListCommand extends ConsoleCommand {
       } else {
         this.printResults(orgs)
       }
-
-      return orgs
     } catch (err) {
-      aioConsoleLogger.error(err)
-      this.error('failed to list Orgs')
+      aioConsoleLogger.debug(err)
+      this.error(err.message)
     } finally {
       cli.action.stop()
     }

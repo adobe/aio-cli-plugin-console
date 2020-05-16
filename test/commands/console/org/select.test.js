@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 const { Command } = require('@oclif/command')
 const { stdout } = require('stdout-stderr')
 const sdk = require('@adobe/aio-lib-console')
-const config = require('@adobe/aio-cli-config')
+const config = require('@adobe/aio-lib-core-config')
 const SelectCommand = require('../../../../src/commands/console/org/select')
 
 const getOrganizations = () => ({
@@ -56,10 +56,10 @@ test('aliases', async () => {
 })
 
 test('args', async () => {
-  const orgId = SelectCommand.args[0]
-  expect(orgId.name).toEqual('orgId')
-  expect(orgId.required).toEqual(true)
-  expect(orgId.description).toBeDefined()
+  const orgCode = SelectCommand.args[0]
+  expect(orgCode.name).toEqual('orgCode')
+  expect(orgCode.required).toEqual(true)
+  expect(orgCode.description).toBeDefined()
 })
 
 test('flags', async () => {
@@ -94,12 +94,8 @@ describe('console:org:select', () => {
     })
 
     test('should select the provided org', async () => {
-      try {
-        command.argv = ['1']
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      command.argv = ['CODE01']
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('org/select.txt')
       expect(handleError).not.toHaveBeenCalled()
     })
@@ -115,18 +111,12 @@ describe('console:org:select', () => {
     })
 
     test('throw Error retrieving Orgs', async () => {
-      let error
-      try {
-        command.argv = ['1']
-        await command.run()
-      } catch (e) {
-        error = e
-      }
-      expect(error.toString()).toEqual('Error: Error retrieving Orgs')
+      command.argv = ['1']
+      await expect(command.run()).rejects.toThrowError(new Error('Error retrieving Orgs'))
     })
   })
 
-  describe('invalid org id', () => {
+  describe('invalid org code', () => {
     beforeEach(() => {
       sdk.init.mockImplementation(() => ({
         getOrganizations: jest.fn(() => ({
@@ -140,25 +130,20 @@ describe('console:org:select', () => {
       jest.clearAllMocks()
     })
 
-    test('throw Invalid OrgId', async () => {
-      let error
-      try {
-        command.argv = ['1']
-        await command.run()
-      } catch (e) {
-        error = e
-      }
-      expect(error.toString()).toEqual('Error: Invalid OrgId')
+    test('throw Invalid OrgCode', async () => {
+      command.argv = ['1']
+      await expect(command.run()).rejects.toThrowError(new Error('Invalid OrgCode'))
     })
   })
 
   describe('error selecting org', () => {
+    const err = new Error('SetConfig Error')
     beforeEach(() => {
       sdk.init.mockImplementation(() => ({
         getOrganizations
       }))
       command.setConfig = jest.fn(() => {
-        throw new Error('Error')
+        throw err
       })
     })
 
@@ -166,15 +151,9 @@ describe('console:org:select', () => {
       jest.clearAllMocks()
     })
 
-    test('throw Invalid OrgId', async () => {
-      let error
-      try {
-        command.argv = ['1']
-        await command.run()
-      } catch (e) {
-        error = e
-      }
-      expect(error.toString()).toEqual('Error: Failed to select Org')
+    test('error during config set/clear', async () => {
+      command.argv = ['CODE01']
+      await expect(command.run()).rejects.toThrowError(err)
     })
   })
 })

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 
 const ConsoleCommand = require('../../../src/commands/console/index')
 const mockLogger = require('@adobe/aio-lib-core-logging')
-const config = require('@adobe/aio-cli-config')
+const config = require('@adobe/aio-lib-core-config')
 const Help = require('@oclif/plugin-help').default
 const yaml = require('js-yaml')
 

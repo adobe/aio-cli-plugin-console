@@ -72,38 +72,26 @@ describe('console:workspace:list', () => {
     })
 
     test('should return list of workspaces', async () => {
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/list.txt')
       expect(handleError).not.toHaveBeenCalled()
     })
 
     test('should return list of workspaces as json', async () => {
       command.argv = ['--json']
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).resolves.not.toThrowError()
+
       expect(JSON.parse(stdout.output)).toMatchFixtureJson('workspace/list.json')
-      expect(handleError).not.toHaveBeenCalled()
     })
 
     test('should return list of workspaces as yaml', async () => {
       command.argv = ['--yml']
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).resolves.not.toThrowError()
+
       expect(stdout.output).toEqual(expect.stringContaining('id: 1'))
       expect(stdout.output).toEqual(expect.stringContaining('id: 2'))
       expect(stdout.output).toEqual(expect.stringContaining('name: WRKSPC1'))
       expect(stdout.output).toEqual(expect.stringContaining('name: WRKSPC2'))
-      expect(handleError).not.toHaveBeenCalled()
     })
   })
 
@@ -113,7 +101,7 @@ describe('console:workspace:list', () => {
     })
 
     test('should throw error no org selected', async () => {
-      await command.run()
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/list-error1.txt')
     })
   })
@@ -124,17 +112,21 @@ describe('console:workspace:list', () => {
       if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
         return { name: 'THE_ORG', id: 123 }
       }
+      if (key === `${ConsoleCommand.CONFIG_KEYS.ORG}.name`) {
+        return 'THE_ORG'
+      }
       return null
     })
-    await command.run()
+    await expect(command.run()).rejects.toThrowError()
     expect(stdout.output).toMatchFixture('workspace/list-error2.txt')
   })
 
-  test('should throw Error retrieving Project', async () => {
-    command.getConfig = jest.fn()
-    command.getConfig.mockImplementation(key => {
-      throw new Error('Some Error')
-    })
-    await expect(command.run()).rejects.toThrow('Some Error')
+  test('should throw Error for getWorkspacesForProject', async () => {
+    const getWorkspacesForProjectError = () => ({ ok: false })
+
+    command.getConfig = jest.fn(() => '111')
+    sdk.init.mockImplementation(() => ({ getWorkspacesForProject: getWorkspacesForProjectError }))
+
+    await expect(command.run()).rejects.toThrow('Error retrieving Workspaces')
   })
 })

@@ -1,11 +1,10 @@
 {
   "name": "@adobe/aio-cli-plugin-console",
   "description": "Console plugin for the Adobe I/O CLI",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "author": "Adobe Inc.",
   "bugs": "https://github.com/adobe/aio-cli-plugin-console/issues",
   "dependencies": {
-    "@adobe/aio-cli-config": "^1.0.12",
     "@adobe/aio-lib-console": "^1.1.0",
     "@adobe/aio-lib-core-config": "^1.0.15",
     "@adobe/aio-lib-core-logging": "^1.1.0",

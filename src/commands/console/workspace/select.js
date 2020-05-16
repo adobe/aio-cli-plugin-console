@@ -15,31 +15,30 @@ const { cli } = require('cli-ux')
 
 class SelectCommand extends ConsoleCommand {
   async run () {
+    aioConsoleLogger.debug('Trying to Select workspace')
+    const { args } = this.parse(SelectCommand)
+
+    const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
+    if (!org) {
+      this.log('You have not selected any Organization and Project. Please select first.')
+      this.printConsoleConfig()
+      this.exit(1)
+    }
+
+    const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
+    if (!project) {
+      this.log('You have not selected a Project. Please select first.')
+      this.printConsoleConfig()
+      this.exit(1)
+    }
+
     await this.initSdk()
+
     try {
-      const errorMessage = []
-      aioConsoleLogger.debug('Trying to Select workspace')
-      const { args } = this.parse(SelectCommand)
-
-      const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
-      if (!org) {
-        errorMessage.push('Organization')
-      }
-
-      const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
-      if (!project) {
-        errorMessage.push('Project')
-      }
-
-      if (errorMessage.length > 0) {
-        this.log('You have not selected any the of following - ' + errorMessage.toString())
-        this.printConsoleConfig()
-        return
-      }
-
       cli.action.start(`Retrieving the Workspace with id: ${args.workspaceId}`)
-      const result = await this.consoleClient.getWorkspace(org.id, project.id, args.workspaceId)
-      const workspace = result.body
+      const workspace = await this.getConsoleProjectWorkspace(org.id, project.id, args.workspaceId)
+      cli.action.stop()
+
       aioConsoleLogger.debug('Found selected workspace')
       const obj = {
         id: workspace.id,
@@ -51,8 +50,9 @@ class SelectCommand extends ConsoleCommand {
       this.log(`Workspace selected ${workspace.name}`)
 
       this.printConsoleConfig()
-    } catch (e) {
-      this.error(e.message)
+    } catch (err) {
+      aioConsoleLogger.debug(err)
+      this.error(err.message)
     } finally {
       cli.action.stop()
     }

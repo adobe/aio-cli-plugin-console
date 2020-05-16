@@ -115,12 +115,18 @@ describe('console:workspace:download', () => {
         if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
           return { name: 'THE_ORG', id: 123 }
         }
+        if (key === `${ConsoleCommand.CONFIG_KEYS.ORG}.name`) {
+          return 'THE_ORG'
+        }
         if (key === ConsoleCommand.CONFIG_KEYS.PROJECT) {
           return { name: 'THE_PROJECT', id: 456 }
         }
+        if (key === `${ConsoleCommand.CONFIG_KEYS.PROJECT}.name`) {
+          return 'THE_PROJECT'
+        }
         return null
       })
-      await command.run()
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/download-error3.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
@@ -131,9 +137,12 @@ describe('console:workspace:download', () => {
         if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
           return { name: 'THE_ORG', id: 123 }
         }
+        if (key === `${ConsoleCommand.CONFIG_KEYS.ORG}.name`) {
+          return 'THE_ORG'
+        }
         return null
       })
-      await command.run()
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/download-error2.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
@@ -143,7 +152,7 @@ describe('console:workspace:download', () => {
       command.getConfig.mockImplementation(key => {
         return null
       })
-      await command.run()
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/download-error1.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()

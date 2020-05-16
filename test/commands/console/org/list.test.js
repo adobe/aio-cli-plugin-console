@@ -56,11 +56,9 @@ test('flags', async () => {
 
 describe('console:org:list', () => {
   let command
-  let handleError
 
   beforeEach(() => {
     command = new ListCommand([])
-    handleError = jest.spyOn(command, 'error')
   })
 
   afterEach(() => {
@@ -81,35 +79,20 @@ describe('console:org:list', () => {
     })
 
     test('should return list of orgs', async () => {
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('org/list.txt')
-      expect(handleError).not.toHaveBeenCalled()
     })
 
     test('should return list of orgs as json', async () => {
       command.argv = ['--json']
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).resolves.not.toThrowError()
       expect(JSON.parse(stdout.output)).toMatchFixtureJson('org/list.json')
-      expect(handleError).not.toHaveBeenCalled()
     })
 
     test('should return list of orgs as yaml', async () => {
       command.argv = ['--yml']
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('org/list.yml')
-      expect(handleError).not.toHaveBeenCalled()
     })
   })
 
@@ -123,14 +106,7 @@ describe('console:org:list', () => {
     })
 
     test('should return list of orgs', async () => {
-      let error
-      try {
-        await command.run()
-      } catch (e) {
-        error = e
-      }
-      expect(error.toString()).toEqual('Error: failed to list Orgs')
-      expect(handleError).toHaveBeenCalled()
+      await expect(command.run()).rejects.toThrowError(new Error('Error retrieving Orgs'))
     })
   })
 })

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console', { provider: 'debug' })
-const config = require('@adobe/aio-cli-config')
+const config = require('@adobe/aio-lib-core-config')
 const { Command, flags } = require('@oclif/command')
 const { getToken, context } = require('@adobe/aio-lib-ims')
 const sdk = require('@adobe/aio-lib-console')
@@ -97,10 +97,10 @@ class ConsoleCommand extends Command {
   /**
    * Retrieve Orgs / Org from console
    *
-   * @param {string} [orgId] Org Id
+   * @param {string} [orgCode] the Org Code
    * @returns {Promise<Array<{id, code, name}>>} Array of Orgs
    */
-  async getConsoleOrgs (orgId = null) {
+  async getConsoleOrgs (orgCode = null) {
     const response = await this.consoleClient.getOrganizations()
 
     if (!response.ok) {
@@ -111,7 +111,7 @@ class ConsoleCommand extends Command {
       // Filter enterprise orgs
       .filter(org => org.type === ORG_TYPE_ENTERPRISE)
       // Filter org if orgId is specified
-      .filter(org => orgId ? (org.id === orgId) : true)
+      .filter(org => orgCode ? (org.code === orgCode) : true)
       // Omit props
       .map(({ id, code, name }) => ({ id, code, name }))
 
@@ -143,6 +143,37 @@ class ConsoleCommand extends Command {
     const response = await this.consoleClient.getProject(orgId, projectId)
     if (!response.ok) {
       throw new Error('Error retrieving Project')
+    }
+    return response.body
+  }
+
+  /**
+   * Retrieve Workspace from a Project
+   *
+   * @param {string} orgId organization id
+   * @param {string} projectId project id
+   * @returns {Array} Workspaces
+   */
+  async getConsoleProjectWorkspaces (orgId, projectId) {
+    const response = await this.consoleClient.getWorkspacesForProject(orgId, projectId)
+    if (!response.ok) {
+      throw new Error('Error retrieving Workspaces')
+    }
+    return response.body
+  }
+
+  /**
+   * Retrieve Workspace
+   *
+   * @param {string} orgId Ims Org ID
+   * @param {string} projectId Project Id
+   * @param {string} workspaceId Workspace Id to select workspace
+   * @returns {object} Workspace
+   */
+  async getConsoleProjectWorkspace (orgId, projectId, workspaceId) {
+    const response = await this.consoleClient.getWorkspace(orgId, projectId, workspaceId)
+    if (!response.ok) {
+      throw new Error('Error retrieving Workspace')
     }
     return response.body
   }

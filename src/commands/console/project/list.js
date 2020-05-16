@@ -19,11 +19,10 @@ class ListCommand extends ConsoleCommand {
     const { flags } = this.parse(ListCommand)
 
     const orgId = flags.orgId || this.getConfig('org.id')
-
     if (!orgId) {
-      this.log('You have not selected any organization. Please select an organization')
+      this.log('You have not selected an Organization. Please select first.')
       this.printConsoleConfig()
-      return
+      this.exit(1)
     }
 
     await this.initSdk()
@@ -32,8 +31,8 @@ class ListCommand extends ConsoleCommand {
       aioConsoleLogger.debug(`Listing Projects from Org ${orgId}`)
 
       cli.action.start(`Retrieving Projects for the Organization: ${orgId}`)
-
       const projects = await this.getConsoleOrgProjects(orgId)
+      cli.action.stop()
 
       if (flags.json) {
         this.printJson(projects)
@@ -43,9 +42,9 @@ class ListCommand extends ConsoleCommand {
         this.printResults(projects)
       }
       return projects
-    } catch (e) {
-      aioConsoleLogger.error(e)
-      this.error('failed to list Projects')
+    } catch (err) {
+      aioConsoleLogger.debug(err)
+      this.error(err.message)
     } finally {
       cli.action.stop()
     }
