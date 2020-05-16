@@ -115,8 +115,14 @@ describe('console:workspace:download', () => {
         if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
           return { name: 'THE_ORG', id: 123 }
         }
+        if (key === `${ConsoleCommand.CONFIG_KEYS.ORG}.name`) {
+          return 'THE_ORG'
+        }
         if (key === ConsoleCommand.CONFIG_KEYS.PROJECT) {
           return { name: 'THE_PROJECT', id: 456 }
+        }
+        if (key === `${ConsoleCommand.CONFIG_KEYS.PROJECT}.name`) {
+          return 'THE_PROJECT'
         }
         return null
       })
@@ -130,6 +136,9 @@ describe('console:workspace:download', () => {
       command.getConfig.mockImplementation(key => {
         if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
           return { name: 'THE_ORG', id: 123 }
+        }
+        if (key === `${ConsoleCommand.CONFIG_KEYS.ORG}.name`) {
+          return 'THE_ORG'
         }
         return null
       })

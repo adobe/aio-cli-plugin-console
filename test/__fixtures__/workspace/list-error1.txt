@@ -1,4 +1,4 @@
-You have not selected any the of following - Organization,Project
+You have not selected any Organization and Project. Please select first.
 You are currently in:
 1. Org: <no org selected>
 2. Project: <no project selected>

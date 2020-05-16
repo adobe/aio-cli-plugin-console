@@ -1,5 +1,5 @@
-You have not selected any the of following - Workspace
+You have not selected a Workspace. Please select first.
 You are currently in:
-1. Org: <no org selected>
-2. Project: <no project selected>
+1. Org: THE_ORG
+2. Project: THE_PROJECT
 3. Workspace: <no workspace selected>
