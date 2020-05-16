@@ -77,11 +77,9 @@ test('flags', async () => {
 
 describe('console:project:select', () => {
   let command
-  let handleError
 
   beforeEach(() => {
     command = new SelectCommand([])
-    handleError = jest.spyOn(command, 'error')
   })
 
   afterEach(() => {
@@ -103,27 +101,16 @@ describe('console:project:select', () => {
     })
 
     test('should select a project with given projectId and orgId', async () => {
-      try {
-        // Project id
-        command.argv = ['1001', '--orgId', '1']
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      // Project id
+      command.argv = ['1001', '--orgId', '1']
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('project/select.txt')
-      expect(handleError).not.toHaveBeenCalled()
     })
 
     test('should select a project with given projectId', async () => {
-      try {
-        // Project id
-        command.argv = ['1001']
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      command.argv = ['1001']
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('project/select.txt')
-      expect(handleError).not.toHaveBeenCalled()
     })
   })
 
@@ -139,65 +126,15 @@ describe('console:project:select', () => {
 
     test('should throw error if org not set', async () => {
       config.get.mockReturnValue(undefined)
-      try {
-        // Project id
-        command.argv = ['1001']
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      command.argv = ['1001']
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('project/select-error.txt')
     })
 
     test('should throw Error retrieving Project', async () => {
       sdk.init.mockImplementation(() => ({ getProject: getProjectError }))
-      let error
-      try {
-        // Project id
-        command.argv = ['1001']
-        await command.run()
-      } catch (e) {
-        error = e
-        console.log(e)
-      }
-      expect(error.toString()).toEqual('Error: Error retrieving Project')
-    })
-
-    test('should throw Invalid Project ID', async () => {
-      sdk.init.mockImplementation(() => ({
-        getProject: jest.fn(() => ({
-          ok: true
-        }))
-      }))
-
-      let error
-      try {
-        // Project id
-        command.argv = ['1001']
-        await command.run()
-      } catch (e) {
-        error = e
-        console.log(e)
-      }
-      expect(error.toString()).toEqual('Error: Invalid Project ID')
-    })
-
-    test('should throw Failed to select Project', async () => {
-      command.setConfig = jest.fn(() => {
-        throw new Error('Error')
-      })
-
-      let error
-      try {
-        // Project id
-        command.argv = ['1001']
-        await command.run()
-      } catch (e) {
-        error = e
-        console.log(e)
-      }
-      expect(error.toString()).toEqual('Error: Failed to select Project')
-      expect(handleError).toHaveBeenCalled()
+      command.argv = ['1001']
+      await expect(command.run()).rejects.toThrowError(new Error('Error retrieving Project'))
     })
   })
 })

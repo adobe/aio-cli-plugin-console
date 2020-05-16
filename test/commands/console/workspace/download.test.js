@@ -126,7 +126,7 @@ describe('console:workspace:download', () => {
         }
         return null
       })
-      await command.run()
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/download-error3.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
@@ -142,7 +142,7 @@ describe('console:workspace:download', () => {
         }
         return null
       })
-      await command.run()
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/download-error2.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
@@ -152,7 +152,7 @@ describe('console:workspace:download', () => {
       command.getConfig.mockImplementation(key => {
         return null
       })
-      await command.run()
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/download-error1.txt')
       expect(downloadWorkspaceJson).not.toHaveBeenCalled()
       expect(fs.writeFileSync).not.toHaveBeenCalled()
