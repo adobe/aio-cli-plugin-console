@@ -33,7 +33,7 @@ $ npm install -g @adobe/aio-cli-plugin-console
 $ aio COMMAND
 running command...
 $ aio (-v|--version|version)
-@adobe/aio-cli-plugin-console/3.0.0 darwin-x64 node-v10.16.1
+@adobe/aio-cli-plugin-console/3.0.0 darwin-x64 node-v10.18.1
 $ aio --help [COMMAND]
 USAGE
   $ aio COMMAND
@@ -45,7 +45,7 @@ USAGE
 * [`aio console`](#aio-console)
 * [`aio console:org`](#aio-consoleorg)
 * [`aio console:org:list`](#aio-consoleorglist)
-* [`aio console:org:select ORGID`](#aio-consoleorgselect-orgid)
+* [`aio console:org:select ORGCODE`](#aio-consoleorgselect-orgcode)
 * [`aio console:project`](#aio-consoleproject)
 * [`aio console:project:list`](#aio-consoleprojectlist)
 * [`aio console:project:select PROJECTID`](#aio-consoleprojectselect-projectid)
@@ -102,16 +102,16 @@ ALIASES
 
 _See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.0.0/src/commands/console/org/list.js)_
 
-## `aio console:org:select ORGID`
+## `aio console:org:select ORGCODE`
 
 Select an Organization
 
 ```
 USAGE
-  $ aio console:org:select ORGID
+  $ aio console:org:select ORGCODE
 
 ARGUMENTS
-  ORGID  Adobe I/O Org Id
+  ORGCODE  Adobe I/O Org Code
 
 OPTIONS
   --help  Show help

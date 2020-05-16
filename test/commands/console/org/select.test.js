@@ -56,10 +56,10 @@ test('aliases', async () => {
 })
 
 test('args', async () => {
-  const orgId = SelectCommand.args[0]
-  expect(orgId.name).toEqual('orgId')
-  expect(orgId.required).toEqual(true)
-  expect(orgId.description).toBeDefined()
+  const orgCode = SelectCommand.args[0]
+  expect(orgCode.name).toEqual('orgCode')
+  expect(orgCode.required).toEqual(true)
+  expect(orgCode.description).toBeDefined()
 })
 
 test('flags', async () => {
@@ -95,7 +95,7 @@ describe('console:org:select', () => {
 
     test('should select the provided org', async () => {
       try {
-        command.argv = ['1']
+        command.argv = ['CODE01']
         await command.run()
       } catch (e) {
         console.log(e)
@@ -126,7 +126,7 @@ describe('console:org:select', () => {
     })
   })
 
-  describe('invalid org id', () => {
+  describe('invalid org code', () => {
     beforeEach(() => {
       sdk.init.mockImplementation(() => ({
         getOrganizations: jest.fn(() => ({
@@ -140,7 +140,7 @@ describe('console:org:select', () => {
       jest.clearAllMocks()
     })
 
-    test('throw Invalid OrgId', async () => {
+    test('throw Invalid OrgCode', async () => {
       let error
       try {
         command.argv = ['1']
@@ -148,7 +148,7 @@ describe('console:org:select', () => {
       } catch (e) {
         error = e
       }
-      expect(error.toString()).toEqual('Error: Invalid OrgId')
+      expect(error.toString()).toEqual('Error: Invalid OrgCode')
     })
   })
 
@@ -166,10 +166,10 @@ describe('console:org:select', () => {
       jest.clearAllMocks()
     })
 
-    test('throw Invalid OrgId', async () => {
+    test('error during config set/clear', async () => {
       let error
       try {
-        command.argv = ['1']
+        command.argv = ['CODE01']
         await command.run()
       } catch (e) {
         error = e

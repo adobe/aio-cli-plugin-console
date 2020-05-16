@@ -97,10 +97,10 @@ class ConsoleCommand extends Command {
   /**
    * Retrieve Orgs / Org from console
    *
-   * @param {string} [orgId] Org Id
+   * @param {string} [orgCode] the Org Code
    * @returns {Promise<Array<{id, code, name}>>} Array of Orgs
    */
-  async getConsoleOrgs (orgId = null) {
+  async getConsoleOrgs (orgCode = null) {
     const response = await this.consoleClient.getOrganizations()
 
     if (!response.ok) {
@@ -111,7 +111,7 @@ class ConsoleCommand extends Command {
       // Filter enterprise orgs
       .filter(org => org.type === ORG_TYPE_ENTERPRISE)
       // Filter org if orgId is specified
-      .filter(org => orgId ? (org.id === orgId) : true)
+      .filter(org => orgCode ? (org.code === orgCode) : true)
       // Omit props
       .map(({ id, code, name }) => ({ id, code, name }))
 
