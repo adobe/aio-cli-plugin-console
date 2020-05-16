@@ -22,10 +22,10 @@ class SelectCommand extends ConsoleCommand {
 
     aioConsoleLogger.debug('Select Console Orgs')
 
-    cli.action.start(`Retrieving the Organization with id: ${args.orgId}`)
-    const [org] = await this.getConsoleOrgs(args.orgId)
+    cli.action.start(`Retrieving the Organization with code: ${args.orgCode}`)
+    const [org] = await this.getConsoleOrgs(args.orgCode)
     if (!org) {
-      throw new Error('Invalid OrgId')
+      throw new Error('Invalid OrgCode')
     }
     cli.action.stop()
 
@@ -54,9 +54,9 @@ SelectCommand.description = 'Select an Organization'
 
 SelectCommand.args = [
   {
-    name: 'orgId',
+    name: 'orgCode',
     required: true,
-    description: 'Adobe I/O Org Id'
+    description: 'Adobe I/O Org Code'
   }
 ]
 
