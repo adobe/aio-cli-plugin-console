@@ -20,16 +20,17 @@ class SelectCommand extends ConsoleCommand {
 
     await this.initSdk()
 
-    aioConsoleLogger.debug('Select Console Orgs')
-
-    cli.action.start(`Retrieving the Organization with code: ${args.orgCode}`)
-    const [org] = await this.getConsoleOrgs(args.orgCode)
-    if (!org) {
-      throw new Error('Invalid OrgCode')
-    }
-    cli.action.stop()
-
     try {
+      aioConsoleLogger.debug('Select Console Orgs')
+
+      cli.action.start(`Retrieving the Organization with code: ${args.orgCode}`)
+      const [org] = await this.getConsoleOrgs(args.orgCode)
+      if (!org) {
+        throw new Error('Invalid OrgCode')
+      }
+
+      cli.action.stop()
+
       aioConsoleLogger.debug('Setting console Org')
 
       this.setConfig(ConsoleCommand.CONFIG_KEYS.ORG, org)
@@ -39,11 +40,9 @@ class SelectCommand extends ConsoleCommand {
       this.log(`Org selected ${org.name}`)
 
       this.printConsoleConfig()
-
-      return org
     } catch (err) {
-      aioConsoleLogger.error(err)
-      this.error('Failed to select Org')
+      aioConsoleLogger.debug(err)
+      this.error(err.message)
     } finally {
       cli.action.stop()
     }

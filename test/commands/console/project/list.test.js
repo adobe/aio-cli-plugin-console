@@ -77,11 +77,9 @@ test('flags', async () => {
 
 describe('console:project:list', () => {
   let command
-  let handleError
 
   beforeEach(() => {
     command = new ListCommand([])
-    handleError = jest.spyOn(command, 'error')
   })
 
   afterEach(() => {
@@ -102,11 +100,7 @@ describe('console:project:list', () => {
     })
 
     test('should throw error if org not set', async () => {
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('project/list-no-org.txt')
     })
   })
@@ -122,46 +116,26 @@ describe('console:project:list', () => {
 
     test('should return list of projects with selected orgId', async () => {
       command.getConfig = jest.fn(() => '1001')
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('project/list.txt')
-      expect(handleError).not.toHaveBeenCalled()
     })
 
     test('should return list of projects with cli arg', async () => {
       command.argv = ['--orgId', '1001']
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('project/list.txt')
-      expect(handleError).not.toHaveBeenCalled()
     })
 
     test('should return list of projects json', async () => {
       command.argv = ['--orgId', '1001', '--json']
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).resolves.not.toThrowError()
       expect(JSON.parse(stdout.output)).toMatchFixtureJson('project/list.json')
-      expect(handleError).not.toHaveBeenCalled()
     })
 
     test('should return list of projects yaml', async () => {
       command.argv = ['--orgId', '1001', '--yml']
-      try {
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('project/list.yml')
-      expect(handleError).not.toHaveBeenCalled()
     })
   })
 
@@ -176,15 +150,7 @@ describe('console:project:list', () => {
 
     test('should return list of projects', async () => {
       command.argv = ['--orgId', '1001']
-      let error
-      try {
-        await command.run()
-      } catch (e) {
-        error = e
-        console.log(e)
-      }
-      expect(error.toString()).toEqual('Error: failed to list Projects')
-      expect(handleError).toHaveBeenCalled()
+      await expect(command.run()).rejects.toThrowError('Error retrieving Projects')
     })
   })
 })

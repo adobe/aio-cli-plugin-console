@@ -43,11 +43,9 @@ test('args', async () => {
 
 describe('console:workspace:select', () => {
   let command
-  let handleError
 
   beforeEach(() => {
     command = new SelectCommand([])
-    handleError = jest.spyOn(command, 'error')
   })
 
   afterEach(() => {
@@ -69,14 +67,9 @@ describe('console:workspace:select', () => {
     })
 
     test('should select the provided workspace', async () => {
-      try {
-        command.argv = ['111']
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      command.argv = ['111']
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/select.txt')
-      expect(handleError).not.toHaveBeenCalled()
     })
   })
 
@@ -87,7 +80,7 @@ describe('console:workspace:select', () => {
 
     test('should throw error no org selected', async () => {
       command.argv = ['111']
-      await command.run()
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/select-error1.txt')
     })
 
@@ -103,17 +96,20 @@ describe('console:workspace:select', () => {
         }
         return null
       })
-      await command.run()
+      await expect(command.run()).rejects.toThrowError()
       expect(stdout.output).toMatchFixture('workspace/select-error2.txt')
     })
 
     test('should throw Error retrieving Project', async () => {
-      command.argv = ['1']
-      command.getConfig = jest.fn()
-      command.getConfig.mockImplementation(key => {
-        throw new Error('Some Error')
+      const getWs = () => ({
+        ok: false
       })
-      await expect(command.run()).rejects.toThrow('Some Error')
+      command.argv = ['1']
+      command.getConfig = jest.fn(() => {
+        return {}
+      })
+      sdk.init.mockImplementation(() => ({ getWorkspace: getWs }))
+      await expect(command.run()).rejects.toThrowError('Error retrieving Workspace')
     })
   })
 })

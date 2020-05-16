@@ -21,26 +21,21 @@ class SelectCommand extends ConsoleCommand {
 
     const orgId = flags.orgId || this.getConfig(`${ConsoleCommand.CONFIG_KEYS.ORG}.id`)
 
-    await this.initSdk()
-
     if (!orgId) {
       this.log('You have not selected an Organization. Please select first.')
       this.printConsoleConfig()
-      return
+      this.exit(1)
     }
 
-    aioConsoleLogger.debug('Select Console Project')
-
-    cli.action.start(`Retrieving the Project with id: ${args.projectId}`)
-
-    const project = await this.getConsoleOrgProject(orgId, args.projectId)
-
-    if (!project) {
-      throw new Error('Invalid Project ID')
-    }
-    cli.action.stop()
+    await this.initSdk()
 
     try {
+      aioConsoleLogger.debug('Select Console Project')
+
+      cli.action.start(`Retrieving the Project with id: ${args.projectId}`)
+      const project = await this.getConsoleOrgProject(orgId, args.projectId)
+      cli.action.stop()
+
       aioConsoleLogger.debug('Selecting Console Project')
 
       this.setConfig(ConsoleCommand.CONFIG_KEYS.PROJECT, project)
@@ -49,11 +44,9 @@ class SelectCommand extends ConsoleCommand {
       this.log(`Project selected ${project.name}`)
 
       this.printConsoleConfig()
-
-      return project
     } catch (err) {
-      aioConsoleLogger.error(err)
-      this.error('Failed to select Project')
+      aioConsoleLogger.debug(err)
+      this.error(err.message)
     } finally {
       cli.action.stop()
     }

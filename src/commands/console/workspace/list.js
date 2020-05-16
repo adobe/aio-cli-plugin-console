@@ -17,29 +17,30 @@ const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-
 
 class ListCommand extends ConsoleCommand {
   async run () {
+    const { flags } = this.parse(ListCommand)
+
+    const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
+    if (!org) {
+      this.log('You have not selected any Organization and Project. Please select first.')
+      this.printConsoleConfig()
+      this.exit(1)
+    }
+
+    const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
+    if (!project) {
+      this.log('You have not selected a Project. Please select first.')
+      this.printConsoleConfig()
+      this.exit(1)
+    }
+
     await this.initSdk()
+
     try {
       aioConsoleLogger.debug('Listing workspaces')
-      const { flags } = this.parse(ListCommand)
-
-      const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
-      if (!org) {
-        this.log('You have not selected any Organization and Project. Please select first.')
-        this.printConsoleConfig()
-        return
-      }
-
-      const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
-      if (!project) {
-        this.log('You have not selected a Project. Please select first.')
-        this.printConsoleConfig()
-        return
-      }
 
       cli.action.start(`Retrieving Workspaces for Project: ${project.id}`)
-
-      const result = await this.consoleClient.getWorkspacesForProject(org.id, project.id)
-      const workspaces = result.body
+      const workspaces = await this.getConsoleProjectWorkspaces(org.id, project.id)
+      cli.action.stop()
 
       aioConsoleLogger.debug('Listing workspaces: Data received')
 
@@ -61,8 +62,9 @@ class ListCommand extends ConsoleCommand {
           printLine: this.log
         })
       }
-    } catch (e) {
-      this.error(e.message)
+    } catch (err) {
+      aioConsoleLogger.debug(err)
+      this.error(err.message)
     } finally {
       cli.action.stop()
     }

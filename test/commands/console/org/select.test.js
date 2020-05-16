@@ -94,12 +94,8 @@ describe('console:org:select', () => {
     })
 
     test('should select the provided org', async () => {
-      try {
-        command.argv = ['CODE01']
-        await command.run()
-      } catch (e) {
-        console.log(e)
-      }
+      command.argv = ['CODE01']
+      await expect(command.run()).resolves.not.toThrowError()
       expect(stdout.output).toMatchFixture('org/select.txt')
       expect(handleError).not.toHaveBeenCalled()
     })
@@ -115,14 +111,8 @@ describe('console:org:select', () => {
     })
 
     test('throw Error retrieving Orgs', async () => {
-      let error
-      try {
-        command.argv = ['1']
-        await command.run()
-      } catch (e) {
-        error = e
-      }
-      expect(error.toString()).toEqual('Error: Error retrieving Orgs')
+      command.argv = ['1']
+      await expect(command.run()).rejects.toThrowError(new Error('Error retrieving Orgs'))
     })
   })
 
@@ -141,24 +131,19 @@ describe('console:org:select', () => {
     })
 
     test('throw Invalid OrgCode', async () => {
-      let error
-      try {
-        command.argv = ['1']
-        await command.run()
-      } catch (e) {
-        error = e
-      }
-      expect(error.toString()).toEqual('Error: Invalid OrgCode')
+      command.argv = ['1']
+      await expect(command.run()).rejects.toThrowError(new Error('Invalid OrgCode'))
     })
   })
 
   describe('error selecting org', () => {
+    const err = new Error('SetConfig Error')
     beforeEach(() => {
       sdk.init.mockImplementation(() => ({
         getOrganizations
       }))
       command.setConfig = jest.fn(() => {
-        throw new Error('Error')
+        throw err
       })
     })
 
@@ -167,14 +152,8 @@ describe('console:org:select', () => {
     })
 
     test('error during config set/clear', async () => {
-      let error
-      try {
-        command.argv = ['CODE01']
-        await command.run()
-      } catch (e) {
-        error = e
-      }
-      expect(error.toString()).toEqual('Error: Failed to select Org')
+      command.argv = ['CODE01']
+      await expect(command.run()).rejects.toThrowError(err)
     })
   })
 })
