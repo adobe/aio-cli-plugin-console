@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 const { Command } = require('@oclif/command')
 const { stdout } = require('stdout-stderr')
 const sdk = require('@adobe/aio-lib-console')
-const config = require('@adobe/aio-cli-config')
+const config = require('@adobe/aio-lib-core-config')
 const SelectCommand = require('../../../../src/commands/console/project/select')
 
 const getProject = () => ({

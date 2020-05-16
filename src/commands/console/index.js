@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console', { provider: 'debug' })
-const config = require('@adobe/aio-cli-config')
+const config = require('@adobe/aio-lib-core-config')
 const { Command, flags } = require('@oclif/command')
 const { getToken, context } = require('@adobe/aio-lib-ims')
 const sdk = require('@adobe/aio-lib-console')
