@@ -63,7 +63,7 @@
     ],
     "topics": {
       "console": {
-        "description": "Console plugin for the Adobe I/O Console"
+        "description": "Console plugin for the Adobe I/O CLI"
       }
     },
     "repositoryPrefix": "<%- repo %>/blob/<%- version %>/<%- commandPath %>"
