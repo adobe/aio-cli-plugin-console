@@ -223,7 +223,7 @@ ConsoleCommand.CONFIG_KEYS = {
 
 // this is set in package.json, see https://github.com/oclif/oclif/issues/120
 // if not set it will get the first (alphabetical) topic's help description
-ConsoleCommand.description = 'Console plugin for the Adobe I/O Console'
+ConsoleCommand.description = 'Console plugin for the Adobe I/O CLI'
 
 // common flags
 ConsoleCommand.flags = {
