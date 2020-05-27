@@ -60,7 +60,6 @@ SelectCommand.args = [
 ]
 
 SelectCommand.aliases = [
-  'console:org:select',
   'console:org:sel'
 ]
 
