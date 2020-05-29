@@ -84,7 +84,7 @@ ListCommand.flags = {
 }
 
 ListCommand.aliases = [
-  'console:org:list'
+  'console:org:ls'
 ]
 
 module.exports = ListCommand
