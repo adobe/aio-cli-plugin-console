@@ -8,7 +8,7 @@
     "@adobe/aio-lib-console": "^1.1.0",
     "@adobe/aio-lib-core-config": "^1.0.15",
     "@adobe/aio-lib-core-logging": "^1.1.0",
-    "@adobe/aio-lib-ims": "^2.1.2",
+    "@adobe/aio-lib-ims": "^3.0.0",
     "@oclif/command": "^1",
     "@oclif/config": "1.13.3",
     "@oclif/errors": "^1.1.2",
