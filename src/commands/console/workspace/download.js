@@ -14,27 +14,28 @@ const path = require('path')
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:download', { provider: 'debug' })
 const { cli } = require('cli-ux')
+const { CONFIG_KEYS } = require('../../../config')
 
 class DownloadCommand extends ConsoleCommand {
   async run () {
     aioConsoleLogger.debug('Trying to fetch workspace configs')
     const { args } = this.parse(DownloadCommand)
 
-    const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
+    const org = this.getConfig(CONFIG_KEYS.ORG)
     if (!org) {
       this.log('You have not selected any Organization, Project and Workspace. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
     }
 
-    const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
+    const project = this.getConfig(CONFIG_KEYS.PROJECT)
     if (!project) {
       this.log('You have not selected any Project and Workspace. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
     }
 
-    const workspace = this.getConfig(ConsoleCommand.CONFIG_KEYS.WORKSPACE)
+    const workspace = this.getConfig(CONFIG_KEYS.WORKSPACE)
     if (!workspace) {
       this.log('You have not selected a Workspace. Please select first.')
       this.printConsoleConfig()
