@@ -13,6 +13,26 @@ governing permissions and limitations under the License.
 const hook = require('../../src/hooks/upgrade-config-hook')
 // eslint-disable-next-line no-unused-vars
 const config = require('@adobe/aio-lib-core-config')
+const { CONFIG_KEYS } = require('../../src/config')
+const OLD_CONSOLE_CONFIG_KEY = '$console'
+
+const mockConfig = ({ oldConfig, newConfig } = {}) => {
+  const mockStore = {}
+  mockStore[OLD_CONSOLE_CONFIG_KEY] = oldConfig
+  mockStore[CONFIG_KEYS.CONSOLE] = newConfig
+
+  config.get.mockImplementation(key => {
+    return mockStore[key]
+  })
+
+  config.delete.mockImplementation(key => {
+    delete mockStore[key]
+  })
+
+  config.set.mockImplementation((key, value) => {
+    mockStore[key] = value
+  })
+}
 
 afterEach(() => {
   jest.clearAllMocks()
@@ -23,8 +43,41 @@ test('should export a function', () => {
 })
 
 // eslint-disable-next-line jest/expect-expect
-test('should something', () => {
+test('oldConfig: does not exist, newConfig: does not exist. (do nothing)', () => {
+  mockConfig()
   return hook().then(() => {
-    // assert here
+    expect(config.get(OLD_CONSOLE_CONFIG_KEY)).toBeUndefined()
+    expect(config.get(CONFIG_KEYS.CONSOLE)).toBeUndefined()
+  })
+})
+
+// eslint-disable-next-line jest/expect-expect
+test('oldConfig: does not exist, newConfig: exists. (do nothing)', () => {
+  const newConfig = { foo: 'bar' }
+  mockConfig({ newConfig })
+  return hook().then(() => {
+    expect(config.get(OLD_CONSOLE_CONFIG_KEY)).toBeUndefined()
+    expect(config.get(CONFIG_KEYS.CONSOLE)).toEqual(newConfig)
+  })
+})
+
+// eslint-disable-next-line jest/expect-expect
+test('oldConfig: exists, newConfig: does not exist. (migrate to new, delete old)', () => {
+  const oldConfig = { foo: 'bar' }
+  mockConfig({ oldConfig })
+  return hook().then(() => {
+    expect(config.get(OLD_CONSOLE_CONFIG_KEY)).toBeUndefined()
+    expect(config.get(CONFIG_KEYS.CONSOLE)).toEqual(oldConfig)
+  })
+})
+
+// eslint-disable-next-line jest/expect-expect
+test('oldConfig: exists, newConfig: exists (do nothing)', () => {
+  const oldConfig = { foo: 'bar' }
+  const newConfig = { baz: 'faz' }
+  mockConfig({ oldConfig, newConfig })
+  return hook().then(() => {
+    expect(config.get(OLD_CONSOLE_CONFIG_KEY)).toEqual(oldConfig)
+    expect(config.get(CONFIG_KEYS.CONSOLE)).toEqual(newConfig)
   })
 })
