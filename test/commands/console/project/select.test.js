@@ -14,6 +14,7 @@ const { stdout } = require('stdout-stderr')
 const sdk = require('@adobe/aio-lib-console')
 const config = require('@adobe/aio-lib-core-config')
 const SelectCommand = require('../../../../src/commands/console/project/select')
+const { CONFIG_KEYS } = require('../../../../src/config')
 
 const getProject = () => ({
   ok: true,
@@ -44,7 +45,7 @@ const mockConfigGet = (key) => {
     'project.id': '1000000001',
     'project.name': 'name1'
   }
-  const orgKey = key.replace('$console.', '')
+  const orgKey = key.replace(`${CONFIG_KEYS.CONSOLE}.`, '')
   return consoleConfig[orgKey]
 }
 

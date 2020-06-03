@@ -10,6 +10,7 @@ governing permissions and limitations under the License.
 */
 
 const DEFAULT_ENV = 'prod'
+const ORG_TYPE_ENTERPRISE = 'entp'
 
 const API_KEYS = {
   prod: 'aio-cli-console-auth',
@@ -17,14 +18,14 @@ const API_KEYS = {
 }
 
 const CONFIG_KEYS = {
-  CONSOLE: '$console',
+  CONSOLE: 'console',
   ORG: 'org',
   PROJECT: 'project',
   WORKSPACE: 'workspace'
 }
 
 module.exports = {
-  ORG_TYPE_ENTERPRISE: 'entp',
+  ORG_TYPE_ENTERPRISE,
   CONFIG_KEYS,
   API_KEYS,
   DEFAULT_ENV

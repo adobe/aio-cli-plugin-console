@@ -171,7 +171,7 @@ class ConsoleCommand extends Command {
   }
 
   /**
-   * Set $console config
+   * Set console config
    *
    * @param {string} key key to store value
    * @param {string|object} value value to store
@@ -181,7 +181,7 @@ class ConsoleCommand extends Command {
   }
 
   /**
-   * Get $console config
+   * Get console config
    *
    * @param {string} key key to retrieve value
    * @returns {*} config data
@@ -191,7 +191,7 @@ class ConsoleCommand extends Command {
   }
 
   /**
-   * Clear $console config
+   * Clear console config
    *
    * @param {string} key key to clear
    */
@@ -200,7 +200,7 @@ class ConsoleCommand extends Command {
   }
 
   /**
-   * Clear $console config
+   * Clear console config
    */
   clearConfig () {
     config.delete(CONFIG_KEYS.CONSOLE)

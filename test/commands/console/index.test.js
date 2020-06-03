@@ -14,8 +14,7 @@ const mockLogger = require('@adobe/aio-lib-core-logging')
 const config = require('@adobe/aio-lib-core-config')
 const Help = require('@oclif/plugin-help').default
 const yaml = require('js-yaml')
-
-const CONSOLE_CONFIG_KEY = '$console'
+const { CONFIG_KEYS } = require('../../../src/config')
 
 describe('ConsoleCommand', () => {
   beforeEach(() => {
@@ -67,10 +66,10 @@ describe('ConsoleCommand', () => {
       })
       test('only selected org and project', () => {
         config.get.mockImplementation(key => {
-          if (key === `${CONSOLE_CONFIG_KEY}.org.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.org.name`) {
             return 'THE_ORG'
           }
-          if (key === `${CONSOLE_CONFIG_KEY}.project.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.project.name`) {
             return 'THE_PROJECT'
           }
           return null
@@ -84,13 +83,13 @@ describe('ConsoleCommand', () => {
       })
       test('selected org, project and workspace', () => {
         config.get.mockImplementation(key => {
-          if (key === `${CONSOLE_CONFIG_KEY}.org.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.org.name`) {
             return 'THE_ORG'
           }
-          if (key === `${CONSOLE_CONFIG_KEY}.project.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.project.name`) {
             return 'THE_PROJECT'
           }
-          if (key === `${CONSOLE_CONFIG_KEY}.workspace.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.workspace.name`) {
             return 'THE_WORKSPACE'
           }
           return null
@@ -104,13 +103,13 @@ describe('ConsoleCommand', () => {
       })
       test('selected org, project and workspace in json format', () => {
         config.get.mockImplementation(key => {
-          if (key === `${CONSOLE_CONFIG_KEY}.org.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.org.name`) {
             return 'THE_ORG'
           }
-          if (key === `${CONSOLE_CONFIG_KEY}.project.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.project.name`) {
             return 'THE_PROJECT'
           }
-          if (key === `${CONSOLE_CONFIG_KEY}.workspace.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.workspace.name`) {
             return 'THE_WORKSPACE'
           }
           return null
@@ -129,13 +128,13 @@ describe('ConsoleCommand', () => {
       })
       test('selected org, project and workspace in yml format', () => {
         config.get.mockImplementation(key => {
-          if (key === `${CONSOLE_CONFIG_KEY}.org.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.org.name`) {
             return 'THE_ORG'
           }
-          if (key === `${CONSOLE_CONFIG_KEY}.project.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.project.name`) {
             return 'THE_PROJECT'
           }
-          if (key === `${CONSOLE_CONFIG_KEY}.workspace.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.workspace.name`) {
             return 'THE_WORKSPACE'
           }
           return null
@@ -157,19 +156,19 @@ describe('ConsoleCommand', () => {
     test('setConfig', () => {
       const command = new ConsoleCommand([])
       command.setConfig('test', 'value')
-      expect(config.set).toBeCalledWith(`${CONSOLE_CONFIG_KEY}.test`, 'value')
+      expect(config.set).toBeCalledWith(`${CONFIG_KEYS.CONSOLE}.test`, 'value')
     })
 
     test('getConfig', () => {
       const command = new ConsoleCommand([])
       command.getConfig('test')
-      expect(config.get).toBeCalledWith(`${CONSOLE_CONFIG_KEY}.test`)
+      expect(config.get).toBeCalledWith(`${CONFIG_KEYS.CONSOLE}.test`)
     })
 
     test('clearConfig', () => {
       const command = new ConsoleCommand([])
       command.clearConfig()
-      expect(config.delete).toBeCalledWith(CONSOLE_CONFIG_KEY)
+      expect(config.delete).toBeCalledWith(CONFIG_KEYS.CONSOLE)
     })
   })
 })
