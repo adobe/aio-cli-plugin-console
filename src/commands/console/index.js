@@ -18,15 +18,7 @@ const sdk = require('@adobe/aio-lib-console')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const Help = require('@oclif/plugin-help').default
 const yaml = require('js-yaml')
-
-const DEFAULT_ENV = 'prod'
-const API_KEYS = {
-  prod: 'aio-cli-console-auth',
-  stage: 'aio-cli-console-auth-stage'
-}
-
-const ORG_TYPE_ENTERPRISE = 'entp'
-const CONSOLE_CONFIG_KEY = '$console'
+const { CONFIG_KEYS, DEFAULT_ENV, API_KEYS, ORG_TYPE_ENTERPRISE } = require('../../config')
 
 class ConsoleCommand extends Command {
   async run () {
@@ -179,46 +171,40 @@ class ConsoleCommand extends Command {
   }
 
   /**
-   * Set $console config
+   * Set console config
    *
    * @param {string} key key to store value
    * @param {string|object} value value to store
    */
   setConfig (key, value) {
-    config.set(`${CONSOLE_CONFIG_KEY}.${key}`, value)
+    config.set(`${CONFIG_KEYS.CONSOLE}.${key}`, value)
   }
 
   /**
-   * Get $console config
+   * Get console config
    *
    * @param {string} key key to retrieve value
    * @returns {*} config data
    */
   getConfig (key) {
-    return config.get(`${CONSOLE_CONFIG_KEY}.${key}`)
+    return config.get(`${CONFIG_KEYS.CONSOLE}.${key}`)
   }
 
   /**
-   * Clear $console config
+   * Clear console config
    *
    * @param {string} key key to clear
    */
   clearConfigKey (key) {
-    config.delete(`${CONSOLE_CONFIG_KEY}.${key}`)
+    config.delete(`${CONFIG_KEYS.CONSOLE}.${key}`)
   }
 
   /**
-   * Clear $console config
+   * Clear console config
    */
   clearConfig () {
-    config.delete(CONSOLE_CONFIG_KEY)
+    config.delete(CONFIG_KEYS.CONSOLE)
   }
-}
-
-ConsoleCommand.CONFIG_KEYS = {
-  ORG: 'org',
-  PROJECT: 'project',
-  WORKSPACE: 'workspace'
 }
 
 // this is set in package.json, see https://github.com/oclif/oclif/issues/120

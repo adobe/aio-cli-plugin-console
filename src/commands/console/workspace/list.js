@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 const { flags } = require('@oclif/command')
 const { cli } = require('cli-ux')
+const { CONFIG_KEYS } = require('../../../config')
 
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:list', { provider: 'debug' })
@@ -19,14 +20,14 @@ class ListCommand extends ConsoleCommand {
   async run () {
     const { flags } = this.parse(ListCommand)
 
-    const org = this.getConfig(ConsoleCommand.CONFIG_KEYS.ORG)
+    const org = this.getConfig(CONFIG_KEYS.ORG)
     if (!org) {
       this.log('You have not selected any Organization and Project. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
     }
 
-    const project = this.getConfig(ConsoleCommand.CONFIG_KEYS.PROJECT)
+    const project = this.getConfig(CONFIG_KEYS.PROJECT)
     if (!project) {
       this.log('You have not selected a Project. Please select first.')
       this.printConsoleConfig()

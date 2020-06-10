@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:select', { provider: 'debug' })
 const { cli } = require('cli-ux')
 const { flags } = require('@oclif/command')
+const { CONFIG_KEYS } = require('../../../config')
 
 const ConsoleCommand = require('../index')
 
@@ -19,7 +20,7 @@ class SelectCommand extends ConsoleCommand {
   async run () {
     const { args, flags } = this.parse(SelectCommand)
 
-    const orgId = flags.orgId || this.getConfig(`${ConsoleCommand.CONFIG_KEYS.ORG}.id`)
+    const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
 
     if (!orgId) {
       this.log('You have not selected an Organization. Please select first.')
@@ -38,8 +39,8 @@ class SelectCommand extends ConsoleCommand {
 
       aioConsoleLogger.debug('Selecting Console Project')
 
-      this.setConfig(ConsoleCommand.CONFIG_KEYS.PROJECT, project)
-      this.clearConfigKey(ConsoleCommand.CONFIG_KEYS.WORKSPACE)
+      this.setConfig(CONFIG_KEYS.PROJECT, project)
+      this.clearConfigKey(CONFIG_KEYS.WORKSPACE)
 
       this.log(`Project selected ${project.name}`)
 

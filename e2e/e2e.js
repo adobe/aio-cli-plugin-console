@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 
 const execa = require('execa')
-
+const { CONFIG_KEYS } = require('../src/config')
 const fs = require('fs')
 process.env.DEBUG = 'aio-cli-config*'
 // set global config file
@@ -30,7 +30,7 @@ describe('aio:where tests', () => {
   })
 
   test('an org is selected', async () => {
-    fs.writeFileSync('.e2e-aio-config', JSON.stringify({ $console: { org: { name: 'E2e Test Org' } } }))
+    fs.writeFileSync('.e2e-aio-config', JSON.stringify({ [CONFIG_KEYS.CONSOLE]: { org: { name: 'E2e Test Org' } } }))
     await expect(execa('./bin/run', ['where'], { stderr: 'inherit' }))
       .resolves.toEqual(expect.objectContaining({
         exitCode: 0,

@@ -13,7 +13,7 @@ const { Command } = require('@oclif/command')
 const { stdout } = require('stdout-stderr')
 const sdk = require('@adobe/aio-lib-console')
 const ListCommand = require('../../../../src/commands/console/workspace/list')
-const ConsoleCommand = require('../../../../src/commands/console')
+const { CONFIG_KEYS } = require('../../../../src/config')
 
 const getWorkspacesForProject = () => ({
   ok: true,
@@ -109,10 +109,10 @@ describe('console:workspace:list', () => {
   test('should throw error no project selected', async () => {
     command.getConfig = jest.fn()
     command.getConfig.mockImplementation(key => {
-      if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
+      if (key === CONFIG_KEYS.ORG) {
         return { name: 'THE_ORG', id: 123 }
       }
-      if (key === `${ConsoleCommand.CONFIG_KEYS.ORG}.name`) {
+      if (key === `${CONFIG_KEYS.ORG}.name`) {
         return 'THE_ORG'
       }
       return null

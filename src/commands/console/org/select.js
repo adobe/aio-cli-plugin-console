@@ -11,6 +11,7 @@ governing permissions and limitations under the License.
 */
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:org:select', { provider: 'debug' })
 const { cli } = require('cli-ux')
+const { CONFIG_KEYS } = require('../../../config')
 
 const ConsoleCommand = require('../index')
 
@@ -33,9 +34,9 @@ class SelectCommand extends ConsoleCommand {
 
       aioConsoleLogger.debug('Setting console Org')
 
-      this.setConfig(ConsoleCommand.CONFIG_KEYS.ORG, org)
-      this.clearConfigKey(ConsoleCommand.CONFIG_KEYS.PROJECT)
-      this.clearConfigKey(ConsoleCommand.CONFIG_KEYS.WORKSPACE)
+      this.setConfig(CONFIG_KEYS.ORG, org)
+      this.clearConfigKey(CONFIG_KEYS.PROJECT)
+      this.clearConfigKey(CONFIG_KEYS.WORKSPACE)
 
       this.log(`Org selected ${org.name}`)
 

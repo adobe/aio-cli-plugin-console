@@ -14,9 +14,9 @@ const sdk = require('@adobe/aio-lib-console')
 const path = require('path')
 const fs = require('fs')
 const { stdout } = require('stdout-stderr')
+const { CONFIG_KEYS } = require('../../../../src/config')
 jest.mock('fs')
 const DownloadCommand = require('../../../../src/commands/console/workspace/download')
-const ConsoleCommand = require('../../../../src/commands/console')
 
 test('exports', async () => {
   expect(typeof DownloadCommand).toEqual('function')
@@ -73,13 +73,13 @@ describe('console:workspace:download', () => {
 
     test('should download the config for the selected workspace', async () => {
       command.getConfig.mockImplementation(key => {
-        if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
+        if (key === CONFIG_KEYS.ORG) {
           return { name: 'THE_ORG', id: 123 }
         }
-        if (key === ConsoleCommand.CONFIG_KEYS.PROJECT) {
+        if (key === CONFIG_KEYS.PROJECT) {
           return { name: 'THE_PROJECT', id: 456 }
         }
-        if (key === ConsoleCommand.CONFIG_KEYS.WORKSPACE) {
+        if (key === CONFIG_KEYS.WORKSPACE) {
           return { name: 'THE_WORKSPACE', id: 789 }
         }
         return null
@@ -112,16 +112,16 @@ describe('console:workspace:download', () => {
 
     test('should fail if the workspace is missing', async () => {
       command.getConfig.mockImplementation(key => {
-        if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
+        if (key === CONFIG_KEYS.ORG) {
           return { name: 'THE_ORG', id: 123 }
         }
-        if (key === `${ConsoleCommand.CONFIG_KEYS.ORG}.name`) {
+        if (key === `${CONFIG_KEYS.ORG}.name`) {
           return 'THE_ORG'
         }
-        if (key === ConsoleCommand.CONFIG_KEYS.PROJECT) {
+        if (key === CONFIG_KEYS.PROJECT) {
           return { name: 'THE_PROJECT', id: 456 }
         }
-        if (key === `${ConsoleCommand.CONFIG_KEYS.PROJECT}.name`) {
+        if (key === `${CONFIG_KEYS.PROJECT}.name`) {
           return 'THE_PROJECT'
         }
         return null
@@ -134,10 +134,10 @@ describe('console:workspace:download', () => {
 
     test('should fail if the project is missing', async () => {
       command.getConfig.mockImplementation(key => {
-        if (key === ConsoleCommand.CONFIG_KEYS.ORG) {
+        if (key === CONFIG_KEYS.ORG) {
           return { name: 'THE_ORG', id: 123 }
         }
-        if (key === `${ConsoleCommand.CONFIG_KEYS.ORG}.name`) {
+        if (key === `${CONFIG_KEYS.ORG}.name`) {
           return 'THE_ORG'
         }
         return null
