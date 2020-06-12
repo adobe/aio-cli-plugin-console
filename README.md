@@ -26,20 +26,15 @@ Console Integration Plugin for the Adobe I/O CLI
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
-<!-- usage -->
 ```sh-session
-$ npm install -g @adobe/aio-cli-plugin-console
-$ aio COMMAND
-running command...
-$ aio (-v|--version|version)
-@adobe/aio-cli-plugin-console/3.0.2 darwin-x64 node-v10.18.1
-$ aio --help [COMMAND]
-USAGE
-  $ aio COMMAND
-...
+$ aio plugins:install -g @adobe/aio-cli-plugin-console
+$ # OR
+$ aio discover -i
+$ aio console --help
 ```
-<!-- usagestop -->
+
 # Commands
 <!-- commands -->
 * [`aio console`](#aio-console)
