@@ -62,7 +62,7 @@
     ],
     "hooks": {
       "init": "./src/hooks/upgrade-config-hook.js"
-    },    
+    },
     "topics": {
       "console": {
         "description": "Console plugin for the Adobe I/O CLI"
