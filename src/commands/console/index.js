@@ -31,7 +31,7 @@ class ConsoleCommand extends Command {
     this.imsEnv = (currConfig && currConfig.env) || DEFAULT_ENV
     this.apiKey = API_KEYS[this.imsEnv]
 
-    await context.setCli({ '$cli.bare-output': true }, false) // set this globally
+    await context.setCli({ 'cli.bare-output': true }, false) // set this globally
     aioConsoleLogger.debug('Retrieving Auth Token')
     this.accessToken = await getToken(CLI)
     this.consoleClient = await sdk.init(this.accessToken, this.apiKey, this.imsEnv)
