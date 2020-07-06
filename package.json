@@ -6,9 +6,9 @@
   "bugs": "https://github.com/adobe/aio-cli-plugin-console/issues",
   "dependencies": {
     "@adobe/aio-lib-console": "^1.1.0",
-    "@adobe/aio-lib-core-config": "^1.0.15",
+    "@adobe/aio-lib-core-config": "^2.0.0",
     "@adobe/aio-lib-core-logging": "^1.1.0",
-    "@adobe/aio-lib-ims": "^3.0.0",
+    "@adobe/aio-lib-ims": "^4.0.0",
     "@oclif/command": "^1",
     "@oclif/config": "1.15.1",
     "@oclif/errors": "^1.1.2",
