@@ -36,9 +36,10 @@ class SelectCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      cli.action.start(`Retrieving the Workspace with id: ${args.workspaceId}`)
-      const workspace = await this.getConsoleProjectWorkspace(org.id, project.id, args.workspaceId)
-      cli.action.stop()
+      // todo support also workspace name
+      const workspace = await this.selectWorkspaceInteractive(org.id, project.id, args.workspaceId)
+      // cli.action.start(`Retrieving the Workspace with id: ${args.workspaceId}`)
+      // cli.action.stop()
 
       aioConsoleLogger.debug('Found selected workspace')
       const obj = {
@@ -69,7 +70,7 @@ SelectCommand.aliases = [
 ]
 
 SelectCommand.args = [
-  { name: 'workspaceId', required: true }
+  { name: 'workspaceId', required: false }
 ]
 
 module.exports = SelectCommand

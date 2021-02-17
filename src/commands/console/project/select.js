@@ -33,9 +33,10 @@ class SelectCommand extends ConsoleCommand {
     try {
       aioConsoleLogger.debug('Select Console Project')
 
-      cli.action.start(`Retrieving the Project with id: ${args.projectId}`)
-      const project = await this.getConsoleOrgProject(orgId, args.projectId)
-      cli.action.stop()
+      // todo support project name (unique) on top of projectId
+      const project = await this.selectProjectInteractive(orgId, args.projectId)
+      // cli.action.start(`Retrieving the Project with id: ${project.id}`)
+      // cli.action.stop()
 
       aioConsoleLogger.debug('Selecting Console Project')
 
@@ -59,7 +60,7 @@ SelectCommand.description = 'Select a Project for the selected Organization'
 SelectCommand.args = [
   {
     name: 'projectId',
-    required: true,
+    required: false,
     description: 'Adobe I/O Project Id'
   }
 ]

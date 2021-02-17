@@ -14,7 +14,7 @@ const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-
 const config = require('@adobe/aio-lib-core-config')
 const { Command, flags } = require('@oclif/command')
 const { getToken, context } = require('@adobe/aio-lib-ims')
-const sdk = require('@adobe/aio-lib-console')
+const LibConsoleCLI = require('@adobe/generator-aio-console/lib/console-cli')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const Help = require('@oclif/plugin-help').default
 const yaml = require('js-yaml')
@@ -34,7 +34,7 @@ class ConsoleCommand extends Command {
     await context.setCli({ 'cli.bare-output': true }, false) // set this globally
     aioConsoleLogger.debug('Retrieving Auth Token')
     this.accessToken = await getToken(CLI)
-    this.consoleClient = await sdk.init(this.accessToken, this.apiKey, this.imsEnv)
+    this.consoleCLI = await LibConsoleCLI.init({ accessToken: this.accessToken, apiKey: this.apiKey, env: this.imsEnv })
   }
 
   /**
@@ -93,13 +93,8 @@ class ConsoleCommand extends Command {
    * @returns {Promise<Array<{id, code, name}>>} Array of Orgs
    */
   async getConsoleOrgs (orgCode = null) {
-    const response = await this.consoleClient.getOrganizations()
-
-    if (!response.ok) {
-      throw new Error('Error retrieving Orgs')
-    }
-
-    const orgs = response.body
+    const response = await this.consoleCLI.getOrganizations()
+    const orgs = response
       // Filter enterprise orgs
       .filter(org => org.type === ORG_TYPE_ENTERPRISE)
       // Filter org if orgId is specified
@@ -117,11 +112,8 @@ class ConsoleCommand extends Command {
    * @returns {Array} Projects
    */
   async getConsoleOrgProjects (orgId) {
-    const response = await this.consoleClient.getProjectsForOrg(orgId)
-    if (!response.ok) {
-      throw new Error('Error retrieving Projects')
-    }
-    return response.body
+    const response = await this.consoleCLI.getProjects(orgId)
+    return response
   }
 
   /**
@@ -132,7 +124,7 @@ class ConsoleCommand extends Command {
    * @returns {object} Project
    */
   async getConsoleOrgProject (orgId, projectId) {
-    const response = await this.consoleClient.getProject(orgId, projectId)
+    const response = await this.consoleCLI.sdkClient.getProject(orgId, projectId)
     if (!response.ok) {
       throw new Error('Error retrieving Project')
     }
@@ -147,11 +139,8 @@ class ConsoleCommand extends Command {
    * @returns {Array} Workspaces
    */
   async getConsoleProjectWorkspaces (orgId, projectId) {
-    const response = await this.consoleClient.getWorkspacesForProject(orgId, projectId)
-    if (!response.ok) {
-      throw new Error('Error retrieving Workspaces')
-    }
-    return response.body
+    const response = await this.consoleCLI.getWorkspaces(orgId, projectId)
+    return response
   }
 
   /**
@@ -163,11 +152,53 @@ class ConsoleCommand extends Command {
    * @returns {object} Workspace
    */
   async getConsoleProjectWorkspace (orgId, projectId, workspaceId) {
-    const response = await this.consoleClient.getWorkspace(orgId, projectId, workspaceId)
+    const response = await this.consoleCLI.sdkClient.getWorkspace(orgId, projectId, workspaceId)
     if (!response.ok) {
       throw new Error('Error retrieving Workspace')
     }
     return response.body
+  }
+
+  // todo that should be part of console-cli `selectProjectInteractive({ preSelected, allowCreate })`, return project.isNew ?
+  // what about returning projects ?
+  // todo note here we want to support preSelectedProjectIdOrName
+  async selectProjectInteractive (orgId, preSelectedProjectId) {
+    const projects = await this.consoleCLI.getProjects(orgId)
+    let project = await this.consoleCLI.promptForSelectProject(
+      projects,
+      { projectId: preSelectedProjectId },
+      { allowCreate: false }
+    )
+    if (!project) {
+      // user has escaped project selection prompt, let's create a new one
+      const projectDetails = await this.consoleCLI.promptForCreateProjectDetails()
+      project = await this.consoleCLI.createProject(orgId, projectDetails)
+    }
+    return project
+  }
+
+  // todo should also be part of lib
+  async selectWorkspaceInteractive (orgId, projectId, preSelectedWorkspaceId) {
+    const workspaces = await this.consoleCLI.getWorkspaces(orgId, projectId)
+    let workspace = await this.consoleCLI.promptForSelectWorkspace(
+      workspaces,
+      { workspaceId: preSelectedWorkspaceId },
+      { allowCreate: false }
+    )
+    return workspace
+  }
+
+  // todo should also be part of lib
+  // todo support orgid or orgCode
+  async selectOrgInteractive (preSelectedOrgId) {
+    const orgs = await  this.consoleCLI.getOrganizations()
+
+    const org = await this.consoleCLI.promptForSelectOrganization(
+      orgs,
+      { orgId: preSelectedOrgId }
+    )
+    // Omit props
+    return { id: org.id, code: org.code, name: org.name }
   }
 
   /**
