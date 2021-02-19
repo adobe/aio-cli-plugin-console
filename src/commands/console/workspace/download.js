@@ -15,6 +15,7 @@ const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:download', { provider: 'debug' })
 const { cli } = require('cli-ux')
 const { CONFIG_KEYS } = require('../../../config')
+const LibConsoleCLI = require('@adobe/generator-aio-console/lib/console-cli')
 
 class DownloadCommand extends ConsoleCommand {
   async run () {
@@ -44,22 +45,20 @@ class DownloadCommand extends ConsoleCommand {
 
     await this.initSdk()
     try {
-      cli.action.start(`Downloading configuration for Workspace ${workspace.name}`)
-      const consoleConfig = await this.consoleClient.downloadWorkspaceJson(org.id, project.id, workspace.id)
-      cli.action.stop()
+      const consoleConfig = await this.consoleCLI.getWorkspaceConfig(org.id, project.id, workspace.id)
 
       let fileName = `${org.id}-${project.name}-${workspace.name}.json`
       if (args.destination) {
         fileName = path.join(args.destination, fileName)
       }
-      fs.writeFileSync(fileName, JSON.stringify(consoleConfig.body, null, 2))
+      fs.writeFileSync(fileName, JSON.stringify(consoleConfig, null, 2))
 
       this.log(`Downloaded Workspace configuration to ${fileName}`)
     } catch (err) {
       aioConsoleLogger.debug(err)
       this.error(err.message)
     } finally {
-      cli.action.stop()
+      LibConsoleCLI.cleanStdOut()
     }
   }
 }
@@ -73,7 +72,7 @@ DownloadCommand.aliases = [
 ]
 
 DownloadCommand.args = [
-  { name: 'destination', required: false, description: 'path where workspace configuration file will be saved' }
+  { name: 'destination', required: false, description: 'path to the folder where workspace configuration file will be saved' }
 ]
 
 module.exports = DownloadCommand

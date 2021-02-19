@@ -18,7 +18,7 @@ const LibConsoleCLI = require('@adobe/generator-aio-console/lib/console-cli')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const Help = require('@oclif/plugin-help').default
 const yaml = require('js-yaml')
-const { CONFIG_KEYS, DEFAULT_ENV, API_KEYS, ORG_TYPE_ENTERPRISE } = require('../../config')
+const { CONFIG_KEYS, DEFAULT_ENV, API_KEYS } = require('../../config')
 
 class ConsoleCommand extends Command {
   async run () {
@@ -86,119 +86,8 @@ class ConsoleCommand extends Command {
     this.log(`3. Workspace: ${config.workspace || '<no workspace selected>'}`)
   }
 
-  /**
-   * Retrieve Orgs / Org from console
-   *
-   * @param {string} [orgCode] the Org Code
-   * @returns {Promise<Array<{id, code, name}>>} Array of Orgs
-   */
-  async getConsoleOrgs (orgCode = null) {
-    const response = await this.consoleCLI.getOrganizations()
-    const orgs = response
-      // Filter enterprise orgs
-      .filter(org => org.type === ORG_TYPE_ENTERPRISE)
-      // Filter org if orgId is specified
-      .filter(org => orgCode ? (org.code === orgCode) : true)
-      // Omit props
-      .map(({ id, code, name }) => ({ id, code, name }))
-
-    return orgs
-  }
-
-  /**
-   * Retrieve projects from an Org
-   *
-   * @param {string} orgId organization id
-   * @returns {Array} Projects
-   */
-  async getConsoleOrgProjects (orgId) {
-    const response = await this.consoleCLI.getProjects(orgId)
-    return response
-  }
-
-  /**
-   * Retrieve project
-   *
-   * @param {string} orgId Ims Org ID
-   * @param {string} projectId Project Id to select project
-   * @returns {object} Project
-   */
-  async getConsoleOrgProject (orgId, projectId) {
-    const response = await this.consoleCLI.sdkClient.getProject(orgId, projectId)
-    if (!response.ok) {
-      throw new Error('Error retrieving Project')
-    }
-    return response.body
-  }
-
-  /**
-   * Retrieve Workspace from a Project
-   *
-   * @param {string} orgId organization id
-   * @param {string} projectId project id
-   * @returns {Array} Workspaces
-   */
-  async getConsoleProjectWorkspaces (orgId, projectId) {
-    const response = await this.consoleCLI.getWorkspaces(orgId, projectId)
-    return response
-  }
-
-  /**
-   * Retrieve Workspace
-   *
-   * @param {string} orgId Ims Org ID
-   * @param {string} projectId Project Id
-   * @param {string} workspaceId Workspace Id to select workspace
-   * @returns {object} Workspace
-   */
-  async getConsoleProjectWorkspace (orgId, projectId, workspaceId) {
-    const response = await this.consoleCLI.sdkClient.getWorkspace(orgId, projectId, workspaceId)
-    if (!response.ok) {
-      throw new Error('Error retrieving Workspace')
-    }
-    return response.body
-  }
-
-  // todo that should be part of console-cli `selectProjectInteractive({ preSelected, allowCreate })`, return project.isNew ?
-  // what about returning projects ?
-  // todo note here we want to support preSelectedProjectIdOrName
-  async selectProjectInteractive (orgId, preSelectedProjectId) {
-    const projects = await this.consoleCLI.getProjects(orgId)
-    let project = await this.consoleCLI.promptForSelectProject(
-      projects,
-      { projectId: preSelectedProjectId },
-      { allowCreate: false }
-    )
-    if (!project) {
-      // user has escaped project selection prompt, let's create a new one
-      const projectDetails = await this.consoleCLI.promptForCreateProjectDetails()
-      project = await this.consoleCLI.createProject(orgId, projectDetails)
-    }
-    return project
-  }
-
-  // todo should also be part of lib
-  async selectWorkspaceInteractive (orgId, projectId, preSelectedWorkspaceId) {
-    const workspaces = await this.consoleCLI.getWorkspaces(orgId, projectId)
-    let workspace = await this.consoleCLI.promptForSelectWorkspace(
-      workspaces,
-      { workspaceId: preSelectedWorkspaceId },
-      { allowCreate: false }
-    )
-    return workspace
-  }
-
-  // todo should also be part of lib
-  // todo support orgid or orgCode
-  async selectOrgInteractive (preSelectedOrgId) {
-    const orgs = await  this.consoleCLI.getOrganizations()
-
-    const org = await this.consoleCLI.promptForSelectOrganization(
-      orgs,
-      { orgId: preSelectedOrgId }
-    )
-    // Omit props
-    return { id: org.id, code: org.code, name: org.name }
+  cleanOutput () {
+    LibConsoleCLI.cleanStdOut()
   }
 
   /**

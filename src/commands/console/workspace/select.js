@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:select', { provider: 'debug' })
-const { cli } = require('cli-ux')
 const { CONFIG_KEYS } = require('../../../config')
 
 class SelectCommand extends ConsoleCommand {
@@ -36,19 +35,14 @@ class SelectCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      // todo support also workspace name
-      const workspace = await this.selectWorkspaceInteractive(org.id, project.id, args.workspaceId)
-      // cli.action.start(`Retrieving the Workspace with id: ${args.workspaceId}`)
-      // cli.action.stop()
+      const workspace = await this.selectWorkspaceInteractive(org.id, project.id, args.workspaceIdOrName)
 
-      aioConsoleLogger.debug('Found selected workspace')
       const obj = {
         id: workspace.id,
         name: workspace.name
       }
 
       this.setConfig(CONFIG_KEYS.WORKSPACE, obj)
-      aioConsoleLogger.debug('Selected workspace')
       this.log(`Workspace selected ${workspace.name}`)
 
       this.printConsoleConfig()
@@ -56,8 +50,18 @@ class SelectCommand extends ConsoleCommand {
       aioConsoleLogger.debug(err)
       this.error(err.message)
     } finally {
-      cli.action.stop()
+      this.cleanOutput()
     }
+  }
+
+  async selectWorkspaceInteractive (orgId, projectId, preSelectedWorkspaceIdOrName = null) {
+    const workspaces = await this.consoleCLI.getWorkspaces(orgId, projectId)
+    let workspace = await this.consoleCLI.promptForSelectWorkspace(
+      workspaces,
+      { workspaceId: preSelectedWorkspaceIdOrName, workspaceName: preSelectedWorkspaceIdOrName },
+      { allowCreate: false }
+    )
+    return workspace
   }
 }
 
@@ -70,7 +74,11 @@ SelectCommand.aliases = [
 ]
 
 SelectCommand.args = [
-  { name: 'workspaceId', required: false }
+  {
+    name: 'workspaceIdOrName',
+    required: false,
+    description: 'Adobe Developer Console Workspace id or Workspace name'
+  }
 ]
 
 module.exports = SelectCommand

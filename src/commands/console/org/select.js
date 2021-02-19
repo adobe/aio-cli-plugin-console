@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:org:select', { provider: 'debug' })
-const { cli } = require('cli-ux')
 const { CONFIG_KEYS } = require('../../../config')
 
 const ConsoleCommand = require('../index')
@@ -22,14 +21,9 @@ class SelectCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      aioConsoleLogger.debug('Select Console Orgs')
-
-      // todo here it's orgid also support orgcode again
       const org = await this.selectOrgInteractive(args.orgCode)
-      // cli.action.start(`Retrieving the Organization : ${org.orgCode}`)
-      // cli.action.stop()
 
-      aioConsoleLogger.debug('Setting console Org')
+      aioConsoleLogger.debug('Setting console Org in config')
 
       this.setConfig(CONFIG_KEYS.ORG, org)
       this.clearConfigKey(CONFIG_KEYS.PROJECT)
@@ -42,8 +36,18 @@ class SelectCommand extends ConsoleCommand {
       aioConsoleLogger.debug(err)
       this.error(err.message)
     } finally {
-      cli.action.stop()
+      this.cleanOutput()
     }
+  }
+
+  async selectOrgInteractive (preSelectedOrgIdOrCode) {
+    const orgs = await  this.consoleCLI.getOrganizations()
+    const org = await this.consoleCLI.promptForSelectOrganization(
+      orgs,
+      { orgId: preSelectedOrgIdOrCode, orgCode: preSelectedOrgIdOrCode }
+    )
+    // Omit props
+    return { id: org.id, code: org.code, name: org.name }
   }
 }
 
@@ -53,7 +57,7 @@ SelectCommand.args = [
   {
     name: 'orgCode',
     required: false,
-    description: 'Adobe I/O Org Code'
+    description: 'Adobe Developer Console Org code'
   }
 ]
 

@@ -28,11 +28,7 @@ class ListCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      aioConsoleLogger.debug(`Listing Projects from Org ${orgId}`)
-
-      cli.action.start(`Retrieving Projects for the Organization: ${orgId}`)
       const projects = await this.getConsoleOrgProjects(orgId)
-      cli.action.stop()
 
       if (flags.json) {
         this.printJson(projects)
@@ -46,8 +42,19 @@ class ListCommand extends ConsoleCommand {
       aioConsoleLogger.debug(err)
       this.error(err.message)
     } finally {
-      cli.action.stop()
+      this.cleanOutput()
     }
+  }
+
+  /**
+   * Retrieve projects from an Org
+   *
+   * @param {string} orgId organization id
+   * @returns {Array} Projects
+   */
+  async getConsoleOrgProjects (orgId) {
+    const response = await this.consoleCLI.getProjects(orgId)
+    return response
   }
 
   printResults (projects) {

@@ -37,13 +37,7 @@ class ListCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      aioConsoleLogger.debug('Listing workspaces')
-
-      cli.action.start(`Retrieving Workspaces for Project: ${project.id}`)
       const workspaces = await this.getConsoleProjectWorkspaces(org.id, project.id)
-      cli.action.stop()
-
-      aioConsoleLogger.debug('Listing workspaces: Data received')
 
       if (flags.json) {
         this.printJson(workspaces)
@@ -67,8 +61,20 @@ class ListCommand extends ConsoleCommand {
       aioConsoleLogger.debug(err)
       this.error(err.message)
     } finally {
-      cli.action.stop()
+      this.cleanOutput()
     }
+  }
+
+  /**
+   * Retrieve list of Workspaces from a Project
+   *
+   * @param {string} orgId organization id
+   * @param {string} projectId project id
+   * @returns {Array} Workspaces
+   */
+  async getConsoleProjectWorkspaces (orgId, projectId) {
+    const response = await this.consoleCLI.getWorkspaces(orgId, projectId)
+    return response
   }
 }
 
