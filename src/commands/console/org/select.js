@@ -41,7 +41,7 @@ class SelectCommand extends ConsoleCommand {
   }
 
   async selectOrgInteractive (preSelectedOrgIdOrCode) {
-    const orgs = await  this.consoleCLI.getOrganizations()
+    const orgs = await this.consoleCLI.getOrganizations()
     const org = await this.consoleCLI.promptForSelectOrganization(
       orgs,
       { orgId: preSelectedOrgIdOrCode, orgCode: preSelectedOrgIdOrCode }

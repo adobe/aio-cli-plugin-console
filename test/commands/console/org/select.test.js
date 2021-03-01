@@ -10,36 +10,34 @@ governing permissions and limitations under the License.
 */
 
 const { Command } = require('@oclif/command')
-const { stdout } = require('stdout-stderr')
-const sdk = require('@adobe/aio-lib-console')
+
+const mockConsoleCLIInstance = {}
+const orgs = [
+  { id: '1', code: 'CODE01', name: 'ORG01', type: 'entp' },
+  { id: '2', code: 'CODE02', name: 'ORG02', type: 'entp' },
+  { id: '3', code: 'CODE03', name: 'ORG03', type: 'entp' },
+  { id: '33', code: 'CODE03', name: 'ORG03', type: 'not_entp' }
+]
+const selectedOrg = { id: '1', code: 'CODE01', name: 'ORG01', type: 'entp' }
+/** @private */
+function setDefaultMockConsoleCLI () {
+  mockConsoleCLIInstance.getOrganizations = jest.fn().mockResolvedValue(orgs)
+  mockConsoleCLIInstance.promptForSelectOrganization = jest.fn().mockResolvedValue(selectedOrg)
+}
+jest.mock('@adobe/generator-aio-console/lib/console-cli', () => ({
+  init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
+  cleanStdOut: jest.fn()
+}))
+
 const config = require('@adobe/aio-lib-core-config')
 const SelectCommand = require('../../../../src/commands/console/org/select')
-const { CONFIG_KEYS } = require('../../../../src/config')
 
-const getOrganizations = () => ({
-  ok: true,
-  body: [
-    { id: '1', code: 'CODE01', name: 'ORG01', type: 'entp' },
-    { id: '2', code: 'CODE02', name: 'ORG02', type: 'entp' },
-    { id: '3', code: 'CODE03', name: 'ORG03', type: 'entp' },
-    { id: '4', code: 'CODE03', name: 'ORG03', type: 'not_entp' }
-  ]
+let command
+beforeEach(() => {
+  command = new SelectCommand([])
+  setDefaultMockConsoleCLI()
+  config.set.mockReset()
 })
-
-const getOrganizationsError = () => ({
-  ok: false,
-  body: []
-})
-
-const mockConfigGet = (key) => {
-  const consoleConfig = {
-    'org.id': 1,
-    'org.code': 'CODE01',
-    'org.name': 'ORG01'
-  }
-  const orgKey = key.replace(`${CONFIG_KEYS.CONSOLE}.`, '')
-  return consoleConfig[orgKey]
-}
 
 test('exports', async () => {
   expect(typeof SelectCommand).toEqual('function')
@@ -59,7 +57,7 @@ test('aliases', async () => {
 test('args', async () => {
   const orgCode = SelectCommand.args[0]
   expect(orgCode.name).toEqual('orgCode')
-  expect(orgCode.required).toEqual(true)
+  expect(orgCode.required).toEqual(false)
   expect(orgCode.description).toBeDefined()
 })
 
@@ -68,93 +66,44 @@ test('flags', async () => {
 })
 
 describe('console:org:select', () => {
-  let command
-  let handleError
-
-  beforeEach(() => {
-    command = new SelectCommand([])
-    handleError = jest.spyOn(command, 'error')
-  })
-
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-
   test('exists', async () => {
     expect(command.run).toBeInstanceOf(Function)
   })
 
-  describe('successfully select org', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getOrganizations }))
-      config.get.mockImplementation(mockConfigGet)
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('should select the provided org', async () => {
-      command.argv = ['CODE01']
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(stdout.output).toMatchFixture('org/select.txt')
-      expect(handleError).not.toHaveBeenCalled()
-    })
+  test('should select the provided org code', async () => {
+    command.argv = [selectedOrg.code]
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: selectedOrg.code, orgId: selectedOrg.code })
+    // stores the org configuration
+    expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
+  })
+  test('should select the provided org id', async () => {
+    command.argv = [selectedOrg.id]
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: selectedOrg.id, orgId: selectedOrg.id })
+    // stores the org configuration
+    expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
+  })
+  test('should prompt for selection if no org is provided', async () => {
+    command.argv = []
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: undefined, orgId: undefined })
+    // stores the org configuration
+    expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
   })
 
-  describe('fail to list org', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getOrganizations: getOrganizationsError }))
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('throw Error retrieving Orgs', async () => {
-      command.argv = ['1']
-      await expect(command.run()).rejects.toThrowError(new Error('Error retrieving Orgs'))
-    })
+  test('throw Error retrieving Orgs', async () => {
+    mockConsoleCLIInstance.getOrganizations.mockRejectedValue(new Error('error org'))
+    await expect(command.run()).rejects.toThrowError(new Error('error org'))
   })
 
-  describe('invalid org code', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({
-        getOrganizations: jest.fn(() => ({
-          ok: true,
-          body: []
-        }))
-      }))
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('throw Invalid OrgCode', async () => {
-      command.argv = ['1']
-      await expect(command.run()).rejects.toThrowError(new Error('Invalid OrgCode'))
-    })
+  test('throw error with provided org', async () => {
+    mockConsoleCLIInstance.promptForSelectOrganization.mockRejectedValue(new Error('error bad org'))
+    await expect(command.run(['yo'])).rejects.toThrowError(new Error('error bad org'))
   })
 
-  describe('error selecting org', () => {
-    const err = new Error('SetConfig Error')
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({
-        getOrganizations
-      }))
-      command.setConfig = jest.fn(() => {
-        throw err
-      })
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('error during config set/clear', async () => {
-      command.argv = ['CODE01']
-      await expect(command.run()).rejects.toThrowError(err)
-    })
+  test('error during config set', async () => {
+    config.set.mockImplementation(() => { throw new Error('bad config') })
+    await expect(command.run()).rejects.toThrow(new Error('bad config'))
   })
 })

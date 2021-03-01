@@ -58,9 +58,6 @@ class SelectCommand extends ConsoleCommand {
   }
 }
 
-
-
-
 SelectCommand.description = 'Select a Project for the selected Organization'
 
 SelectCommand.args = [
