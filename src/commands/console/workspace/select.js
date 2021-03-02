@@ -9,6 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+const { flags } = require('@oclif/command')
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:select', { provider: 'debug' })
 const { CONFIG_KEYS } = require('../../../config')
@@ -16,17 +17,17 @@ const { CONFIG_KEYS } = require('../../../config')
 class SelectCommand extends ConsoleCommand {
   async run () {
     aioConsoleLogger.debug('Trying to Select workspace')
-    const { args } = this.parse(SelectCommand)
+    const { args, flags } = this.parse(SelectCommand)
 
-    const org = this.getConfig(CONFIG_KEYS.ORG)
-    if (!org) {
+    const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
+    if (!orgId) {
       this.log('You have not selected any Organization and Project. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
     }
 
-    const project = this.getConfig(CONFIG_KEYS.PROJECT)
-    if (!project) {
+    const projectId = flags.projectId || this.getConfig(`${CONFIG_KEYS.PROJECT}.id`)
+    if (!projectId) {
       this.log('You have not selected a Project. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
@@ -35,7 +36,7 @@ class SelectCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      const workspace = await this.selectWorkspaceInteractive(org.id, project.id, args.workspaceIdOrName)
+      const workspace = await this.selectWorkspaceInteractive(orgId, projectId, args.workspaceIdOrName)
 
       const obj = {
         id: workspace.id,
@@ -56,7 +57,7 @@ class SelectCommand extends ConsoleCommand {
 
   async selectWorkspaceInteractive (orgId, projectId, preSelectedWorkspaceIdOrName = null) {
     const workspaces = await this.consoleCLI.getWorkspaces(orgId, projectId)
-    let workspace = await this.consoleCLI.promptForSelectWorkspace(
+    const workspace = await this.consoleCLI.promptForSelectWorkspace(
       workspaces,
       { workspaceId: preSelectedWorkspaceIdOrName, workspaceName: preSelectedWorkspaceIdOrName },
       { allowCreate: false }
@@ -72,6 +73,16 @@ SelectCommand.aliases = [
   'console:ws:select',
   'console:ws:sel'
 ]
+
+SelectCommand.flags = {
+  ...ConsoleCommand.flags,
+  orgId: flags.string({
+    description: 'Organization id of the Console Workspace to select'
+  }),
+  projectId: flags.string({
+    description: 'Project id of the Console Workspace to select'
+  })
+}
 
 SelectCommand.args = [
   {

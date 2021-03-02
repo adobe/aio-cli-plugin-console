@@ -10,7 +10,6 @@ governing permissions and limitations under the License.
 */
 
 const { Command } = require('@oclif/command')
-const { stdout } = require('stdout-stderr')
 const projects = [
   {
     appId: null,

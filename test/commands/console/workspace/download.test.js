@@ -10,7 +10,6 @@ governing permissions and limitations under the License.
 */
 
 const { Command } = require('@oclif/command')
-const sdk = require('@adobe/aio-lib-console')
 const path = require('path')
 const fs = require('fs')
 const { stdout } = require('stdout-stderr')
@@ -40,50 +39,25 @@ test('args', async () => {
   expect(destination.description).toBeDefined()
 })
 
-describe('console:workspace:download', () => {
-  let command
-  beforeEach(() => {
-    command = new DownloadCommand([])
-  })
-
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-
   test('exists', async () => {
     expect(command.run).toBeInstanceOf(Function)
   })
 
-  describe('run', () => {
-    const fakeDownloadData = { id: 1, name: 'WRKSPC1', enabled: 1 }
-    const downloadWorkspaceJson = jest.fn()
-    beforeEach(() => {
-      downloadWorkspaceJson.mockReset()
-      downloadWorkspaceJson.mockResolvedValue({ ok: true, body: fakeDownloadData })
-
-      sdk.init.mockImplementation(() => ({ downloadWorkspaceJson }))
-      fs.writeFileSync = jest.fn()
-      command.getConfig = jest.fn()
-    })
-
-    afterEach(() => {
-      command.getConfig.mockReset()
-      jest.clearAllMocks()
-    })
-
+  const fakeDownloadData = { id: 1, name: 'WRKSPC1', enabled: 1 }
+  command.getConfig.mockImplementation(key => {
+    if (key === CONFIG_KEYS.ORG) {
+      return { name: 'THE_ORG', id: 123 }
+    }
+    if (key === CONFIG_KEYS.PROJECT) {
+      return { name: 'THE_PROJECT', id: 456 }
+    }
+    if (key === CONFIG_KEYS.WORKSPACE) {
+      return { name: 'THE_WORKSPACE', id: 789 }
+    }
+    return null
+  })
     test('should download the config for the selected workspace', async () => {
-      command.getConfig.mockImplementation(key => {
-        if (key === CONFIG_KEYS.ORG) {
-          return { name: 'THE_ORG', id: 123 }
-        }
-        if (key === CONFIG_KEYS.PROJECT) {
-          return { name: 'THE_PROJECT', id: 456 }
-        }
-        if (key === CONFIG_KEYS.WORKSPACE) {
-          return { name: 'THE_WORKSPACE', id: 789 }
-        }
-        return null
-      })
+
       await command.run()
       expect(fs.writeFileSync).toHaveBeenCalledWith('123-THE_PROJECT-THE_WORKSPACE.json', JSON.stringify(fakeDownloadData, null, 2))
       expect(downloadWorkspaceJson).toHaveBeenCalledWith(123, 456, 789)

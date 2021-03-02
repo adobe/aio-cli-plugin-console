@@ -11,13 +11,48 @@ governing permissions and limitations under the License.
 
 const { Command } = require('@oclif/command')
 const { stdout } = require('stdout-stderr')
-const sdk = require('@adobe/aio-lib-console')
-const SelectCommand = require('../../../../src/commands/console/workspace/select')
-const { CONFIG_KEYS } = require('../../../../src/config')
+// mock data
+const workspaces = [
+  { id: 111, name: 'workspace1', enabled: 1 },
+  { id: 222, name: 'workspace2', enabled: 1 }
+]
+const selectedWorkspace = workspaces[0]
+const configOrgId = '012'
+const configProjectId = '123'
 
-const getWorkspace = () => ({
-  ok: true,
-  body: { id: 111, name: 'workspace1', enabled: 1 }
+const mockConsoleCLIInstance = {}
+/** @private */
+function setDefaultMockConsoleCLI () {
+  mockConsoleCLIInstance.getWorkspaces = jest.fn().mockResolvedValue(workspaces)
+  mockConsoleCLIInstance.promptForSelectWorkspace = jest.fn().mockResolvedValue(selectedWorkspace)
+}
+jest.mock('@adobe/generator-aio-console/lib/console-cli', () => ({
+  init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
+  cleanStdOut: jest.fn()
+}))
+
+const SelectCommand = require('../../../../src/commands/console/workspace/select')
+
+const config = require('@adobe/aio-lib-core-config')
+/** @private */
+function setDefaultMockConfigGet () {
+  config.get.mockReset()
+  config.get.mockImplementation(key => {
+    if (key === 'console.org.id') {
+      return configOrgId
+    }
+    if (key === 'console.project.id') {
+      return configProjectId
+    }
+  })
+}
+
+let command
+beforeEach(() => {
+  setDefaultMockConsoleCLI()
+  setDefaultMockConfigGet()
+  config.set.mockReset()
+  command = new SelectCommand()
 })
 
 test('exports', async () => {
@@ -37,79 +72,86 @@ test('aliases', async () => {
 
 test('args', async () => {
   const workspaceId = SelectCommand.args[0]
-  expect(workspaceId.name).toEqual('workspaceId')
-  expect(workspaceId.required).toEqual(true)
+  expect(workspaceId.name).toEqual('workspaceIdOrName')
+  expect(workspaceId.required).toEqual(false)
 })
 
 describe('console:workspace:select', () => {
-  let command
-
-  beforeEach(() => {
-    command = new SelectCommand([])
-  })
-
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-
   test('exists', async () => {
     expect(command.run).toBeInstanceOf(Function)
   })
-
-  describe('successfully select workspace', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getWorkspace }))
-      command.getConfig = jest.fn(() => '111')
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('should select the provided workspace', async () => {
-      command.argv = ['111']
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(stdout.output).toMatchFixture('workspace/select.txt')
-    })
+  test('should select the provided workspaceId', async () => {
+    command.argv = ['111']
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith(configOrgId, configProjectId)
+    expect(mockConsoleCLIInstance.promptForSelectWorkspace).toHaveBeenCalledWith(
+      workspaces, { workspaceId: '111', workspaceName: '111' }, { allowCreate: false }
+    )
+    expect(config.set).toHaveBeenCalledWith(
+      'console.workspace', { name: selectedWorkspace.name, id: selectedWorkspace.id }
+    )
   })
 
-  describe('fail to select workspaces', () => {
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
+  test('should select the provided workspaceName', async () => {
+    command.argv = ['name']
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith(configOrgId, configProjectId)
+    expect(mockConsoleCLIInstance.promptForSelectWorkspace).toHaveBeenCalledWith(
+      workspaces, { workspaceId: 'name', workspaceName: 'name' }, { allowCreate: false }
+    )
+    expect(config.set).toHaveBeenCalledWith(
+      'console.workspace', { name: selectedWorkspace.name, id: selectedWorkspace.id }
+    )
+  })
 
-    test('should throw error no org selected', async () => {
-      command.argv = ['111']
-      await expect(command.run()).rejects.toThrowError()
-      expect(stdout.output).toMatchFixture('workspace/select-error1.txt')
-    })
+  test('should select the provided workspaceName with specified projectId and orgId', async () => {
+    command.argv = ['name', '--projectId', '000', '--orgId', '3214']
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith('3214', '000')
+    expect(mockConsoleCLIInstance.promptForSelectWorkspace).toHaveBeenCalledWith(
+      workspaces, { workspaceId: 'name', workspaceName: 'name' }, { allowCreate: false }
+    )
+    expect(config.set).toHaveBeenCalledWith(
+      'console.workspace', { name: selectedWorkspace.name, id: selectedWorkspace.id }
+    )
+  })
 
-    test('should throw error no project selected', async () => {
-      command.argv = ['111']
-      command.getConfig = jest.fn()
-      command.getConfig.mockImplementation(key => {
-        if (key === CONFIG_KEYS.ORG) {
-          return { name: 'THE_ORG', id: 123 }
-        }
-        if (key === `${CONFIG_KEYS.ORG}.name`) {
-          return 'THE_ORG'
-        }
-        return null
-      })
-      await expect(command.run()).rejects.toThrowError()
-      expect(stdout.output).toMatchFixture('workspace/select-error2.txt')
-    })
+  test('should prompt to select if workspace is not provided', async () => {
+    command.argv = []
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith(configOrgId, configProjectId)
+    expect(mockConsoleCLIInstance.promptForSelectWorkspace).toHaveBeenCalledWith(
+      workspaces, { workspaceId: null, workspaceName: null }, { allowCreate: false }
+    )
+    expect(config.set).toHaveBeenCalledWith(
+      'console.workspace', { name: selectedWorkspace.name, id: selectedWorkspace.id }
+    )
+  })
+  test('should throw error if no org is selected nor passed by flag', async () => {
+    config.get.mockImplementation(k => undefined)
+    command.argv = ['111']
+    await expect(command.run()).rejects.toThrowError()
+    expect(stdout.output).toMatchFixture('workspace/select-error1.txt')
+  })
 
-    test('should throw Error retrieving Project', async () => {
-      const getWs = () => ({
-        ok: false
-      })
-      command.argv = ['1']
-      command.getConfig = jest.fn(() => {
-        return {}
-      })
-      sdk.init.mockImplementation(() => ({ getWorkspace: getWs }))
-      await expect(command.run()).rejects.toThrowError('Error retrieving Workspace')
+  test('should throw error if no project is selected nor passed by flag', async () => {
+    config.get.mockImplementation(k => {
+      if (k === 'console.org.name') {
+        return 'THE_ORG'
+      }
+      if (k === 'console.org.id') {
+        return 123
+      }
+      return undefined
     })
+    command.argv = ['111']
+    await expect(command.run()).rejects.toThrowError()
+    expect(stdout.output).toMatchFixture('workspace/select-error2.txt')
+  })
+
+  test('error while retrieving workspaces', async () => {
+    command.argv = []
+    mockConsoleCLIInstance.getWorkspaces.mockRejectedValue(new Error('Error retrieving Workspaces'))
+    await expect(command.run()).rejects.toThrowError('Error retrieving Workspaces')
   })
 })

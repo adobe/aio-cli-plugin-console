@@ -9,35 +9,35 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
+const { flags } = require('@oclif/command')
 const fs = require('fs')
 const path = require('path')
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:download', { provider: 'debug' })
-const { cli } = require('cli-ux')
 const { CONFIG_KEYS } = require('../../../config')
 const LibConsoleCLI = require('@adobe/generator-aio-console/lib/console-cli')
 
 class DownloadCommand extends ConsoleCommand {
   async run () {
     aioConsoleLogger.debug('Trying to fetch workspace configs')
-    const { args } = this.parse(DownloadCommand)
+    const { args, flags } = this.parse(DownloadCommand)
 
-    const org = this.getConfig(CONFIG_KEYS.ORG)
-    if (!org) {
-      this.log('You have not selected any Organization, Project and Workspace. Please select first.')
+    const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
+    if (!orgId) {
+      this.log('You have not selected any Organization and Project. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
     }
 
-    const project = this.getConfig(CONFIG_KEYS.PROJECT)
-    if (!project) {
-      this.log('You have not selected any Project and Workspace. Please select first.')
+    const projectId = flags.projectId || this.getConfig(`${CONFIG_KEYS.PROJECT}.id`)
+    if (!projectId) {
+      this.log('You have not selected a Project. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
     }
 
-    const workspace = this.getConfig(CONFIG_KEYS.WORKSPACE)
-    if (!workspace) {
+    const workspaceId = flags.workspaceId || this.getConfig(`${CONFIG_KEYS.WORKSPACE}.id`)
+    if (!workspaceId) {
       this.log('You have not selected a Workspace. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
@@ -45,12 +45,26 @@ class DownloadCommand extends ConsoleCommand {
 
     await this.initSdk()
     try {
-      const consoleConfig = await this.consoleCLI.getWorkspaceConfig(org.id, project.id, workspace.id)
+      const consoleConfig = await this.consoleCLI.getWorkspaceConfig(orgId, projectId, workspaceId)
 
-      let fileName = `${org.id}-${project.name}-${workspace.name}.json`
-      if (args.destination) {
-        fileName = path.join(args.destination, fileName)
+      let fileName = 'console.json'
+      if (!flags.workspaceId || !flags.projectId) {
+        // give a better default name when possible
+        fileName = `${orgId}-${this.getConfig(`${CONFIG_KEYS.PROJECT}.name`)}-${this.getConfig(`${CONFIG_KEYS.WORKSPACE}.name`)}`
       }
+      if (args.destination) {
+        // overwrite default name based on destination flag
+        let stats
+        try {
+          stats = fs.statSync(args.destination)
+        } catch (e) { /* does not exist */ }
+        if (!stats || stats.isFile()) {
+          fileName = args.destination
+        } else if (stats.isDirectory()) {
+          fileName = path.join(args.destination, fileName)
+        }
+      }
+
       fs.writeFileSync(fileName, JSON.stringify(consoleConfig, null, 2))
 
       this.log(`Downloaded Workspace configuration to ${fileName}`)
@@ -65,6 +79,19 @@ class DownloadCommand extends ConsoleCommand {
 
 DownloadCommand.description = 'Downloads the configuration for the selected Workspace'
 
+DownloadCommand.flags = {
+  ...ConsoleCommand.flags,
+  orgId: flags.string({
+    description: 'Organization id of the Console Workspace configuration to download'
+  }),
+  projectId: flags.string({
+    description: 'Project id of the Console Workspace configuration to download'
+  }),
+  workspaceId: flags.string({
+    description: 'Workspace id of the Console Workspace configuration to download'
+  })
+}
+
 DownloadCommand.aliases = [
   'console:workspace:dl',
   'console:ws:download',
@@ -72,7 +99,7 @@ DownloadCommand.aliases = [
 ]
 
 DownloadCommand.args = [
-  { name: 'destination', required: false, description: 'path to the folder where workspace configuration file will be saved' }
+  { name: 'destination', required: false, description: 'Output file name or folder name where the Console Workspace configuration file should be saved' }
 ]
 
 module.exports = DownloadCommand

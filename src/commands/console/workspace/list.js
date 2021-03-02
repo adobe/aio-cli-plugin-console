@@ -20,15 +20,15 @@ class ListCommand extends ConsoleCommand {
   async run () {
     const { flags } = this.parse(ListCommand)
 
-    const org = this.getConfig(CONFIG_KEYS.ORG)
-    if (!org) {
+    const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
+    if (!orgId) {
       this.log('You have not selected any Organization and Project. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
     }
 
-    const project = this.getConfig(CONFIG_KEYS.PROJECT)
-    if (!project) {
+    const projectId = flags.projectId || this.getConfig(`${CONFIG_KEYS.PROJECT}.id`)
+    if (!projectId) {
       this.log('You have not selected a Project. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
@@ -37,7 +37,7 @@ class ListCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      const workspaces = await this.getConsoleProjectWorkspaces(org.id, project.id)
+      const workspaces = await this.getConsoleProjectWorkspaces(orgId, projectId)
 
       if (flags.json) {
         this.printJson(workspaces)
@@ -97,6 +97,12 @@ ListCommand.flags = {
     description: 'Output yml',
     char: 'y',
     exclusive: ['json']
+  }),
+  orgId: flags.string({
+    description: 'Organization id of the Console Workspaces to list'
+  }),
+  projectId: flags.string({
+    description: 'Project id of the Console Workspaces to list'
   })
 }
 

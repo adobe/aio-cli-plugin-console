@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:select', { provider: 'debug' })
-const { cli } = require('cli-ux')
 const { flags } = require('@oclif/command')
 const { CONFIG_KEYS } = require('../../../config')
 
