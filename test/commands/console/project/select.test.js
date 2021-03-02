@@ -58,6 +58,7 @@ beforeEach(() => {
   command = new SelectCommand([])
   setDefaultMockConsoleCLI()
   config.set.mockReset()
+  config.delete.mockReset()
 })
 
 test('exports', async () => {
@@ -98,6 +99,7 @@ test('should select a project with given projectId and orgId', async () => {
   expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1')
   expect(mockConsoleCLIInstance.promptForSelectProject).toHaveBeenCalledWith(projects, { projectId: '1001', projectName: '1001' }, { allowCreate: false })
   expect(config.set).toHaveBeenCalledWith('console.project', selectedProject)
+  expect(config.delete).toHaveBeenCalledWith('console.workspace')
 })
 
 test('should select a project with given projectName and selected orgId', async () => {
@@ -109,6 +111,7 @@ test('should select a project with given projectName and selected orgId', async 
   expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1')
   expect(mockConsoleCLIInstance.promptForSelectProject).toHaveBeenCalledWith(projects, { projectId: 'name', projectName: 'name' }, { allowCreate: false })
   expect(config.set).toHaveBeenCalledWith('console.project', selectedProject)
+  expect(config.delete).toHaveBeenCalledWith('console.workspace')
 })
 
 test('should prompt and select a project with orgId in config', async () => {
@@ -120,6 +123,7 @@ test('should prompt and select a project with orgId in config', async () => {
   expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1')
   expect(mockConsoleCLIInstance.promptForSelectProject).toHaveBeenCalledWith(projects, { projectId: undefined, projectName: undefined }, { allowCreate: false })
   expect(config.set).toHaveBeenCalledWith('console.project', selectedProject)
+  expect(config.delete).toHaveBeenCalledWith('console.workspace')
 })
 
 test('should fail if orgId is missing and not in config', async () => {

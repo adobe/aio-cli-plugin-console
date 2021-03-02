@@ -11,16 +11,47 @@ governing permissions and limitations under the License.
 
 const { Command } = require('@oclif/command')
 const { stdout } = require('stdout-stderr')
-const sdk = require('@adobe/aio-lib-console')
-const ListCommand = require('../../../../src/commands/console/workspace/list')
-const { CONFIG_KEYS } = require('../../../../src/config')
 
-const getWorkspacesForProject = () => ({
-  ok: true,
-  body: [
-    { id: 1, name: 'WRKSPC1', enabled: 1 },
-    { id: 2, name: 'WRKSPC2', enabled: 1 }
-  ]
+// mock data
+const workspaces = [
+  { id: 1, name: 'WRKSPC1', enabled: 1 },
+  { id: 2, name: 'WRKSPC2', enabled: 1 }
+]
+const configOrgId = '012'
+const configProjectId = '123'
+
+const mockConsoleCLIInstance = {}
+/** @private */
+function setDefaultMockConsoleCLI () {
+  mockConsoleCLIInstance.getWorkspaces = jest.fn().mockResolvedValue(workspaces)
+}
+jest.mock('@adobe/generator-aio-console/lib/console-cli', () => ({
+  init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
+  cleanStdOut: jest.fn()
+}))
+
+const ListCommand = require('../../../../src/commands/console/workspace/list')
+
+const config = require('@adobe/aio-lib-core-config')
+/** @private */
+function setDefaultMockConfigGet () {
+  config.get.mockReset()
+  config.get.mockImplementation(key => {
+    if (key === 'console.org.id') {
+      return configOrgId
+    }
+    if (key === 'console.project.id') {
+      return configProjectId
+    }
+  })
+}
+
+let command
+beforeEach(() => {
+  setDefaultMockConsoleCLI()
+  setDefaultMockConfigGet()
+  config.set.mockReset()
+  command = new ListCommand([])
 })
 
 test('exports', async () => {
@@ -45,74 +76,55 @@ test('flags', async () => {
 })
 
 describe('console:workspace:list', () => {
-  let command
-  let handleError
-
-  beforeEach(() => {
-    command = new ListCommand([])
-    handleError = jest.spyOn(command, 'error')
-  })
-
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-
   test('exists', async () => {
     expect(command.run).toBeInstanceOf(Function)
   })
 
-  describe('successfully list workspaces', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getWorkspacesForProject }))
-      command.getConfig = jest.fn(() => '111')
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('should return list of workspaces', async () => {
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(stdout.output).toMatchFixture('workspace/list.txt')
-      expect(handleError).not.toHaveBeenCalled()
-    })
-
-    test('should return list of workspaces as json', async () => {
-      command.argv = ['--json']
-      await expect(command.run()).resolves.not.toThrowError()
-
-      expect(JSON.parse(stdout.output)).toMatchFixtureJson('workspace/list.json')
-    })
-
-    test('should return list of workspaces as yaml', async () => {
-      command.argv = ['--yml']
-      await expect(command.run()).resolves.not.toThrowError()
-
-      expect(stdout.output).toEqual(expect.stringContaining('id: 1'))
-      expect(stdout.output).toEqual(expect.stringContaining('id: 2'))
-      expect(stdout.output).toEqual(expect.stringContaining('name: WRKSPC1'))
-      expect(stdout.output).toEqual(expect.stringContaining('name: WRKSPC2'))
-    })
+  test('should return list of workspaces', async () => {
+    command.argv = []
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(stdout.output).toMatchFixture('workspace/list.txt')
+    expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith(configOrgId, configProjectId)
   })
 
-  describe('fail to list workspaces', () => {
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
+  test('should return list of workspaces when passing orgId and projectId as flags', async () => {
+    command.argv = ['--orgId', '000', '--projectId', '999']
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(stdout.output).toMatchFixture('workspace/list.txt')
+    expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith('000', '999')
+  })
 
-    test('should throw error no org selected', async () => {
-      await expect(command.run()).rejects.toThrowError()
-      expect(stdout.output).toMatchFixture('workspace/list-error1.txt')
-    })
+  test('should return list of workspaces as json', async () => {
+    command.argv = ['--json']
+    await expect(command.run()).resolves.not.toThrowError()
+
+    expect(JSON.parse(stdout.output)).toMatchFixtureJson('workspace/list.json')
+  })
+
+  test('should return list of workspaces as yaml', async () => {
+    command.argv = ['--yml']
+    await expect(command.run()).resolves.not.toThrowError()
+
+    expect(stdout.output).toEqual(expect.stringContaining('id: 1'))
+    expect(stdout.output).toEqual(expect.stringContaining('id: 2'))
+    expect(stdout.output).toEqual(expect.stringContaining('name: WRKSPC1'))
+    expect(stdout.output).toEqual(expect.stringContaining('name: WRKSPC2'))
+  })
+
+  test('should throw error no org selected', async () => {
+    command.argv = []
+    config.get.mockImplementation(k => undefined)
+    await expect(command.run()).rejects.toThrowError()
+    expect(stdout.output).toMatchFixture('workspace/list-error1.txt')
   })
 
   test('should throw error no project selected', async () => {
-    command.getConfig = jest.fn()
-    command.getConfig.mockImplementation(key => {
-      if (key === CONFIG_KEYS.ORG) {
-        return { name: 'THE_ORG', id: 123 }
+    command.argv = []
+    config.get.mockImplementation(key => {
+      if (key === 'console.org.id') {
+        return 123
       }
-      if (key === `${CONFIG_KEYS.ORG}.name`) {
+      if (key === 'console.org.name') {
         return 'THE_ORG'
       }
       return null
@@ -122,11 +134,8 @@ describe('console:workspace:list', () => {
   })
 
   test('should throw Error for getWorkspacesForProject', async () => {
-    const getWorkspacesForProjectError = () => ({ ok: false })
-
-    command.getConfig = jest.fn(() => '111')
-    sdk.init.mockImplementation(() => ({ getWorkspacesForProject: getWorkspacesForProjectError }))
-
+    command.argv = []
+    mockConsoleCLIInstance.getWorkspaces.mockRejectedValue(new Error('Error retrieving Workspaces'))
     await expect(command.run()).rejects.toThrow('Error retrieving Workspaces')
   })
 })

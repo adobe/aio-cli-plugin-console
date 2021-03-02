@@ -44,16 +44,13 @@ class ListCommand extends ConsoleCommand {
   /**
    * Retrieve Orgs from console
    *
-   * @param {string} [orgCode] the Org Code
    * @returns {Promise<Array<{id, code, name}>>} Array of Orgs
    */
-  async getConsoleOrgs (orgCode = null) {
+  async getConsoleOrgs () {
     const response = await this.consoleCLI.getOrganizations()
     const orgs = response
       // Filter enterprise orgs
       .filter(org => org.type === ORG_TYPE_ENTERPRISE)
-      // Filter org if orgId is specified
-      .filter(org => orgCode ? (org.code === orgCode) : true)
       // Omit props
       .map(({ id, code, name }) => ({ id, code, name }))
 

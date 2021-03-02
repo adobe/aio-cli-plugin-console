@@ -37,6 +37,7 @@ beforeEach(() => {
   command = new SelectCommand([])
   setDefaultMockConsoleCLI()
   config.set.mockReset()
+  config.delete.mockReset()
 })
 
 test('exports', async () => {
@@ -76,6 +77,8 @@ describe('console:org:select', () => {
     expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: selectedOrg.code, orgId: selectedOrg.code })
     // stores the org configuration
     expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
+    expect(config.delete).toHaveBeenCalledWith('console.project')
+    expect(config.delete).toHaveBeenCalledWith('console.workspace')
   })
   test('should select the provided org id', async () => {
     command.argv = [selectedOrg.id]
@@ -83,6 +86,8 @@ describe('console:org:select', () => {
     expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: selectedOrg.id, orgId: selectedOrg.id })
     // stores the org configuration
     expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
+    expect(config.delete).toHaveBeenCalledWith('console.project')
+    expect(config.delete).toHaveBeenCalledWith('console.workspace')
   })
   test('should prompt for selection if no org is provided', async () => {
     command.argv = []
@@ -90,6 +95,8 @@ describe('console:org:select', () => {
     expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: undefined, orgId: undefined })
     // stores the org configuration
     expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
+    expect(config.delete).toHaveBeenCalledWith('console.project')
+    expect(config.delete).toHaveBeenCalledWith('console.workspace')
   })
 
   test('throw Error retrieving Orgs', async () => {

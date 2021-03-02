@@ -21,7 +21,7 @@ class SelectCommand extends ConsoleCommand {
 
     const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
     if (!orgId) {
-      this.log('You have not selected any Organization and Project. Please select first.')
+      this.log('You have not selected an Organization. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
     }

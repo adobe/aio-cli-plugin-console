@@ -10,12 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const { flags } = require('@oclif/command')
-const fs = require('fs')
 const path = require('path')
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:download', { provider: 'debug' })
 const { CONFIG_KEYS } = require('../../../config')
 const LibConsoleCLI = require('@adobe/generator-aio-console/lib/console-cli')
+const fs = require('fs')
 
 class DownloadCommand extends ConsoleCommand {
   async run () {
@@ -24,7 +24,7 @@ class DownloadCommand extends ConsoleCommand {
 
     const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
     if (!orgId) {
-      this.log('You have not selected any Organization and Project. Please select first.')
+      this.log('You have not selected an Organization. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
     }
@@ -48,9 +48,13 @@ class DownloadCommand extends ConsoleCommand {
       const consoleConfig = await this.consoleCLI.getWorkspaceConfig(orgId, projectId, workspaceId)
 
       let fileName = 'console.json'
-      if (!flags.workspaceId || !flags.projectId) {
-        // give a better default name when possible
-        fileName = `${orgId}-${this.getConfig(`${CONFIG_KEYS.PROJECT}.name`)}-${this.getConfig(`${CONFIG_KEYS.WORKSPACE}.name`)}`
+      if (!flags.workspaceId && !flags.projectId && !flags.orgId) {
+        const projectName = this.getConfig(`${CONFIG_KEYS.PROJECT}.name`)
+        const workspaceName = this.getConfig(`${CONFIG_KEYS.WORKSPACE}.name`)
+        if (projectName && workspaceName) {
+          // give a better default file name when possible
+          fileName = `${orgId}-${projectName}-${workspaceName}.json`
+        }
       }
       if (args.destination) {
         // overwrite default name based on destination flag
