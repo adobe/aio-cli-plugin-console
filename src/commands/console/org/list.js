@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:org:list', { provider: 'debug' })
 const { flags } = require('@oclif/command')
 const { cli } = require('cli-ux')
+const { ORG_TYPE_ENTERPRISE } = require('../../../config')
 
 const ConsoleCommand = require('../index')
 
@@ -23,13 +24,7 @@ class ListCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      aioConsoleLogger.debug('Listing Console Orgs')
-
-      cli.action.start('Retrieving Organizations')
       const orgs = await this.getConsoleOrgs()
-      cli.action.stop()
-
-      aioConsoleLogger.debug('Listing Console Orgs: Data received')
 
       if (flags.json) {
         this.printJson(orgs)
@@ -42,8 +37,24 @@ class ListCommand extends ConsoleCommand {
       aioConsoleLogger.debug(err)
       this.error(err.message)
     } finally {
-      cli.action.stop()
+      this.cleanOutput()
     }
+  }
+
+  /**
+   * Retrieve Orgs from console
+   *
+   * @returns {Promise<Array<{id, code, name}>>} Array of Orgs
+   */
+  async getConsoleOrgs () {
+    const response = await this.consoleCLI.getOrganizations()
+    const orgs = response
+      // Filter enterprise orgs
+      .filter(org => org.type === ORG_TYPE_ENTERPRISE)
+      // Omit props
+      .map(({ id, code, name }) => ({ id, code, name }))
+
+    return orgs
   }
 
   /**

@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:select', { provider: 'debug' })
-const { cli } = require('cli-ux')
 const { flags } = require('@oclif/command')
 const { CONFIG_KEYS } = require('../../../config')
 
@@ -31,13 +30,7 @@ class SelectCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      aioConsoleLogger.debug('Select Console Project')
-
-      cli.action.start(`Retrieving the Project with id: ${args.projectId}`)
-      const project = await this.getConsoleOrgProject(orgId, args.projectId)
-      cli.action.stop()
-
-      aioConsoleLogger.debug('Selecting Console Project')
+      const project = await this.selectProjectInteractive(orgId, args.projectIdOrName)
 
       this.setConfig(CONFIG_KEYS.PROJECT, project)
       this.clearConfigKey(CONFIG_KEYS.WORKSPACE)
@@ -49,8 +42,18 @@ class SelectCommand extends ConsoleCommand {
       aioConsoleLogger.debug(err)
       this.error(err.message)
     } finally {
-      cli.action.stop()
+      this.cleanOutput()
     }
+  }
+
+  async selectProjectInteractive (orgId, preSelectedProjectIdOrName) {
+    const projects = await this.consoleCLI.getProjects(orgId)
+    const project = await this.consoleCLI.promptForSelectProject(
+      projects,
+      { projectId: preSelectedProjectIdOrName, projectName: preSelectedProjectIdOrName },
+      { allowCreate: false }
+    )
+    return project
   }
 }
 
@@ -58,16 +61,16 @@ SelectCommand.description = 'Select a Project for the selected Organization'
 
 SelectCommand.args = [
   {
-    name: 'projectId',
-    required: true,
-    description: 'Adobe I/O Project Id'
+    name: 'projectIdOrName',
+    required: false,
+    description: 'Adobe Developer Console Project id or Project name'
   }
 ]
 
 SelectCommand.flags = {
   ...ConsoleCommand.flags,
   orgId: flags.string({
-    description: 'OrgID of the project to select'
+    description: 'Organization id of the Console Project to select'
   })
 }
 

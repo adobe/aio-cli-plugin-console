@@ -11,43 +11,54 @@ governing permissions and limitations under the License.
 
 const { Command } = require('@oclif/command')
 const { stdout } = require('stdout-stderr')
-const sdk = require('@adobe/aio-lib-console')
+
+const projects = [
+  {
+    appId: null,
+    date_created: '2020-04-29T10:14:17.000Z',
+    date_last_modified: '2020-04-29T10:14:17.000Z',
+    deleted: 0,
+    description: 'Description 1',
+    id: '1000000001',
+    name: 'name1',
+    org_id: 1001,
+    title: 'Title 1',
+    type: 'default'
+  },
+  {
+    appId: null,
+    date_created: '2020-04-29T10:14:17.000Z',
+    date_last_modified: '2020-04-29T10:14:17.000Z',
+    deleted: 0,
+    description: 'Description 2',
+    id: '1000000002',
+    name: 'name2',
+    org_id: 1002,
+    title: 'Title 2',
+    type: 'default'
+  }
+]
+const mockConsoleCLIInstance = {}
+/**
+ *
+ */
+function setDefaultMockConsoleCLI () {
+  mockConsoleCLIInstance.getProjects = jest.fn().mockResolvedValue(projects)
+}
+jest.mock('@adobe/generator-aio-console/lib/console-cli', () => ({
+  init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
+  cleanStdOut: jest.fn()
+}))
+
+const config = require('@adobe/aio-lib-core-config')
+
 const ListCommand = require('../../../../src/commands/console/project/list')
 
-const getProjectsForOrg = () => ({
-  ok: true,
-  body: [
-    {
-      appId: null,
-      date_created: '2020-04-29T10:14:17.000Z',
-      date_last_modified: '2020-04-29T10:14:17.000Z',
-      deleted: 0,
-      description: 'Description 1',
-      id: '1000000001',
-      name: 'name1',
-      org_id: 1001,
-      title: 'Title 1',
-      type: 'default'
-    },
-    {
-      appId: null,
-      date_created: '2020-04-29T10:14:17.000Z',
-      date_last_modified: '2020-04-29T10:14:17.000Z',
-      deleted: 0,
-      description: 'Description 2',
-      id: '1000000002',
-      name: 'name2',
-      org_id: 1002,
-      title: 'Title 2',
-      type: 'default'
-    }
-  ]
-})
-
-const getProjectsForOrgError = () => ({
-  ok: false,
-  body: [],
-  error: 'Some Error'
+let command
+beforeEach(() => {
+  command = new ListCommand([])
+  setDefaultMockConsoleCLI()
+  config.get.mockReset()
 })
 
 test('exports', async () => {
@@ -76,81 +87,46 @@ test('flags', async () => {
 })
 
 describe('console:project:list', () => {
-  let command
-
-  beforeEach(() => {
-    command = new ListCommand([])
-  })
-
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-
   test('exists', async () => {
     expect(command.run).toBeInstanceOf(Function)
   })
 
-  describe('error required param missing', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getProjectsForOrg }))
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('should throw error if org not set', async () => {
-      await expect(command.run()).rejects.toThrowError()
-      expect(stdout.output).toMatchFixture('project/list-no-org.txt')
-    })
+  test('should throw error if org not set', async () => {
+    await expect(command.run()).rejects.toThrowError()
+    expect(stdout.output).toMatchFixture('project/list-no-org.txt')
   })
 
-  describe('successfully list projects', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getProjectsForOrg }))
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('should return list of projects with selected orgId', async () => {
-      command.getConfig = jest.fn(() => '1001')
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(stdout.output).toMatchFixture('project/list.txt')
-    })
-
-    test('should return list of projects with cli arg', async () => {
-      command.argv = ['--orgId', '1001']
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(stdout.output).toMatchFixture('project/list.txt')
-    })
-
-    test('should return list of projects json', async () => {
-      command.argv = ['--orgId', '1001', '--json']
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(JSON.parse(stdout.output)).toMatchFixtureJson('project/list.json')
-    })
-
-    test('should return list of projects yaml', async () => {
-      command.argv = ['--orgId', '1001', '--yml']
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(stdout.output).toMatchFixture('project/list.yml')
-    })
+  test('should return list of projects with selected orgId', async () => {
+    config.get.mockReturnValue('someorgid')
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(stdout.output).toMatchFixture('project/list.txt')
+    expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('someorgid')
   })
 
-  describe('error while listing', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getProjectsForOrg: getProjectsForOrgError }))
-    })
+  test('should return list of projects with orgid as cli arg', async () => {
+    command.argv = ['--orgId', '1001']
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(stdout.output).toMatchFixture('project/list.txt')
+    expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1001')
+  })
 
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
+  test('should return list of projects json', async () => {
+    command.argv = ['--orgId', '1001', '--json']
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(JSON.parse(stdout.output)).toMatchFixtureJson('project/list.json')
+    expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1001')
+  })
 
-    test('should return list of projects', async () => {
-      command.argv = ['--orgId', '1001']
-      await expect(command.run()).rejects.toThrowError('Error retrieving Projects')
-    })
+  test('should return list of projects yaml', async () => {
+    command.argv = ['--orgId', '1001', '--yml']
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(stdout.output).toMatchFixture('project/list.yml')
+    expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1001')
+  })
+
+  test('error returning list of projects', async () => {
+    mockConsoleCLIInstance.getProjects.mockRejectedValue(new Error('Error retrieving Projects'))
+    command.argv = ['--orgId', '1001']
+    await expect(command.run()).rejects.toThrowError('Error retrieving Projects')
   })
 })

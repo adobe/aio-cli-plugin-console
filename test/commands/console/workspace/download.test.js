@@ -8,15 +8,74 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-
-const { Command } = require('@oclif/command')
-const sdk = require('@adobe/aio-lib-console')
-const path = require('path')
 const fs = require('fs')
 const { stdout } = require('stdout-stderr')
-const { CONFIG_KEYS } = require('../../../../src/config')
-jest.mock('fs')
+const { Command } = require('@oclif/command')
+const path = require('path')
+
+// mock data
+const configOrgId = '012'
+const configProjectId = '123'
+const configWorkspaceId = '333'
+const configProjectName = 'THE_PROJECT'
+const configWorkspaceName = 'THE_WORKSPACE'
+const fakeConfig = { someField: '1' }
+
+// console mocks
+const mockConsoleCLIInstance = {}
+/** @private */
+function setDefaultMockConsoleCLI () {
+  mockConsoleCLIInstance.getWorkspaceConfig = jest.fn()
+  mockConsoleCLIInstance.getWorkspaceConfig.mockResolvedValue(fakeConfig)
+}
+jest.mock('@adobe/generator-aio-console/lib/console-cli', () => ({
+  init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
+  cleanStdOut: jest.fn()
+}))
+
+// fs mocks
+const mockWriteFileSync = jest.spyOn(fs, 'writeFileSync')
+const mockStatSync = jest.spyOn(fs, 'statSync')
+/** @private */
+function setDefaultMockFs () {
+  mockWriteFileSync.mockReset()
+  mockStatSync.mockReset()
+  mockWriteFileSync.mockImplementation(() => {})
+  mockStatSync.mockReturnValue({ isFile: () => true, isDirectory: () => false })
+}
+// mock config
+const config = require('@adobe/aio-lib-core-config')
+/** @private */
+function setDefaultMockConfigGet () {
+  config.get.mockReset()
+  config.get.mockImplementation(key => {
+    if (key === 'console.org.id') {
+      return configOrgId
+    }
+    if (key === 'console.project.id') {
+      return configProjectId
+    }
+    if (key === 'console.workspace.id') {
+      return configWorkspaceId
+    }
+    if (key === 'console.project.name') {
+      return configProjectName
+    }
+    if (key === 'console.workspace.name') {
+      return configWorkspaceName
+    }
+  })
+}
 const DownloadCommand = require('../../../../src/commands/console/workspace/download')
+
+let command
+beforeEach(() => {
+  setDefaultMockConsoleCLI()
+  setDefaultMockConfigGet()
+  setDefaultMockFs()
+  config.set.mockReset()
+  command = new DownloadCommand([])
+})
 
 test('exports', async () => {
   expect(typeof DownloadCommand).toEqual('function')
@@ -40,132 +99,169 @@ test('args', async () => {
   expect(destination.description).toBeDefined()
 })
 
-describe('console:workspace:download', () => {
-  let command
-  beforeEach(() => {
-    command = new DownloadCommand([])
+test('exists', async () => {
+  expect(command.run).toBeInstanceOf(Function)
+})
+
+test('should download the config for the selected workspace', async () => {
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith(`${configOrgId}-${configProjectName}-${configWorkspaceName}.json`, JSON.stringify(fakeConfig, null, 2))
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith(configOrgId, configProjectId, configWorkspaceId)
+})
+
+test('should download the config to a specified file - file exists', async () => {
+  fs.statSync.mockReturnValue({ isFile: () => true, isDirectory: () => false })
+  command.argv = ['other/file.json']
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith('other/file.json', JSON.stringify(fakeConfig, null, 2))
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith(configOrgId, configProjectId, configWorkspaceId)
+})
+
+test('should download the config to a specified file - file does not exist', async () => {
+  fs.statSync.mockImplementation(() => { throw new Error('file does not exist') })
+  command.argv = ['other/file.json']
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith('other/file.json', JSON.stringify(fakeConfig, null, 2))
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith(configOrgId, configProjectId, configWorkspaceId)
+})
+
+test('should download the config to a specified folder', async () => {
+  fs.statSync.mockReturnValue({ isFile: () => false, isDirectory: () => true })
+  command.argv = ['other/subdir/']
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith(
+    path.normalize(`other/subdir/${configOrgId}-${configProjectName}-${configWorkspaceName}.json`),
+    JSON.stringify(fakeConfig, null, 2)
+  )
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith(configOrgId, configProjectId, configWorkspaceId)
+})
+
+test('should download the config to the default file if destination is not a valid file or folder', async () => {
+  fs.statSync.mockReturnValue({ isFile: () => false, isDirectory: () => false })
+  command.argv = ['other/subdir/']
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith(
+    path.normalize(`${configOrgId}-${configProjectName}-${configWorkspaceName}.json`),
+    JSON.stringify(fakeConfig, null, 2)
+  )
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith(configOrgId, configProjectId, configWorkspaceId)
+})
+
+test('should download the config for the selected workspace, with --orgId flag', async () => {
+  command.argv = ['--orgId', '555']
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith('console.json', JSON.stringify(fakeConfig, null, 2))
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith('555', configProjectId, configWorkspaceId)
+})
+
+test('should download the config for the selected workspace, with --projectId flag', async () => {
+  command.argv = ['--projectId', '555']
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith('console.json', JSON.stringify(fakeConfig, null, 2))
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith(configOrgId, '555', configWorkspaceId)
+})
+
+test('should download the config for the selected workspace, with --workspaceId flag', async () => {
+  command.argv = ['--workspaceId', '555']
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith('console.json', JSON.stringify(fakeConfig, null, 2))
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith(configOrgId, configProjectId, '555')
+})
+
+test('should download the config for the selected workspace, with --workspace/project/orgId flag', async () => {
+  command.argv = ['--orgId', '22', '--projectId', '111', '--workspaceId', '555']
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith('console.json', JSON.stringify(fakeConfig, null, 2))
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith('22', '111', '555')
+})
+
+test('should download the config for the selected workspace, config workspaceName is missing', async () => {
+  command.argv = []
+  config.get.mockImplementation(key => {
+    if (key === 'console.org.id') {
+      return configOrgId
+    }
+    if (key === 'console.project.id') {
+      return configProjectId
+    }
+    if (key === 'console.workspace.id') {
+      return configWorkspaceId
+    }
+    if (key === 'console.project.name') {
+      return configProjectName
+    }
   })
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith('console.json', JSON.stringify(fakeConfig, null, 2))
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith(configOrgId, configProjectId, configWorkspaceId)
+})
 
-  afterEach(() => {
-    jest.clearAllMocks()
+test('should download the config for the selected workspace, config projectName is missing', async () => {
+  command.argv = []
+  config.get.mockImplementation(key => {
+    if (key === 'console.org.id') {
+      return configOrgId
+    }
+    if (key === 'console.project.id') {
+      return configProjectId
+    }
+    if (key === 'console.workspace.id') {
+      return configWorkspaceId
+    }
+    if (key === 'console.workspace.name') {
+      return configWorkspaceName
+    }
   })
+  await command.run()
+  expect(fs.writeFileSync).toHaveBeenCalledWith('console.json', JSON.stringify(fakeConfig, null, 2))
+  expect(mockConsoleCLIInstance.getWorkspaceConfig).toHaveBeenCalledWith(configOrgId, configProjectId, configWorkspaceId)
+})
 
-  test('exists', async () => {
-    expect(command.run).toBeInstanceOf(Function)
+test('should fail if the workspace config is missing', async () => {
+  config.get.mockImplementation(key => {
+    if (key === 'console.org.id') {
+      return configOrgId
+    }
+    if (key === 'console.project.id') {
+      return configProjectId
+    }
+    if (key === 'console.project.name') {
+      return configProjectName
+    }
+    if (key === 'console.org.name') {
+      return 'THE_ORG'
+    }
   })
+  await expect(command.run()).rejects.toThrowError()
+  expect(stdout.output).toMatchFixture('workspace/download-error3.txt')
+  expect(fs.writeFileSync).not.toHaveBeenCalled()
+})
 
-  describe('run', () => {
-    const fakeDownloadData = { id: 1, name: 'WRKSPC1', enabled: 1 }
-    const downloadWorkspaceJson = jest.fn()
-    beforeEach(() => {
-      downloadWorkspaceJson.mockReset()
-      downloadWorkspaceJson.mockResolvedValue({ ok: true, body: fakeDownloadData })
-
-      sdk.init.mockImplementation(() => ({ downloadWorkspaceJson }))
-      fs.writeFileSync = jest.fn()
-      command.getConfig = jest.fn()
-    })
-
-    afterEach(() => {
-      command.getConfig.mockReset()
-      jest.clearAllMocks()
-    })
-
-    test('should download the config for the selected workspace', async () => {
-      command.getConfig.mockImplementation(key => {
-        if (key === CONFIG_KEYS.ORG) {
-          return { name: 'THE_ORG', id: 123 }
-        }
-        if (key === CONFIG_KEYS.PROJECT) {
-          return { name: 'THE_PROJECT', id: 456 }
-        }
-        if (key === CONFIG_KEYS.WORKSPACE) {
-          return { name: 'THE_WORKSPACE', id: 789 }
-        }
-        return null
-      })
-      await command.run()
-      expect(fs.writeFileSync).toHaveBeenCalledWith('123-THE_PROJECT-THE_WORKSPACE.json', JSON.stringify(fakeDownloadData, null, 2))
-      expect(downloadWorkspaceJson).toHaveBeenCalledWith(123, 456, 789)
-    })
-
-    test('should download the config at specific destination', async () => {
-      const destination = '/Users/testuser/temp'
-      command.argv = [destination]
-      command.getConfig.mockImplementation(key => {
-        if (key === 'org') {
-          return { name: 'THE_ORG', id: 123 }
-        }
-        if (key === 'project') {
-          return { name: 'THE_PROJECT', id: 456 }
-        }
-        if (key === 'workspace') {
-          return { name: 'THE_WORKSPACE', id: 789 }
-        }
-        return null
-      })
-      await command.run()
-      const fileName = path.join(destination, '123-THE_PROJECT-THE_WORKSPACE.json')
-      expect(fs.writeFileSync).toHaveBeenCalledWith(fileName, JSON.stringify(fakeDownloadData, null, 2))
-      expect(downloadWorkspaceJson).toHaveBeenCalledWith(123, 456, 789)
-    })
-
-    test('should fail if the workspace is missing', async () => {
-      command.getConfig.mockImplementation(key => {
-        if (key === CONFIG_KEYS.ORG) {
-          return { name: 'THE_ORG', id: 123 }
-        }
-        if (key === `${CONFIG_KEYS.ORG}.name`) {
-          return 'THE_ORG'
-        }
-        if (key === CONFIG_KEYS.PROJECT) {
-          return { name: 'THE_PROJECT', id: 456 }
-        }
-        if (key === `${CONFIG_KEYS.PROJECT}.name`) {
-          return 'THE_PROJECT'
-        }
-        return null
-      })
-      await expect(command.run()).rejects.toThrowError()
-      expect(stdout.output).toMatchFixture('workspace/download-error3.txt')
-      expect(downloadWorkspaceJson).not.toHaveBeenCalled()
-      expect(fs.writeFileSync).not.toHaveBeenCalled()
-    })
-
-    test('should fail if the project is missing', async () => {
-      command.getConfig.mockImplementation(key => {
-        if (key === CONFIG_KEYS.ORG) {
-          return { name: 'THE_ORG', id: 123 }
-        }
-        if (key === `${CONFIG_KEYS.ORG}.name`) {
-          return 'THE_ORG'
-        }
-        return null
-      })
-      await expect(command.run()).rejects.toThrowError()
-      expect(stdout.output).toMatchFixture('workspace/download-error2.txt')
-      expect(downloadWorkspaceJson).not.toHaveBeenCalled()
-      expect(fs.writeFileSync).not.toHaveBeenCalled()
-    })
-
-    test('should fail if the org is missing', async () => {
-      command.getConfig.mockImplementation(key => {
-        return null
-      })
-      await expect(command.run()).rejects.toThrowError()
-      expect(stdout.output).toMatchFixture('workspace/download-error1.txt')
-      expect(downloadWorkspaceJson).not.toHaveBeenCalled()
-      expect(fs.writeFileSync).not.toHaveBeenCalled()
-    })
-
-    test('should fail if download fails', async () => {
-      downloadWorkspaceJson.mockRejectedValue(new Error('The Error'))
-      command.getConfig.mockImplementation(key => {
-        return { name: 'FAKE', id: 123 }
-      })
-      await expect(command.run()).rejects.toThrow('The Error')
-      expect(downloadWorkspaceJson).toHaveBeenCalled()
-      expect(fs.writeFileSync).not.toHaveBeenCalled()
-    })
+test('should fail if the project config is missing', async () => {
+  config.get.mockImplementation(key => {
+    if (key === 'console.org.id') {
+      return configOrgId
+    }
+    if (key === 'console.org.name') {
+      return 'THE_ORG'
+    }
   })
+  await expect(command.run()).rejects.toThrowError()
+  expect(stdout.output).toMatchFixture('workspace/download-error2.txt')
+  expect(fs.writeFileSync).not.toHaveBeenCalled()
+})
+
+test('should fail if the org config is missing', async () => {
+  config.get.mockImplementation(key => {
+    return undefined
+  })
+  await expect(command.run()).rejects.toThrowError()
+  expect(stdout.output).toMatchFixture('workspace/download-error1.txt')
+  expect(fs.writeFileSync).not.toHaveBeenCalled()
+})
+
+test('should fail if download fails', async () => {
+  mockConsoleCLIInstance.getWorkspaceConfig.mockImplementation(() => { throw new Error('The Error') })
+  await expect(command.run()).rejects.toThrow('The Error')
+  expect(fs.writeFileSync).not.toHaveBeenCalled()
 })

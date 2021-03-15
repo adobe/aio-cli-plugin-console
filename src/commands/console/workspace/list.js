@@ -20,15 +20,15 @@ class ListCommand extends ConsoleCommand {
   async run () {
     const { flags } = this.parse(ListCommand)
 
-    const org = this.getConfig(CONFIG_KEYS.ORG)
-    if (!org) {
-      this.log('You have not selected any Organization and Project. Please select first.')
+    const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
+    if (!orgId) {
+      this.log('You have not selected an Organization. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
     }
 
-    const project = this.getConfig(CONFIG_KEYS.PROJECT)
-    if (!project) {
+    const projectId = flags.projectId || this.getConfig(`${CONFIG_KEYS.PROJECT}.id`)
+    if (!projectId) {
       this.log('You have not selected a Project. Please select first.')
       this.printConsoleConfig()
       this.exit(1)
@@ -37,13 +37,7 @@ class ListCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      aioConsoleLogger.debug('Listing workspaces')
-
-      cli.action.start(`Retrieving Workspaces for Project: ${project.id}`)
-      const workspaces = await this.getConsoleProjectWorkspaces(org.id, project.id)
-      cli.action.stop()
-
-      aioConsoleLogger.debug('Listing workspaces: Data received')
+      const workspaces = await this.getConsoleProjectWorkspaces(orgId, projectId)
 
       if (flags.json) {
         this.printJson(workspaces)
@@ -67,8 +61,20 @@ class ListCommand extends ConsoleCommand {
       aioConsoleLogger.debug(err)
       this.error(err.message)
     } finally {
-      cli.action.stop()
+      this.cleanOutput()
     }
+  }
+
+  /**
+   * Retrieve list of Workspaces from a Project
+   *
+   * @param {string} orgId organization id
+   * @param {string} projectId project id
+   * @returns {Array} Workspaces
+   */
+  async getConsoleProjectWorkspaces (orgId, projectId) {
+    const response = await this.consoleCLI.getWorkspaces(orgId, projectId)
+    return response
   }
 }
 
@@ -91,6 +97,12 @@ ListCommand.flags = {
     description: 'Output yml',
     char: 'y',
     exclusive: ['json']
+  }),
+  orgId: flags.string({
+    description: 'Organization id of the Console Workspaces to list'
+  }),
+  projectId: flags.string({
+    description: 'Project id of the Console Workspaces to list'
   })
 }
 

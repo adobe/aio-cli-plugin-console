@@ -14,11 +14,11 @@ const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-
 const config = require('@adobe/aio-lib-core-config')
 const { Command, flags } = require('@oclif/command')
 const { getToken, context } = require('@adobe/aio-lib-ims')
-const sdk = require('@adobe/aio-lib-console')
+const LibConsoleCLI = require('@adobe/generator-aio-console/lib/console-cli')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const Help = require('@oclif/plugin-help').default
 const yaml = require('js-yaml')
-const { CONFIG_KEYS, DEFAULT_ENV, API_KEYS, ORG_TYPE_ENTERPRISE } = require('../../config')
+const { CONFIG_KEYS, DEFAULT_ENV, API_KEYS } = require('../../config')
 
 class ConsoleCommand extends Command {
   async run () {
@@ -34,7 +34,7 @@ class ConsoleCommand extends Command {
     await context.setCli({ 'cli.bare-output': true }, false) // set this globally
     aioConsoleLogger.debug('Retrieving Auth Token')
     this.accessToken = await getToken(CLI)
-    this.consoleClient = await sdk.init(this.accessToken, this.apiKey, this.imsEnv)
+    this.consoleCLI = await LibConsoleCLI.init({ accessToken: this.accessToken, apiKey: this.apiKey, env: this.imsEnv })
   }
 
   /**
@@ -86,88 +86,8 @@ class ConsoleCommand extends Command {
     this.log(`3. Workspace: ${config.workspace || '<no workspace selected>'}`)
   }
 
-  /**
-   * Retrieve Orgs / Org from console
-   *
-   * @param {string} [orgCode] the Org Code
-   * @returns {Promise<Array<{id, code, name}>>} Array of Orgs
-   */
-  async getConsoleOrgs (orgCode = null) {
-    const response = await this.consoleClient.getOrganizations()
-
-    if (!response.ok) {
-      throw new Error('Error retrieving Orgs')
-    }
-
-    const orgs = response.body
-      // Filter enterprise orgs
-      .filter(org => org.type === ORG_TYPE_ENTERPRISE)
-      // Filter org if orgId is specified
-      .filter(org => orgCode ? (org.code === orgCode) : true)
-      // Omit props
-      .map(({ id, code, name }) => ({ id, code, name }))
-
-    return orgs
-  }
-
-  /**
-   * Retrieve projects from an Org
-   *
-   * @param {string} orgId organization id
-   * @returns {Array} Projects
-   */
-  async getConsoleOrgProjects (orgId) {
-    const response = await this.consoleClient.getProjectsForOrg(orgId)
-    if (!response.ok) {
-      throw new Error('Error retrieving Projects')
-    }
-    return response.body
-  }
-
-  /**
-   * Retrieve project
-   *
-   * @param {string} orgId Ims Org ID
-   * @param {string} projectId Project Id to select project
-   * @returns {object} Project
-   */
-  async getConsoleOrgProject (orgId, projectId) {
-    const response = await this.consoleClient.getProject(orgId, projectId)
-    if (!response.ok) {
-      throw new Error('Error retrieving Project')
-    }
-    return response.body
-  }
-
-  /**
-   * Retrieve Workspace from a Project
-   *
-   * @param {string} orgId organization id
-   * @param {string} projectId project id
-   * @returns {Array} Workspaces
-   */
-  async getConsoleProjectWorkspaces (orgId, projectId) {
-    const response = await this.consoleClient.getWorkspacesForProject(orgId, projectId)
-    if (!response.ok) {
-      throw new Error('Error retrieving Workspaces')
-    }
-    return response.body
-  }
-
-  /**
-   * Retrieve Workspace
-   *
-   * @param {string} orgId Ims Org ID
-   * @param {string} projectId Project Id
-   * @param {string} workspaceId Workspace Id to select workspace
-   * @returns {object} Workspace
-   */
-  async getConsoleProjectWorkspace (orgId, projectId, workspaceId) {
-    const response = await this.consoleClient.getWorkspace(orgId, projectId, workspaceId)
-    if (!response.ok) {
-      throw new Error('Error retrieving Workspace')
-    }
-    return response.body
+  cleanOutput () {
+    LibConsoleCLI.cleanStdOut()
   }
 
   /**

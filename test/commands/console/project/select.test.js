@@ -10,15 +10,8 @@ governing permissions and limitations under the License.
 */
 
 const { Command } = require('@oclif/command')
-const { stdout } = require('stdout-stderr')
-const sdk = require('@adobe/aio-lib-console')
-const config = require('@adobe/aio-lib-core-config')
-const SelectCommand = require('../../../../src/commands/console/project/select')
-const { CONFIG_KEYS } = require('../../../../src/config')
-
-const getProject = () => ({
-  ok: true,
-  body: {
+const projects = [
+  {
     appId: null,
     date_created: '2020-04-29T10:14:17.000Z',
     date_last_modified: '2020-04-29T10:14:17.000Z',
@@ -29,25 +22,44 @@ const getProject = () => ({
     org_id: 1001,
     title: 'Title 1',
     type: 'default'
+  },
+  {
+    appId: null,
+    date_created: '2020-04-29T10:14:17.000Z',
+    date_last_modified: '2020-04-29T10:14:17.000Z',
+    deleted: 0,
+    description: 'Description 2',
+    id: '1000000002',
+    name: 'name2',
+    org_id: 1002,
+    title: 'Title 2',
+    type: 'default'
   }
-})
-
-const getProjectError = () => ({
-  ok: false,
-  body: []
-})
-
-const mockConfigGet = (key) => {
-  const consoleConfig = {
-    'org.id': 1,
-    'org.code': 'CODE01',
-    'org.name': 'ORG01',
-    'project.id': '1000000001',
-    'project.name': 'name1'
-  }
-  const orgKey = key.replace(`${CONFIG_KEYS.CONSOLE}.`, '')
-  return consoleConfig[orgKey]
+]
+const selectedProject = projects[0]
+const mockConsoleCLIInstance = {}
+/** @private */
+function setDefaultMockConsoleCLI () {
+  mockConsoleCLIInstance.getProjects = jest.fn().mockResolvedValue(projects)
+  mockConsoleCLIInstance.promptForSelectProject = jest.fn().mockResolvedValue(selectedProject)
 }
+
+jest.mock('@adobe/generator-aio-console/lib/console-cli', () => ({
+  init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
+  cleanStdOut: jest.fn()
+}))
+
+const config = require('@adobe/aio-lib-core-config')
+
+const SelectCommand = require('../../../../src/commands/console/project/select')
+
+let command
+beforeEach(() => {
+  command = new SelectCommand([])
+  setDefaultMockConsoleCLI()
+  config.set.mockReset()
+  config.delete.mockReset()
+})
 
 test('exports', async () => {
   expect(typeof SelectCommand).toEqual('function')
@@ -66,8 +78,8 @@ test('aliases', async () => {
 
 test('args', async () => {
   const projectId = SelectCommand.args[0]
-  expect(projectId.name).toEqual('projectId')
-  expect(projectId.required).toEqual(true)
+  expect(projectId.name).toEqual('projectIdOrName')
+  expect(projectId.required).toEqual(false)
   expect(projectId.description).toBeDefined()
 })
 
@@ -76,66 +88,53 @@ test('flags', async () => {
   expect(SelectCommand.flags.orgId.type).toBe('option')
 })
 
-describe('console:project:select', () => {
-  let command
+test('exists', async () => {
+  expect(command.run).toBeInstanceOf(Function)
+})
 
-  beforeEach(() => {
-    command = new SelectCommand([])
-  })
+test('should select a project with given projectId and orgId', async () => {
+  // Project id
+  command.argv = ['1001', '--orgId', '1']
+  await expect(command.run()).resolves.not.toThrowError()
+  expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1')
+  expect(mockConsoleCLIInstance.promptForSelectProject).toHaveBeenCalledWith(projects, { projectId: '1001', projectName: '1001' }, { allowCreate: false })
+  expect(config.set).toHaveBeenCalledWith('console.project', selectedProject)
+  expect(config.delete).toHaveBeenCalledWith('console.workspace')
+})
 
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
+test('should select a project with given projectName and selected orgId', async () => {
+  // org id from config
+  config.get.mockReturnValue('1')
+  // Project name
+  command.argv = ['name']
+  await expect(command.run()).resolves.not.toThrowError()
+  expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1')
+  expect(mockConsoleCLIInstance.promptForSelectProject).toHaveBeenCalledWith(projects, { projectId: 'name', projectName: 'name' }, { allowCreate: false })
+  expect(config.set).toHaveBeenCalledWith('console.project', selectedProject)
+  expect(config.delete).toHaveBeenCalledWith('console.workspace')
+})
 
-  test('exists', async () => {
-    expect(command.run).toBeInstanceOf(Function)
-  })
+test('should prompt and select a project with orgId in config', async () => {
+  // org id from config
+  config.get.mockReturnValue('1')
+  // Project not passed in
+  command.argv = []
+  await expect(command.run()).resolves.not.toThrowError()
+  expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1')
+  expect(mockConsoleCLIInstance.promptForSelectProject).toHaveBeenCalledWith(projects, { projectId: undefined, projectName: undefined }, { allowCreate: false })
+  expect(config.set).toHaveBeenCalledWith('console.project', selectedProject)
+  expect(config.delete).toHaveBeenCalledWith('console.workspace')
+})
 
-  describe('successfully select a project', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getProject }))
-      config.get.mockImplementation(mockConfigGet)
-    })
+test('should fail if orgId is missing and not in config', async () => {
+  // org id from config
+  config.get.mockReturnValue(undefined)
+  command.argv = ['name']
+  await expect(command.run()).rejects.toThrow('EEXIT: 1')
+})
 
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('should select a project with given projectId and orgId', async () => {
-      // Project id
-      command.argv = ['1001', '--orgId', '1']
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(stdout.output).toMatchFixture('project/select.txt')
-    })
-
-    test('should select a project with given projectId', async () => {
-      command.argv = ['1001']
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(stdout.output).toMatchFixture('project/select.txt')
-    })
-  })
-
-  describe('fail to select project', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getProject }))
-      config.get.mockImplementation(mockConfigGet)
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('should throw error if org not set', async () => {
-      config.get.mockReturnValue(undefined)
-      command.argv = ['1001']
-      await expect(command.run()).rejects.toThrowError()
-      expect(stdout.output).toMatchFixture('project/select-error.txt')
-    })
-
-    test('should throw Error retrieving Project', async () => {
-      sdk.init.mockImplementation(() => ({ getProject: getProjectError }))
-      command.argv = ['1001']
-      await expect(command.run()).rejects.toThrowError(new Error('Error retrieving Project'))
-    })
-  })
+test('error while retrieving Project', async () => {
+  mockConsoleCLIInstance.getProjects.mockRejectedValue(new Error('Error retrieving Project'))
+  command.argv = ['1001', '--orgId', '1']
+  await expect(command.run()).rejects.toThrowError(new Error('Error retrieving Project'))
 })

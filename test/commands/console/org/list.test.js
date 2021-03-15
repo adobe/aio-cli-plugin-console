@@ -11,23 +11,27 @@ governing permissions and limitations under the License.
 
 const { Command } = require('@oclif/command')
 const { stdout } = require('stdout-stderr')
-const sdk = require('@adobe/aio-lib-console')
-const ListCommand = require('../../../../src/commands/console/org/list')
-
-const getOrganizations = () => ({
-  ok: true,
-  body: [
+const mockConsoleCLIInstance = {}
+/** @private */
+function setDefaultMockConsoleCLI () {
+  mockConsoleCLIInstance.getOrganizations = jest.fn().mockResolvedValue([
     { id: 1, code: 'CODE01', name: 'ORG01', type: 'entp' },
     { id: 2, code: 'CODE02', name: 'ORG02', type: 'entp' },
     { id: 3, code: 'CODE03', name: 'ORG03', type: 'entp' },
     { id: 3, code: 'CODE03', name: 'ORG03', type: 'not_entp' }
-  ]
-})
+  ])
+}
+jest.mock('@adobe/generator-aio-console/lib/console-cli', () => ({
+  init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
+  cleanStdOut: jest.fn()
+}))
 
-const getOrganizationsError = () => ({
-  ok: false,
-  body: [],
-  error: 'Some Error'
+const ListCommand = require('../../../../src/commands/console/org/list')
+
+let command
+beforeEach(() => {
+  setDefaultMockConsoleCLI()
+  command = new ListCommand([])
 })
 
 test('exports', async () => {
@@ -55,58 +59,27 @@ test('flags', async () => {
 })
 
 describe('console:org:list', () => {
-  let command
-
-  beforeEach(() => {
-    command = new ListCommand([])
-  })
-
-  afterEach(() => {
-    jest.clearAllMocks()
-  })
-
   test('exists', async () => {
     expect(command.run).toBeInstanceOf(Function)
   })
-
-  describe('successfully list orgs', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getOrganizations }))
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('should return list of orgs', async () => {
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(stdout.output).toMatchFixture('org/list.txt')
-    })
-
-    test('should return list of orgs as json', async () => {
-      command.argv = ['--json']
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(JSON.parse(stdout.output)).toMatchFixtureJson('org/list.json')
-    })
-
-    test('should return list of orgs as yaml', async () => {
-      command.argv = ['--yml']
-      await expect(command.run()).resolves.not.toThrowError()
-      expect(stdout.output).toMatchFixture('org/list.yml')
-    })
+  test('should return list of orgs', async () => {
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(stdout.output).toMatchFixture('org/list.txt')
   })
 
-  describe('fail to list org', () => {
-    beforeEach(() => {
-      sdk.init.mockImplementation(() => ({ getOrganizations: getOrganizationsError }))
-    })
+  test('should return list of orgs as json', async () => {
+    command.argv = ['--json']
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(JSON.parse(stdout.output)).toMatchFixtureJson('org/list.json')
+  })
 
-    afterEach(() => {
-      jest.clearAllMocks()
-    })
-
-    test('should return list of orgs', async () => {
-      await expect(command.run()).rejects.toThrowError(new Error('Error retrieving Orgs'))
-    })
+  test('should return list of orgs as yaml', async () => {
+    command.argv = ['--yml']
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(stdout.output).toMatchFixture('org/list.yml')
+  })
+  test('fail to list org', async () => {
+    mockConsoleCLIInstance.getOrganizations.mockRejectedValue(new Error('some error'))
+    await expect(command.run()).rejects.toThrowError(new Error('some error'))
   })
 })
