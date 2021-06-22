@@ -9,7 +9,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const DEFAULT_ENV = 'prod'
 const ORG_TYPE_ENTERPRISE = 'entp'
 
 const API_KEYS = {
@@ -27,6 +26,5 @@ const CONFIG_KEYS = {
 module.exports = {
   ORG_TYPE_ENTERPRISE,
   CONFIG_KEYS,
-  API_KEYS,
-  DEFAULT_ENV
+  API_KEYS
 }

@@ -13,12 +13,13 @@ governing permissions and limitations under the License.
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console', { provider: 'debug' })
 const config = require('@adobe/aio-lib-core-config')
 const { Command, flags } = require('@oclif/command')
-const { getToken, context } = require('@adobe/aio-lib-ims')
+const { getToken } = require('@adobe/aio-lib-ims')
 const LibConsoleCLI = require('@adobe/generator-aio-console/lib/console-cli')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const Help = require('@oclif/plugin-help').default
 const yaml = require('js-yaml')
-const { CONFIG_KEYS, DEFAULT_ENV, API_KEYS } = require('../../config')
+const { CONFIG_KEYS, API_KEYS } = require('../../config')
+const { getCliEnv } = require('@adobe/aio-lib-env')
 
 class ConsoleCommand extends Command {
   async run () {
@@ -27,14 +28,13 @@ class ConsoleCommand extends Command {
   }
 
   async initSdk () {
-    const currConfig = await context.getCli()
-    this.imsEnv = (currConfig && currConfig.env) || DEFAULT_ENV
-    this.apiKey = API_KEYS[this.imsEnv]
+    this.cliEnv = getCliEnv()
+    this.apiKey = API_KEYS[this.cliEnv]
 
-    await context.setCli({ 'cli.bare-output': true }, false) // set this globally
+    // await context.setCli({ 'cli.bare-output': true }, false) // set this globally
     aioConsoleLogger.debug('Retrieving Auth Token')
     this.accessToken = await getToken(CLI)
-    this.consoleCLI = await LibConsoleCLI.init({ accessToken: this.accessToken, apiKey: this.apiKey, env: this.imsEnv })
+    this.consoleCLI = await LibConsoleCLI.init({ accessToken: this.accessToken, apiKey: this.apiKey, env: this.cliEnv })
   }
 
   /**
