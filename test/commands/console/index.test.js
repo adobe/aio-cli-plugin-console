@@ -14,15 +14,25 @@ const mockLogger = require('@adobe/aio-lib-core-logging')
 const config = require('@adobe/aio-lib-core-config')
 const Help = require('@oclif/plugin-help').default
 const yaml = require('js-yaml')
-const { CONFIG_KEYS } = require('../../../src/config')
+const { CONFIG_KEYS, API_KEYS } = require('../../../src/config')
+const { PROD_ENV, STAGE_ENV, DEFAULT_ENV } = require('@adobe/aio-lib-env')
+
+jest.mock('@adobe/aio-lib-ims')
 
 describe('ConsoleCommand', () => {
-  beforeEach(() => {
-    mockLogger.mockReset()
+  let command
+  let ORIGINAL_AIO_CLI_ENV
+
+  beforeAll(() => {
+    ORIGINAL_AIO_CLI_ENV = process.env.AIO_CLI_ENV
+  })
+  afterAll(() => {
+    process.env.AIO_CLI_ENV = ORIGINAL_AIO_CLI_ENV
   })
 
-  let command
   beforeEach(() => {
+    delete process.env.AIO_CLI_ENV
+    mockLogger.mockReset()
     jest.clearAllMocks()
     command = new ConsoleCommand([])
     command.log = jest.fn()
@@ -38,6 +48,45 @@ describe('ConsoleCommand', () => {
 
   test('flags', async () => {
     expect(ConsoleCommand.flags.help.type).toBe('boolean')
+  })
+
+  describe('initSDK', () => {
+    test('exists', async () => {
+      expect(command.initSdk).toBeInstanceOf(Function)
+    })
+
+    test('env STAGE_ENV', async () => {
+      process.env.AIO_CLI_ENV = STAGE_ENV
+
+      await command.initSdk()
+      expect(command.cliEnv).toEqual(STAGE_ENV)
+      expect(command.apiKey).toEqual(API_KEYS[STAGE_ENV])
+      expect(command.consoleCLI.sdkClient.env).toEqual(STAGE_ENV)
+    })
+    test('env PROD_ENV', async () => {
+      process.env.AIO_CLI_ENV = PROD_ENV
+
+      await command.initSdk()
+      expect(command.cliEnv).toEqual(PROD_ENV)
+      expect(command.apiKey).toEqual(API_KEYS[PROD_ENV])
+      expect(command.consoleCLI.sdkClient.env).toEqual(PROD_ENV)
+    })
+    test('env unknown', async () => {
+      process.env.AIO_CLI_ENV = 'unknown-env'
+
+      await command.initSdk()
+      expect(command.cliEnv).toEqual(DEFAULT_ENV)
+      expect(command.apiKey).toEqual(API_KEYS[DEFAULT_ENV])
+      expect(command.consoleCLI.sdkClient.env).toEqual(DEFAULT_ENV)
+    })
+    test('env not set', async () => {
+      delete process.env.AIO_CLI_ENV
+
+      await command.initSdk()
+      expect(command.cliEnv).toEqual(DEFAULT_ENV)
+      expect(command.apiKey).toEqual(API_KEYS[DEFAULT_ENV])
+      expect(command.consoleCLI.sdkClient.env).toEqual(DEFAULT_ENV)
+    })
   })
 
   describe('run', () => {
