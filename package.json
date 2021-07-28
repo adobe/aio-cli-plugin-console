@@ -9,7 +9,7 @@
     "@adobe/aio-lib-core-logging": "^1.1.0",
     "@adobe/aio-lib-env": "^1.1.0",
     "@adobe/aio-lib-ims": "^4.0.0",
-    "@adobe/generator-aio-console": "^2.0.6",
+    "@adobe/generator-aio-console": "^2.2.0",
     "@oclif/command": "^1",
     "@oclif/config": "1.15.1",
     "@oclif/errors": "^1.1.2",
