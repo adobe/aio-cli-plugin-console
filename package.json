@@ -43,8 +43,9 @@
     "jest-plugin-fs": "^2.9.0",
     "stdout-stderr": "^0.1.9"
   },
+  "engineStrict": true,
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12"
   },
   "main": "src/index.js",
   "files": [
