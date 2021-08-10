@@ -64,7 +64,7 @@ OPTIONS
   --help  Show help
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/index.js)_
+_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/index.js)_
 
 ## `aio console:org`
 
@@ -80,7 +80,7 @@ OPTIONS
   --help  Show help
 ```
 
-_See code: [src/commands/console/org/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/org/index.js)_
+_See code: [src/commands/console/org/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/org/index.js)_
 
 ## `aio console:org:list`
 
@@ -101,7 +101,7 @@ ALIASES
   $ aio console:org:ls
 ```
 
-_See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/org/list.js)_
+_See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/org/list.js)_
 
 ## `aio console:org:select [ORGCODE]`
 
@@ -123,7 +123,7 @@ ALIASES
   $ aio console:org:sel
 ```
 
-_See code: [src/commands/console/org/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/org/select.js)_
+_See code: [src/commands/console/org/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/org/select.js)_
 
 ## `aio console:project`
 
@@ -139,7 +139,7 @@ OPTIONS
   --help  Show help
 ```
 
-_See code: [src/commands/console/project/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/project/index.js)_
+_See code: [src/commands/console/project/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/project/index.js)_
 
 ## `aio console:project:list`
 
@@ -161,7 +161,7 @@ ALIASES
   $ aio console:project:ls
 ```
 
-_See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/project/list.js)_
+_See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/project/list.js)_
 
 ## `aio console:project:select [PROJECTIDORNAME]`
 
@@ -184,7 +184,7 @@ ALIASES
   $ aio console:project:sel
 ```
 
-_See code: [src/commands/console/project/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/project/select.js)_
+_See code: [src/commands/console/project/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/project/select.js)_
 
 ## `aio console:where`
 
@@ -205,7 +205,7 @@ ALIASES
   $ aio where
 ```
 
-_See code: [src/commands/console/where/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/where/index.js)_
+_See code: [src/commands/console/where/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/where/index.js)_
 
 ## `aio console:workspace`
 
@@ -224,7 +224,7 @@ ALIASES
   $ aio console:ws
 ```
 
-_See code: [src/commands/console/workspace/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/workspace/index.js)_
+_See code: [src/commands/console/workspace/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/workspace/index.js)_
 
 ## `aio console:workspace:download [DESTINATION]`
 
@@ -251,7 +251,7 @@ ALIASES
   $ aio console:ws:dl
 ```
 
-_See code: [src/commands/console/workspace/download.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/workspace/download.js)_
+_See code: [src/commands/console/workspace/download.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/workspace/download.js)_
 
 ## `aio console:workspace:list`
 
@@ -276,7 +276,7 @@ ALIASES
   $ aio console:ws:ls
 ```
 
-_See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/workspace/list.js)_
+_See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/workspace/list.js)_
 
 ## `aio console:workspace:select [WORKSPACEIDORNAME]`
 
@@ -302,5 +302,5 @@ ALIASES
   $ aio console:ws:sel
 ```
 
-_See code: [src/commands/console/workspace/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.0/src/commands/console/workspace/select.js)_
+_See code: [src/commands/console/workspace/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.1/src/commands/console/workspace/select.js)_
 <!-- commandsstop -->
