@@ -21,7 +21,7 @@ function setDefaultMockConsoleCLI () {
     { id: 3, code: 'CODE03', name: 'ORG03', type: 'not_entp' }
   ])
 }
-jest.mock('@adobe/generator-aio-console/lib/console-cli', () => ({
+jest.mock('@adobe/aio-cli-lib-console', () => ({
   init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
   cleanStdOut: jest.fn()
 }))
