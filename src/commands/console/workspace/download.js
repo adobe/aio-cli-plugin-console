@@ -14,7 +14,7 @@ const path = require('path')
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:download', { provider: 'debug' })
 const { CONFIG_KEYS } = require('../../../config')
-const LibConsoleCLI = require('@adobe/generator-aio-console/lib/console-cli')
+const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
 const fs = require('fs')
 
 class DownloadCommand extends ConsoleCommand {

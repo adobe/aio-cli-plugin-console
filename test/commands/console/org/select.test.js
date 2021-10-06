@@ -24,7 +24,7 @@ function setDefaultMockConsoleCLI () {
   mockConsoleCLIInstance.getOrganizations = jest.fn().mockResolvedValue(orgs)
   mockConsoleCLIInstance.promptForSelectOrganization = jest.fn().mockResolvedValue(selectedOrg)
 }
-jest.mock('@adobe/generator-aio-console/lib/console-cli', () => ({
+jest.mock('@adobe/aio-cli-lib-console', () => ({
   init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
   cleanStdOut: jest.fn()
 }))
