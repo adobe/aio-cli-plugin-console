@@ -1,6 +1,7 @@
 const { stdout, stderr } = require('stdout-stderr')
-const fs = require.requireActual('fs')
+const fs = jest.requireActual('fs')
 const eol = require('eol')
+const path = require('path')
 
 jest.setTimeout(30000)
 
@@ -15,12 +16,14 @@ afterEach(() => { stdout.stop(); stderr.stop() })
 
 // helper for fixtures
 global.fixtureFile = (output) => {
-  return fs.readFileSync(`${__dirname}/__fixtures__/${output}`).toString()
+  const fixturePath = path.join(__dirname, '__fixtures__', output)
+  return fs.readFileSync(fixturePath).toString()
 }
 
 // helper for fixtures
 global.fixtureJson = (output) => {
-  return JSON.parse(fs.readFileSync(`${__dirname}/__fixtures__/${output}`).toString())
+  const fixturePath = path.join(__dirname, '__fixtures__', output)
+  return JSON.parse(fs.readFileSync(fixturePath).toString())
 }
 
 // fixture matcher
