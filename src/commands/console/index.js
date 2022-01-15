@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console', { provider: 'debug' })
 const config = require('@adobe/aio-lib-core-config')
 const { Command, flags } = require('@oclif/command')
-const { getToken } = require('@adobe/aio-lib-ims')
+const { getToken, context } = require('@adobe/aio-lib-ims')
 const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const Help = require('@oclif/plugin-help').default
@@ -31,7 +31,7 @@ class ConsoleCommand extends Command {
     this.cliEnv = getCliEnv()
     this.apiKey = API_KEYS[this.cliEnv]
 
-    // await context.setCli({ 'cli.bare-output': true }, false) // set this globally
+    await context.setCli({ 'cli.bare-output': true }, false) // set this globally
     aioConsoleLogger.debug('Retrieving Auth Token')
     this.accessToken = await getToken(CLI)
     this.consoleCLI = await LibConsoleCLI.init({ accessToken: this.accessToken, apiKey: this.apiKey, env: this.cliEnv })
