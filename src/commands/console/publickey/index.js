@@ -11,12 +11,53 @@ governing permissions and limitations under the License.
 
 const Help = require('@oclif/plugin-help').default
 const ConsoleCommand = require('..')
+const { cli } = require('cli-ux')
 
 class IndexCommand extends ConsoleCommand {
   async run () {
     const help = new Help(this.config)
     help.showHelp(['console:publickey', '--help'])
   }
+}
+
+/**
+ * Pretty-print a table of public key certificate bindings.
+ *
+ * @param {{ bindingId: string,
+ *           orgId: string,
+ *           technicalAccountId: string,
+ *           certificateFingerprint: string,
+ *           notAfter: number }[]} bindings array of bindings results
+ */
+IndexCommand.printBindings = function (bindings) {
+  const columns = {
+    bindingId: {
+      header: 'ID'
+    },
+    certificateFingerprint: {
+      header: 'Fingerprint'
+    },
+    expiresString: {
+      header: 'Expires'
+    }
+  }
+  bindings.forEach(binding => {
+    binding.expiresString = this.formatExpiry(binding.notAfter)
+  })
+  cli.table(bindings, columns)
+}
+
+/**
+ * Format the notAfter field for readability into YYYY-MM-DD. Make result a
+ * little early by subtracting 1 day before truncating the time fields to
+ * provide a small grace period to users with time zone differences or time blindness.
+ *
+ * @param {number} notAfter GMT epoch in nanoseconds
+ * @returns {string} readable date
+ */
+IndexCommand.formatExpiry = function (notAfter) {
+  const realDate = new Date(notAfter - (24 * 60 * 60 * 1000))
+  return realDate.toISOString().substring(0, 10)
 }
 
 IndexCommand.description = 'Manage Public Key Bindings for your Adobe I/O Console Workspaces'

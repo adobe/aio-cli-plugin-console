@@ -12,8 +12,9 @@ governing permissions and limitations under the License.
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:publickey:list', { provider: 'debug' })
 const { flags } = require('@oclif/command')
 const { CONFIG_KEYS } = require('../../../config')
-const { cli } = require('cli-ux')
+
 const ConsoleCommand = require('../index')
+const IndexCommand = require('./index')
 
 class ListCommand extends ConsoleCommand {
   async run () {
@@ -54,7 +55,7 @@ class ListCommand extends ConsoleCommand {
       } else if (flags.yml) {
         this.printYaml(bindings)
       } else {
-        this.printResults(bindings)
+        IndexCommand.printBindings(bindings)
       }
       return bindings
     } catch (err) {
@@ -63,21 +64,6 @@ class ListCommand extends ConsoleCommand {
     } finally {
       this.cleanOutput()
     }
-  }
-
-  printResults (bindings) {
-    const columns = {
-      bindingId: {
-        header: 'ID'
-      },
-      certificateFingerprint: {
-        header: 'Fingerprint'
-      },
-      notAfter: {
-        header: 'Expires'
-      }
-    }
-    cli.table(bindings, columns)
   }
 }
 
