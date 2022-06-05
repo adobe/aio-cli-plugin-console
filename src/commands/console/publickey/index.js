@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe Inc. All rights reserved.
+Copyright 2022 Adobe Inc. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -41,10 +41,14 @@ IndexCommand.printBindings = function (bindings) {
       header: 'Expires'
     }
   }
+  const decorateds = []
   bindings.forEach(binding => {
-    binding.expiresString = this.formatExpiry(binding.notAfter)
+    const decorated = {}
+    Object.assign(decorated, binding)
+    decorated.expiresString = binding.notAfter ? this.formatExpiry(binding.notAfter) : ''
+    decorateds.push(decorated)
   })
-  cli.table(bindings, columns)
+  cli.table(decorateds, columns)
 }
 
 /**

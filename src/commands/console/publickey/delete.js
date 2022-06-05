@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe Inc. All rights reserved.
+Copyright 2022 Adobe Inc. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -48,16 +48,16 @@ class DeleteCommand extends ConsoleCommand {
 
       const bindings = await this.consoleCLI.getBindingsForWorkspace(orgId, project, workspace)
 
-      if (args.bindingIdOrFingerprint) {
-        const found = bindings.find((value) => value.bindingId === args.bindingIdOrFingerprint || value.certificateFingerprint === args.bindingIdOrFingerprint)
-        if (found) {
-          const deleted = await this.consoleCLI.deleteBindingFromWorkspace(orgId, project, workspace, found)
-          if (deleted) {
-            this.log(`Deleted binding ${found.bindingId} from workspace ${workspace.name}`)
-          }
+      const found = bindings.find((value) => value.bindingId === args.bindingIdOrFingerprint || value.certificateFingerprint === args.bindingIdOrFingerprint)
+      if (found) {
+        const deleted = await this.consoleCLI.deleteBindingFromWorkspace(orgId, project, workspace, found)
+        if (deleted) {
+          this.log(`Deleted binding ${found.bindingId} from workspace ${workspace.name}`)
         } else {
-          this.error(`No binding found with bindingId or fingerprint ${args.bindingIdOrFingerprint}`)
+          this.error(`Failed to delete binding ${found.bindingId} from workspace ${workspace.name}`)
         }
+      } else {
+        this.error(`No binding found with bindingId or fingerprint ${args.bindingIdOrFingerprint}`)
       }
     } catch (err) {
       aioConsoleLogger.debug(err)

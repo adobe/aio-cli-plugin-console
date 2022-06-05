@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Adobe. All rights reserved.
+Copyright 2022 Adobe. All rights reserved.
 This file is licensed to you under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -13,14 +13,12 @@ const { flags } = require('@oclif/command')
 const ConsoleCommand = require('../index')
 const IndexCommand = require('./index')
 const fs = require('fs')
-const { cli } = require('cli-ux')
 const { CONFIG_KEYS } = require('../../../config')
 const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:bind', { provider: 'debug' })
 
 class UploadAndBindCommand extends ConsoleCommand {
   async run () {
-    aioConsoleLogger.debug('Trying to bind certificate')
     const { args, flags } = this.parse(UploadAndBindCommand)
 
     const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
@@ -71,7 +69,7 @@ class UploadAndBindCommand extends ConsoleCommand {
         aioConsoleLogger.debug(`Found existing binding matching publicKey fingerprint ${fingerprint}. Will skip upload.`)
         bindings.push(found)
       } else {
-        const created = await this.consoleCLI.uploadAndBindCertificate(
+        const created = await this.consoleCLI.uploadAndBindCertificateToWorkspace(
           orgId,
           project,
           workspace,
@@ -94,21 +92,6 @@ class UploadAndBindCommand extends ConsoleCommand {
     } finally {
       LibConsoleCLI.cleanStdOut()
     }
-  }
-
-  printResults (bindings) {
-    const columns = {
-      bindingId: {
-        header: 'ID'
-      },
-      certificateFingerprint: {
-        header: 'Fingerprint'
-      },
-      notAfter: {
-        header: 'Expires'
-      }
-    }
-    cli.table(bindings, columns)
   }
 }
 
