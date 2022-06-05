@@ -48,7 +48,7 @@ class DeleteCommand extends ConsoleCommand {
 
       const bindings = await this.consoleCLI.getBindingsForWorkspace(orgId, project, workspace)
 
-      const found = bindings.find((value) => value.bindingId === args.bindingIdOrFingerprint || value.certificateFingerprint === args.bindingIdOrFingerprint)
+      const found = bindings.find((value) => value.bindingId === args.idOrFingerprint || value.certificateFingerprint === args.idOrFingerprint)
       if (found) {
         const deleted = await this.consoleCLI.deleteBindingFromWorkspace(orgId, project, workspace, found)
         if (deleted) {
@@ -57,7 +57,7 @@ class DeleteCommand extends ConsoleCommand {
           this.error(`Failed to delete binding ${found.bindingId} from workspace ${workspace.name}`)
         }
       } else {
-        this.error(`No binding found with bindingId or fingerprint ${args.bindingIdOrFingerprint}`)
+        this.error(`No binding found with bindingId or fingerprint ${args.idOrFingerprint}`)
       }
     } catch (err) {
       aioConsoleLogger.debug(err)
@@ -85,7 +85,7 @@ DeleteCommand.flags = {
 
 DeleteCommand.args = [
   {
-    name: 'bindingIdOrFingerprint',
+    name: 'idOrFingerprint',
     required: true,
     description: 'The bindingId or the fingerprint of the public key binding to delete'
   }
