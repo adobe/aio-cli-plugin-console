@@ -68,18 +68,18 @@ class DeleteCommand extends ConsoleCommand {
   }
 }
 
-DeleteCommand.description = 'List the public key certificates to the selected Workspace'
+DeleteCommand.description = 'Delete a public key certificate from the selected Workspace'
 
 DeleteCommand.flags = {
   ...ConsoleCommand.flags,
   orgId: flags.string({
-    description: 'Organization id of the Console Workspace to bind the public key certificate to'
+    description: 'Organization id of the Console Workspace to delete the public key certificate from'
   }),
   projectId: flags.string({
-    description: 'Project id of the Console Workspace to bind the public key certificate to'
+    description: 'Project id of the Console Workspace to delete the public key certificate from'
   }),
   workspaceId: flags.string({
-    description: 'Workspace id of the Console Workspace to bind the public key certificate to'
+    description: 'Workspace id of the Console Workspace to delete the public key certificate from'
   })
 }
 

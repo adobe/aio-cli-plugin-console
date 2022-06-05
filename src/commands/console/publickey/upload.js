@@ -95,18 +95,18 @@ class UploadAndBindCommand extends ConsoleCommand {
   }
 }
 
-UploadAndBindCommand.description = 'Uploads and binds a public key certificate to the selected Workspace'
+UploadAndBindCommand.description = 'Upload a public key certificate to the selected Workspace'
 
 UploadAndBindCommand.flags = {
   ...ConsoleCommand.flags,
   orgId: flags.string({
-    description: 'Organization id of the Console Workspace to bind the public key certificate to'
+    description: 'Organization id of the Console Workspace to upload the public key certificate to'
   }),
   projectId: flags.string({
-    description: 'Project id of the Console Workspace to bind the public key certificate to'
+    description: 'Project id of the Console Workspace to upload the public key certificate to'
   }),
   workspaceId: flags.string({
-    description: 'Workspace id of the Console Workspace to bind the public key certificate to'
+    description: 'Workspace id of the Console Workspace to upload the public key certificate to'
   }),
   json: flags.boolean({
     description: 'Output json',

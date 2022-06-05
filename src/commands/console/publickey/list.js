@@ -67,18 +67,18 @@ class ListCommand extends ConsoleCommand {
   }
 }
 
-ListCommand.description = 'List the public key certificates to the selected Workspace'
+ListCommand.description = 'List the public key certificates bound to the selected Workspace'
 
 ListCommand.flags = {
   ...ConsoleCommand.flags,
   orgId: flags.string({
-    description: 'Organization id of the Console Workspace to bind the public key certificate to'
+    description: 'Organization id of the Console Workspace to list the public key certificates for'
   }),
   projectId: flags.string({
-    description: 'Project id of the Console Workspace to bind the public key certificate to'
+    description: 'Project id of the Console Workspace to list the public key certificate for'
   }),
   workspaceId: flags.string({
-    description: 'Workspace id of the Console Workspace to bind the public key certificate to'
+    description: 'Workspace id of the Console Workspace to list the public key certificate for'
   }),
   json: flags.boolean({
     description: 'Output json',
