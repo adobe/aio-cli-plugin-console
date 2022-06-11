@@ -92,9 +92,6 @@ ListCommand.flags = {
   })
 }
 
-ListCommand.aliases = [
-  'console:publickey:ls',
-  'console:key:ls'
-]
+ListCommand.aliases = []
 
 module.exports = ListCommand

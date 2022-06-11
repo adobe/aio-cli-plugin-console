@@ -87,7 +87,6 @@ test('description', async () => {
 test('aliases', async () => {
   expect(ListCommand.aliases).toBeDefined()
   expect(ListCommand.aliases).toBeInstanceOf(Array)
-  expect(ListCommand.aliases.length).toBeGreaterThan(0)
 })
 
 test('flags', async () => {

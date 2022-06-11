@@ -91,9 +91,6 @@ DeleteCommand.args = [
   }
 ]
 
-DeleteCommand.aliases = [
-  'console:publickey:del',
-  'console:key:del'
-]
+DeleteCommand.aliases = []
 
 module.exports = DeleteCommand

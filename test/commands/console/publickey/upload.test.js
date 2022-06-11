@@ -104,7 +104,6 @@ test('description', async () => {
 test('aliases', async () => {
   expect(UploadAndBindCommand.aliases).toBeDefined()
   expect(UploadAndBindCommand.aliases).toBeInstanceOf(Array)
-  expect(UploadAndBindCommand.aliases.length).toBeGreaterThan(0)
 })
 
 test('flags', async () => {

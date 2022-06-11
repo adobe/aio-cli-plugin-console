@@ -66,8 +66,6 @@ IndexCommand.formatExpiry = function (notAfter) {
 
 IndexCommand.description = 'Manage Public Key Bindings for your Adobe I/O Console Workspaces'
 
-IndexCommand.aliases = [
-  'console:key'
-]
+IndexCommand.aliases = []
 
 module.exports = IndexCommand

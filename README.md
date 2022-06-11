@@ -47,7 +47,7 @@ $ aio console --help
 * [`aio console:publickey`](#aio-consolepublickey)
 * [`aio console:publickey:delete IDORFINGERPRINT`](#aio-consolepublickeydelete-idorfingerprint)
 * [`aio console:publickey:list`](#aio-consolepublickeylist)
-* [`aio console:publickey:upload PUBLICKEY`](#aio-consolepublickeyupload-publickey)
+* [`aio console:publickey:upload FILE`](#aio-consolepublickeyupload-file)
 * [`aio console:where`](#aio-consolewhere)
 * [`aio console:workspace`](#aio-consoleworkspace)
 * [`aio console:workspace:download [DESTINATION]`](#aio-consoleworkspacedownload-destination)
@@ -186,9 +186,6 @@ USAGE
 
 OPTIONS
   --help  Show help
-
-ALIASES
-  $ aio console:key
 ```
 
 _See code: [src/commands/console/publickey/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/index.js)_
@@ -209,10 +206,6 @@ OPTIONS
   --orgId=orgId              Organization id of the Console Workspace to delete the public key certificate from
   --projectId=projectId      Project id of the Console Workspace to delete the public key certificate from
   --workspaceId=workspaceId  Workspace id of the Console Workspace to delete the public key certificate from
-
-ALIASES
-  $ aio console:publickey:del
-  $ aio console:key:del
 ```
 
 _See code: [src/commands/console/publickey/delete.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/delete.js)_
@@ -232,24 +225,20 @@ OPTIONS
   --orgId=orgId              Organization id of the Console Workspace to list the public key certificates for
   --projectId=projectId      Project id of the Console Workspace to list the public key certificate for
   --workspaceId=workspaceId  Workspace id of the Console Workspace to list the public key certificate for
-
-ALIASES
-  $ aio console:publickey:ls
-  $ aio console:key:ls
 ```
 
 _See code: [src/commands/console/publickey/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/list.js)_
 
-## `aio console:publickey:upload PUBLICKEY`
+## `aio console:publickey:upload FILE`
 
 Upload a public key certificate to the selected Workspace
 
 ```
 USAGE
-  $ aio console:publickey:upload PUBLICKEY
+  $ aio console:publickey:upload FILE
 
 ARGUMENTS
-  PUBLICKEY  Path to public key certificate file in PEM format
+  FILE  Path to public key certificate file in PEM format
 
 OPTIONS
   -j, --json                 Output json
@@ -258,9 +247,6 @@ OPTIONS
   --orgId=orgId              Organization id of the Console Workspace to upload the public key certificate to
   --projectId=projectId      Project id of the Console Workspace to upload the public key certificate to
   --workspaceId=workspaceId  Workspace id of the Console Workspace to upload the public key certificate to
-
-ALIASES
-  $ aio console:key:upload
 ```
 
 _See code: [src/commands/console/publickey/upload.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/upload.js)_

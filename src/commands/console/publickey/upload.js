@@ -42,7 +42,7 @@ class UploadAndBindCommand extends ConsoleCommand {
       this.exit(1)
     }
 
-    const publicKey = args.publicKey
+    const publicKey = args.file
     let stats
     try {
       stats = fs.statSync(publicKey)
@@ -73,7 +73,7 @@ class UploadAndBindCommand extends ConsoleCommand {
           orgId,
           project,
           workspace,
-          args.publicKey
+          publicKey
         )
         bindings.push(created)
       }
@@ -120,13 +120,11 @@ UploadAndBindCommand.flags = {
   })
 }
 
-UploadAndBindCommand.aliases = [
-  'console:key:upload'
-]
+UploadAndBindCommand.aliases = []
 
 UploadAndBindCommand.args = [
   {
-    name: 'publicKey',
+    name: 'file',
     required: true,
     description: 'Path to public key certificate file in PEM format'
   }
