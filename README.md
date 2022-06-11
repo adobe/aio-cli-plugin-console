@@ -44,6 +44,10 @@ $ aio console --help
 * [`aio console:project`](#aio-consoleproject)
 * [`aio console:project:list`](#aio-consoleprojectlist)
 * [`aio console:project:select [PROJECTIDORNAME]`](#aio-consoleprojectselect-projectidorname)
+* [`aio console:publickey`](#aio-consolepublickey)
+* [`aio console:publickey:delete IDORFINGERPRINT`](#aio-consolepublickeydelete-idorfingerprint)
+* [`aio console:publickey:list`](#aio-consolepublickeylist)
+* [`aio console:publickey:upload PUBLICKEY`](#aio-consolepublickeyupload-publickey)
 * [`aio console:where`](#aio-consolewhere)
 * [`aio console:workspace`](#aio-consoleworkspace)
 * [`aio console:workspace:download [DESTINATION]`](#aio-consoleworkspacedownload-destination)
@@ -55,8 +59,6 @@ $ aio console --help
 Console plugin for the Adobe I/O CLI
 
 ```
-Console plugin for the Adobe I/O CLI
-
 USAGE
   $ aio console
 
@@ -71,8 +73,6 @@ _See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plug
 Manage your Adobe I/O Console Organizations
 
 ```
-Manage your Adobe I/O Console Organizations
-
 USAGE
   $ aio console:org
 
@@ -87,8 +87,6 @@ _See code: [src/commands/console/org/index.js](https://github.com/adobe/aio-cli-
 List your Organizations
 
 ```
-List your Organizations
-
 USAGE
   $ aio console:org:list
 
@@ -108,8 +106,6 @@ _See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-p
 Select an Organization
 
 ```
-Select an Organization
-
 USAGE
   $ aio console:org:select [ORGCODE]
 
@@ -130,8 +126,6 @@ _See code: [src/commands/console/org/select.js](https://github.com/adobe/aio-cli
 Manage your Adobe I/O Console Projects
 
 ```
-Manage your Adobe I/O Console Projects
-
 USAGE
   $ aio console:project
 
@@ -146,8 +140,6 @@ _See code: [src/commands/console/project/index.js](https://github.com/adobe/aio-
 List your Projects for the selected Organization
 
 ```
-List your Projects for the selected Organization
-
 USAGE
   $ aio console:project:list
 
@@ -168,8 +160,6 @@ _See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-c
 Select a Project for the selected Organization
 
 ```
-Select a Project for the selected Organization
-
 USAGE
   $ aio console:project:select [PROJECTIDORNAME]
 
@@ -186,13 +176,100 @@ ALIASES
 
 _See code: [src/commands/console/project/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/project/select.js)_
 
+## `aio console:publickey`
+
+Manage Public Key Bindings for your Adobe I/O Console Workspaces
+
+```
+USAGE
+  $ aio console:publickey
+
+OPTIONS
+  --help  Show help
+
+ALIASES
+  $ aio console:key
+```
+
+_See code: [src/commands/console/publickey/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/index.js)_
+
+## `aio console:publickey:delete IDORFINGERPRINT`
+
+Delete a public key certificate from the selected Workspace
+
+```
+USAGE
+  $ aio console:publickey:delete IDORFINGERPRINT
+
+ARGUMENTS
+  IDORFINGERPRINT  The bindingId or the fingerprint of the public key binding to delete
+
+OPTIONS
+  --help                     Show help
+  --orgId=orgId              Organization id of the Console Workspace to delete the public key certificate from
+  --projectId=projectId      Project id of the Console Workspace to delete the public key certificate from
+  --workspaceId=workspaceId  Workspace id of the Console Workspace to delete the public key certificate from
+
+ALIASES
+  $ aio console:publickey:del
+  $ aio console:key:del
+```
+
+_See code: [src/commands/console/publickey/delete.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/delete.js)_
+
+## `aio console:publickey:list`
+
+List the public key certificates bound to the selected Workspace
+
+```
+USAGE
+  $ aio console:publickey:list
+
+OPTIONS
+  -j, --json                 Output json
+  -y, --yml                  Output yml
+  --help                     Show help
+  --orgId=orgId              Organization id of the Console Workspace to list the public key certificates for
+  --projectId=projectId      Project id of the Console Workspace to list the public key certificate for
+  --workspaceId=workspaceId  Workspace id of the Console Workspace to list the public key certificate for
+
+ALIASES
+  $ aio console:publickey:ls
+  $ aio console:key:ls
+```
+
+_See code: [src/commands/console/publickey/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/list.js)_
+
+## `aio console:publickey:upload PUBLICKEY`
+
+Upload a public key certificate to the selected Workspace
+
+```
+USAGE
+  $ aio console:publickey:upload PUBLICKEY
+
+ARGUMENTS
+  PUBLICKEY  Path to public key certificate file in PEM format
+
+OPTIONS
+  -j, --json                 Output json
+  -y, --yml                  Output yml
+  --help                     Show help
+  --orgId=orgId              Organization id of the Console Workspace to upload the public key certificate to
+  --projectId=projectId      Project id of the Console Workspace to upload the public key certificate to
+  --workspaceId=workspaceId  Workspace id of the Console Workspace to upload the public key certificate to
+
+ALIASES
+  $ aio console:key:upload
+```
+
+_See code: [src/commands/console/publickey/upload.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/upload.js)_
+
 ## `aio console:where`
 
 Show the currently selected Organization, Project and Workspace
 
 ```
-Show the currently selected Organization, Project and Workspace
-
 USAGE
   $ aio console:where
 
@@ -212,8 +289,6 @@ _See code: [src/commands/console/where/index.js](https://github.com/adobe/aio-cl
 Manage your Adobe I/O Console Workspaces
 
 ```
-Manage your Adobe I/O Console Workspaces
-
 USAGE
   $ aio console:workspace
 
@@ -231,8 +306,6 @@ _See code: [src/commands/console/workspace/index.js](https://github.com/adobe/ai
 Downloads the configuration for the selected Workspace
 
 ```
-Downloads the configuration for the selected Workspace
-
 USAGE
   $ aio console:workspace:download [DESTINATION]
 
@@ -258,8 +331,6 @@ _See code: [src/commands/console/workspace/download.js](https://github.com/adobe
 List your Workspaces for your selected Project
 
 ```
-List your Workspaces for your selected Project
-
 USAGE
   $ aio console:workspace:list
 
@@ -283,8 +354,6 @@ _See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio
 Select a Workspace for the selected Project
 
 ```
-Select a Workspace for the selected Project
-
 USAGE
   $ aio console:workspace:select [WORKSPACEIDORNAME]
 
