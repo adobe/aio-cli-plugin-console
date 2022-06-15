@@ -66,7 +66,7 @@ OPTIONS
   --help  Show help
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/index.js)_
+_See code: [src/commands/console/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/index.ts)_
 
 ## `aio console:org`
 
@@ -80,7 +80,7 @@ OPTIONS
   --help  Show help
 ```
 
-_See code: [src/commands/console/org/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/org/index.js)_
+_See code: [src/commands/console/org/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/org/index.ts)_
 
 ## `aio console:org:list`
 
@@ -99,7 +99,7 @@ ALIASES
   $ aio console:org:ls
 ```
 
-_See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/org/list.js)_
+_See code: [src/commands/console/org/list.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/org/list.ts)_
 
 ## `aio console:org:select [ORGCODE]`
 
@@ -119,7 +119,7 @@ ALIASES
   $ aio console:org:sel
 ```
 
-_See code: [src/commands/console/org/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/org/select.js)_
+_See code: [src/commands/console/org/select.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/org/select.ts)_
 
 ## `aio console:project`
 
@@ -133,7 +133,7 @@ OPTIONS
   --help  Show help
 ```
 
-_See code: [src/commands/console/project/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/project/index.js)_
+_See code: [src/commands/console/project/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/project/index.ts)_
 
 ## `aio console:project:list`
 
@@ -153,7 +153,7 @@ ALIASES
   $ aio console:project:ls
 ```
 
-_See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/project/list.js)_
+_See code: [src/commands/console/project/list.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/project/list.ts)_
 
 ## `aio console:project:select [PROJECTIDORNAME]`
 
@@ -174,7 +174,7 @@ ALIASES
   $ aio console:project:sel
 ```
 
-_See code: [src/commands/console/project/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/project/select.js)_
+_See code: [src/commands/console/project/select.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/project/select.ts)_
 
 ## `aio console:publickey`
 
@@ -188,7 +188,7 @@ OPTIONS
   --help  Show help
 ```
 
-_See code: [src/commands/console/publickey/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/index.js)_
+_See code: [src/commands/console/publickey/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/publickey/index.ts)_
 
 ## `aio console:publickey:delete IDORFINGERPRINT`
 
@@ -208,7 +208,7 @@ OPTIONS
   --workspaceId=workspaceId  Workspace id of the Console Workspace to delete the public key certificate from
 ```
 
-_See code: [src/commands/console/publickey/delete.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/delete.js)_
+_See code: [src/commands/console/publickey/delete.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/publickey/delete.ts)_
 
 ## `aio console:publickey:list`
 
@@ -227,7 +227,7 @@ OPTIONS
   --workspaceId=workspaceId  Workspace id of the Console Workspace to list the public key certificate for
 ```
 
-_See code: [src/commands/console/publickey/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/list.js)_
+_See code: [src/commands/console/publickey/list.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/publickey/list.ts)_
 
 ## `aio console:publickey:upload FILE`
 
@@ -249,7 +249,7 @@ OPTIONS
   --workspaceId=workspaceId  Workspace id of the Console Workspace to upload the public key certificate to
 ```
 
-_See code: [src/commands/console/publickey/upload.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/publickey/upload.js)_
+_See code: [src/commands/console/publickey/upload.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/publickey/upload.ts)_
 
 ## `aio console:where`
 
@@ -268,7 +268,7 @@ ALIASES
   $ aio where
 ```
 
-_See code: [src/commands/console/where/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/where/index.js)_
+_See code: [src/commands/console/where/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/where/index.ts)_
 
 ## `aio console:workspace`
 
@@ -285,7 +285,7 @@ ALIASES
   $ aio console:ws
 ```
 
-_See code: [src/commands/console/workspace/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/workspace/index.js)_
+_See code: [src/commands/console/workspace/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/workspace/index.ts)_
 
 ## `aio console:workspace:download [DESTINATION]`
 
@@ -310,7 +310,7 @@ ALIASES
   $ aio console:ws:dl
 ```
 
-_See code: [src/commands/console/workspace/download.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/workspace/download.js)_
+_See code: [src/commands/console/workspace/download.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/workspace/download.ts)_
 
 ## `aio console:workspace:list`
 
@@ -333,7 +333,7 @@ ALIASES
   $ aio console:ws:ls
 ```
 
-_See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/workspace/list.js)_
+_See code: [src/commands/console/workspace/list.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/workspace/list.ts)_
 
 ## `aio console:workspace:select [WORKSPACEIDORNAME]`
 
@@ -357,5 +357,5 @@ ALIASES
   $ aio console:ws:sel
 ```
 
-_See code: [src/commands/console/workspace/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/3.4.2/src/commands/console/workspace/select.js)_
+_See code: [src/commands/console/workspace/select.ts](https://github.com/adobe/aio-cli-plugin-console/blob/3.5.0/src/commands/console/workspace/select.ts)_
 <!-- commandsstop -->
