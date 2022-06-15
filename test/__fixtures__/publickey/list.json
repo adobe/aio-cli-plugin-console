@@ -1,0 +1,16 @@
+[
+    {
+        "bindingId": "b1",
+        "orgId": "orgId",
+        "technicalAccountId": "ta1",
+        "certificateFingerprint": "cf1",
+        "notAfter": 1685806324000
+    },
+    {
+        "bindingId": "b2",
+        "orgId": "orgId",
+        "technicalAccountId": "ta2",
+        "certificateFingerprint": "cf2",
+        "notAfter": 1685806325000
+    }
+]

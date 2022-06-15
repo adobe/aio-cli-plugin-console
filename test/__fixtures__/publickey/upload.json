@@ -1,0 +1,9 @@
+[
+    {
+        "bindingId": "b2",
+        "orgId": "orgId",
+        "technicalAccountId": "ta2",
+        "certificateFingerprint": "cf2",
+        "notAfter": 1685806325000
+    }
+]
