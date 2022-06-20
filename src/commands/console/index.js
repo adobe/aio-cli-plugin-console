@@ -12,19 +12,18 @@ governing permissions and limitations under the License.
 
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console', { provider: 'debug' })
 const config = require('@adobe/aio-lib-core-config')
-const { Command, flags } = require('@oclif/command')
+const { Command, Flags, Help } = require('@oclif/core')
 const { getToken, context } = require('@adobe/aio-lib-ims')
 const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
-const Help = require('@oclif/plugin-help').default
+const { getCliEnv } = require('@adobe/aio-lib-env')
 const yaml = require('js-yaml')
 const { CONFIG_KEYS, API_KEYS } = require('../../config')
-const { getCliEnv } = require('@adobe/aio-lib-env')
 
 class ConsoleCommand extends Command {
   async run () {
     const help = new Help(this.config)
-    help.showHelp(['console', '--help'])
+    await help.showHelp(['console', '--help'])
   }
 
   async initSdk () {
@@ -133,7 +132,7 @@ ConsoleCommand.description = 'Console plugin for the Adobe I/O CLI'
 
 // common flags
 ConsoleCommand.flags = {
-  help: flags.boolean({ description: 'Show help' })
+  help: Flags.boolean({ description: 'Show help' })
 }
 
 module.exports = ConsoleCommand

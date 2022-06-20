@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 const fs = require('fs')
 const { stdout } = require('stdout-stderr')
-const { Command } = require('@oclif/command')
+const { Command } = require('@oclif/core')
 const path = require('path')
 
 // mock data

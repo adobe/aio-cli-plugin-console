@@ -9,14 +9,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const Help = require('@oclif/plugin-help').default
-const ConsoleCommand = require('..')
-const { cli } = require('cli-ux')
+const { Help, CliUx: { ux: cli } } = require('@oclif/core')
+const ConsoleCommand = require('../')
 
 class IndexCommand extends ConsoleCommand {
   async run () {
     const help = new Help(this.config)
-    help.showHelp(['console:publickey', '--help'])
+    await help.showHelp(['console:publickey', '--help'])
   }
 }
 

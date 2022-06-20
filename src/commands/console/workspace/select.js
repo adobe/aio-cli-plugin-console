@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { flags } = require('@oclif/command')
+const { Flags } = require('@oclif/core')
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:select', { provider: 'debug' })
 const { CONFIG_KEYS } = require('../../../config')
@@ -17,7 +17,7 @@ const { CONFIG_KEYS } = require('../../../config')
 class SelectCommand extends ConsoleCommand {
   async run () {
     aioConsoleLogger.debug('Trying to Select workspace')
-    const { args, flags } = this.parse(SelectCommand)
+    const { args, flags } = await this.parse(SelectCommand)
 
     const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
     if (!orgId) {
@@ -76,10 +76,10 @@ SelectCommand.aliases = [
 
 SelectCommand.flags = {
   ...ConsoleCommand.flags,
-  orgId: flags.string({
+  orgId: Flags.string({
     description: 'Organization id of the Console Workspace to select'
   }),
-  projectId: flags.string({
+  projectId: Flags.string({
     description: 'Project id of the Console Workspace to select'
   })
 }

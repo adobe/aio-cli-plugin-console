@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 const ConsoleCommand = require('../../../src/commands/console/index')
 const mockLogger = require('@adobe/aio-lib-core-logging')
 const config = require('@adobe/aio-lib-core-config')
-const Help = require('@oclif/plugin-help').default
+const { Help } = require('@oclif/core')
 const yaml = require('js-yaml')
 const { CONFIG_KEYS, API_KEYS } = require('../../../src/config')
 const { PROD_ENV, STAGE_ENV, DEFAULT_ENV } = require('@adobe/aio-lib-env')
@@ -95,6 +95,7 @@ describe('ConsoleCommand', () => {
     })
 
     test('returns help file for console command', () => {
+      command.config = {}
       const spy = jest.spyOn(Help.prototype, 'showHelp').mockReturnValue(true)
       return command.run().then(() => {
         expect(spy).toHaveBeenCalledWith(['console', '--help'])

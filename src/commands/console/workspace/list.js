@@ -9,8 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { flags } = require('@oclif/command')
-const { cli } = require('cli-ux')
+const { Flags, CliUx: { ux: cli } } = require('@oclif/core')
 const { CONFIG_KEYS } = require('../../../config')
 
 const ConsoleCommand = require('../index')
@@ -18,7 +17,7 @@ const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-
 
 class ListCommand extends ConsoleCommand {
   async run () {
-    const { flags } = this.parse(ListCommand)
+    const { flags } = await this.parse(ListCommand)
 
     const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
     if (!orgId) {
@@ -54,7 +53,7 @@ class ListCommand extends ConsoleCommand {
           },
           enabled: {}
         }, {
-          printLine: this.log
+          printLine: this.log.bind(this)
         })
       }
     } catch (err) {
@@ -70,7 +69,7 @@ class ListCommand extends ConsoleCommand {
    *
    * @param {string} orgId organization id
    * @param {string} projectId project id
-   * @returns {Array} Workspaces
+   * @returns {Promise<Array>} Workspaces
    */
   async getConsoleProjectWorkspaces (orgId, projectId) {
     const response = await this.consoleCLI.getWorkspaces(orgId, projectId)
@@ -88,20 +87,20 @@ ListCommand.aliases = [
 
 ListCommand.flags = {
   ...ConsoleCommand.flags,
-  json: flags.boolean({
+  json: Flags.boolean({
     description: 'Output json',
     char: 'j',
     exclusive: ['yml']
   }),
-  yml: flags.boolean({
+  yml: Flags.boolean({
     description: 'Output yml',
     char: 'y',
     exclusive: ['json']
   }),
-  orgId: flags.string({
+  orgId: Flags.string({
     description: 'Organization id of the Console Workspaces to list'
   }),
-  projectId: flags.string({
+  projectId: Flags.string({
     description: 'Project id of the Console Workspaces to list'
   })
 }
