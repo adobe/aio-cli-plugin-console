@@ -9,12 +9,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const aioLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:where', { provider: 'debug' })
-const { flags } = require('@oclif/command')
+const { Flags } = require('@oclif/core')
 
 const ConsoleCommand = require('../index')
 class WhereCommand extends ConsoleCommand {
   async run () {
-    const { flags } = this.parse(WhereCommand)
+    const { flags } = await this.parse(WhereCommand)
 
     aioLogger.debug('Where command: inquiring currently selected Org, Project and Workspace')
 
@@ -33,12 +33,12 @@ WhereCommand.description = 'Show the currently selected Organization, Project an
 
 WhereCommand.flags = {
   ...ConsoleCommand.flags,
-  json: flags.boolean({
+  json: Flags.boolean({
     description: 'Output json',
     char: 'j',
     exclusive: ['yml']
   }),
-  yml: flags.boolean({
+  yml: Flags.boolean({
     description: 'Output yml',
     char: 'y',
     exclusive: ['json']

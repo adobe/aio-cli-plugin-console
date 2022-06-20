@@ -11,9 +11,7 @@ governing permissions and limitations under the License.
 
 const TheCommand = require('../../../../src/commands/console/publickey')
 const ConsoleCommand = require('../../../../src/commands/console')
-const Help = require('@oclif/plugin-help').default
-const { cli: mockCLI } = require('cli-ux')
-jest.mock('cli-ux')
+const { Help, CliUx: { ux: cli } } = require('@oclif/core')
 
 test('exports', async () => {
   expect(typeof TheCommand).toEqual('function')
@@ -29,6 +27,7 @@ test('args', async () => {
 })
 
 test('flags', async () => {
+  console.log('TheCommand = ', JSON.stringify(ConsoleCommand, 0, 2))
   expect(TheCommand.flags.help.type).toBe('boolean')
 })
 
@@ -39,7 +38,8 @@ test('formatExpiry', async () => {
 
 test('printBindings', async () => {
   expect(typeof TheCommand.printBindings).toEqual('function')
-  const spy = jest.spyOn(TheCommand, 'formatExpiry')
+  const spyFormatExpiry = jest.spyOn(TheCommand, 'formatExpiry')
+  const spyTable = jest.spyOn(cli, 'table')
   const bindingWithExpires = {
     bindingId: 'testBinding1',
     orgId: 'testOrgId',
@@ -70,10 +70,9 @@ test('printBindings', async () => {
       header: 'Expires'
     }
   }
-  mockCLI.table = jest.fn()
   TheCommand.printBindings([bindingWithExpires, bindingWithoutExpires])
-  expect(spy).toHaveBeenCalledWith(1685806324000)
-  expect(mockCLI.table).toHaveBeenCalledWith([decoratedWithExpires, decoratedWithoutExpires], columns)
+  expect(spyFormatExpiry).toHaveBeenCalledWith(1685806324000)
+  expect(spyTable).toHaveBeenLastCalledWith([decoratedWithExpires, decoratedWithoutExpires], columns)
 })
 
 describe('instance methods', () => {
@@ -89,7 +88,8 @@ describe('instance methods', () => {
     })
 
     test('returns help file for console command', () => {
-      const spy = jest.spyOn(Help.prototype, 'showHelp').mockReturnValue(true)
+      command.config = {}
+      const spy = jest.spyOn(Help.prototype, 'showHelp').mockResolvedValue(true)
       return command.run().then(() => {
         expect(spy).toHaveBeenCalledWith(['console:publickey', '--help'])
       })

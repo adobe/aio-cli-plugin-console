@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { flags } = require('@oclif/command')
+const { Flags } = require('@oclif/core')
 const path = require('path')
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:download', { provider: 'debug' })
@@ -20,7 +20,7 @@ const fs = require('fs')
 class DownloadCommand extends ConsoleCommand {
   async run () {
     aioConsoleLogger.debug('Trying to fetch workspace configs')
-    const { args, flags } = this.parse(DownloadCommand)
+    const { args, flags } = await this.parse(DownloadCommand)
 
     const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
     if (!orgId) {
@@ -85,13 +85,13 @@ DownloadCommand.description = 'Downloads the configuration for the selected Work
 
 DownloadCommand.flags = {
   ...ConsoleCommand.flags,
-  orgId: flags.string({
+  orgId: Flags.string({
     description: 'Organization id of the Console Workspace configuration to download'
   }),
-  projectId: flags.string({
+  projectId: Flags.string({
     description: 'Project id of the Console Workspace configuration to download'
   }),
-  workspaceId: flags.string({
+  workspaceId: Flags.string({
     description: 'Workspace id of the Console Workspace configuration to download'
   })
 }

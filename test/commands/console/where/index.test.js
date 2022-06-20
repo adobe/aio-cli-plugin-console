@@ -9,7 +9,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Command } = require('@oclif/command')
+const { Command } = require('@oclif/core')
 const WhereCommand = require('../../../../src/commands/console/where')
 const mockLogger = require('@adobe/aio-lib-core-logging')
 

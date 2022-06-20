@@ -10,14 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:list', { provider: 'debug' })
-const { flags } = require('@oclif/command')
-const { cli } = require('cli-ux')
+const { Flags, CliUx: { ux: cli } } = require('@oclif/core')
 const ConsoleCommand = require('../index')
 
 class ListCommand extends ConsoleCommand {
   async run () {
-    const { flags } = this.parse(ListCommand)
-
+    const { flags } = await this.parse(ListCommand)
     const orgId = flags.orgId || this.getConfig('org.id')
     if (!orgId) {
       this.log('You have not selected an Organization. Please select first.')
@@ -50,7 +48,7 @@ class ListCommand extends ConsoleCommand {
    * Retrieve projects from an Org
    *
    * @param {string} orgId organization id
-   * @returns {Array} Projects
+   * @returns {Promise<Array>} Projects
    */
   async getConsoleOrgProjects (orgId) {
     const response = await this.consoleCLI.getProjects(orgId)
@@ -77,15 +75,15 @@ ListCommand.description = 'List your Projects for the selected Organization'
 
 ListCommand.flags = {
   ...ConsoleCommand.flags,
-  orgId: flags.string({
+  orgId: Flags.string({
     description: 'OrgID for listing projects'
   }),
-  json: flags.boolean({
+  json: Flags.boolean({
     description: 'Output json',
     char: 'j',
     exclusive: ['yml']
   }),
-  yml: flags.boolean({
+  yml: Flags.boolean({
     description: 'Output yml',
     char: 'y',
     exclusive: ['json']

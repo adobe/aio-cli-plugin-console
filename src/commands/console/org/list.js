@@ -11,15 +11,14 @@ governing permissions and limitations under the License.
 */
 
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:org:list', { provider: 'debug' })
-const { flags } = require('@oclif/command')
-const { cli } = require('cli-ux')
+const { Flags, CliUx: { ux: cli } } = require('@oclif/core')
 const { ORG_TYPE_ENTERPRISE } = require('../../../config')
 
 const ConsoleCommand = require('../index')
 
 class ListCommand extends ConsoleCommand {
   async run () {
-    const { flags } = this.parse(ListCommand)
+    const { flags } = await this.parse(ListCommand)
 
     await this.initSdk()
 
@@ -82,12 +81,12 @@ ListCommand.description = 'List your Organizations'
 
 ListCommand.flags = {
   ...ConsoleCommand.flags,
-  json: flags.boolean({
+  json: Flags.boolean({
     description: 'Output json',
     char: 'j',
     exclusive: ['yml']
   }),
-  yml: flags.boolean({
+  yml: Flags.boolean({
     description: 'Output yml',
     char: 'y',
     exclusive: ['json']

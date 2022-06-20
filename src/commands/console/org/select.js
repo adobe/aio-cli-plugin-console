@@ -16,7 +16,7 @@ const ConsoleCommand = require('../index')
 
 class SelectCommand extends ConsoleCommand {
   async run () {
-    const { args } = this.parse(SelectCommand)
+    const { args } = await this.parse(SelectCommand)
 
     await this.initSdk()
 

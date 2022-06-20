@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { flags } = require('@oclif/command')
+const { Flags } = require('@oclif/core')
 const ConsoleCommand = require('../index')
 const IndexCommand = require('./index')
 const fs = require('fs')
@@ -19,7 +19,7 @@ const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-
 
 class UploadAndBindCommand extends ConsoleCommand {
   async run () {
-    const { args, flags } = this.parse(UploadAndBindCommand)
+    const { args, flags } = await this.parse(UploadAndBindCommand)
 
     const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
     if (!orgId) {
@@ -99,21 +99,21 @@ UploadAndBindCommand.description = 'Upload a public key certificate to the selec
 
 UploadAndBindCommand.flags = {
   ...ConsoleCommand.flags,
-  orgId: flags.string({
+  orgId: Flags.string({
     description: 'Organization id of the Console Workspace to upload the public key certificate to'
   }),
-  projectId: flags.string({
+  projectId: Flags.string({
     description: 'Project id of the Console Workspace to upload the public key certificate to'
   }),
-  workspaceId: flags.string({
+  workspaceId: Flags.string({
     description: 'Workspace id of the Console Workspace to upload the public key certificate to'
   }),
-  json: flags.boolean({
+  json: Flags.boolean({
     description: 'Output json',
     char: 'j',
     exclusive: ['yml']
   }),
-  yml: flags.boolean({
+  yml: Flags.boolean({
     description: 'Output yml',
     char: 'y',
     exclusive: ['json']
