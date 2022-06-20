@@ -10,13 +10,13 @@ governing permissions and limitations under the License.
 */
 
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:publickey:list', { provider: 'debug' })
-const { flags } = require('@oclif/command')
+const { Flags } = require('@oclif/core')
 const { CONFIG_KEYS } = require('../../../config')
 const ConsoleCommand = require('../index')
 
 class DeleteCommand extends ConsoleCommand {
   async run () {
-    const { args, flags } = this.parse(DeleteCommand)
+    const { args, flags } = await this.parse(DeleteCommand)
 
     const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
     if (!orgId) {
@@ -72,13 +72,13 @@ DeleteCommand.description = 'Delete a public key certificate from the selected W
 
 DeleteCommand.flags = {
   ...ConsoleCommand.flags,
-  orgId: flags.string({
+  orgId: Flags.string({
     description: 'Organization id of the Console Workspace to delete the public key certificate from'
   }),
-  projectId: flags.string({
+  projectId: Flags.string({
     description: 'Project id of the Console Workspace to delete the public key certificate from'
   }),
-  workspaceId: flags.string({
+  workspaceId: Flags.string({
     description: 'Workspace id of the Console Workspace to delete the public key certificate from'
   })
 }

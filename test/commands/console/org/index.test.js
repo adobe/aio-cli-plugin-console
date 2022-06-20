@@ -27,6 +27,7 @@ test('args', async () => {
 })
 
 test('flags', async () => {
+  console.log('org TheCommand = ', JSON.stringify(TheCommand.flags, 0, 2))
   expect(TheCommand.flags.help.type).toBe('boolean')
 })
 

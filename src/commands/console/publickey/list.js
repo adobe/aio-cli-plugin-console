@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:publickey:list', { provider: 'debug' })
-const { flags } = require('@oclif/command')
+const { Flags } = require('@oclif/core')
 const { CONFIG_KEYS } = require('../../../config')
 
 const ConsoleCommand = require('../index')
@@ -18,7 +18,7 @@ const IndexCommand = require('./index')
 
 class ListCommand extends ConsoleCommand {
   async run () {
-    const { flags } = this.parse(ListCommand)
+    const { flags } = await this.parse(ListCommand)
 
     const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
     if (!orgId) {
@@ -71,21 +71,21 @@ ListCommand.description = 'List the public key certificates bound to the selecte
 
 ListCommand.flags = {
   ...ConsoleCommand.flags,
-  orgId: flags.string({
+  orgId: Flags.string({
     description: 'Organization id of the Console Workspace to list the public key certificates for'
   }),
-  projectId: flags.string({
+  projectId: Flags.string({
     description: 'Project id of the Console Workspace to list the public key certificate for'
   }),
-  workspaceId: flags.string({
+  workspaceId: Flags.string({
     description: 'Workspace id of the Console Workspace to list the public key certificate for'
   }),
-  json: flags.boolean({
+  json: Flags.boolean({
     description: 'Output json',
     char: 'j',
     exclusive: ['yml']
   }),
-  yml: flags.boolean({
+  yml: Flags.boolean({
     description: 'Output yml',
     char: 'y',
     exclusive: ['json']
