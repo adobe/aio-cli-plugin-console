@@ -34,7 +34,7 @@
     "jest-haste-map": "^27.5.1",
     "jest-junit": "^13.0.0",
     "jest-plugin-fs": "^2.9.0",
-    "oclif": "^3.0.1",
+    "oclif": "^3.2.0",
     "stdout-stderr": "^0.1.9",
     "typescript": "^4.5.4"
   },
@@ -70,7 +70,7 @@
     "eslint": "eslint src test e2e",
     "test": "npm run eslint && npm run unit-tests",
     "unit-tests": "jest --ci -w=2",
-    "prepack": "oclif manifest && oclif readme",
+    "prepack": "oclif manifest && oclif readme --no-aliases",
     "postpack": "rm -f oclif.manifest.json",
     "version": "oclif readme && git add README.md",
     "e2e": "jest --config jest.config.e2e.js"
