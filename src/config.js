@@ -23,8 +23,14 @@ const CONFIG_KEYS = {
   WORKSPACE: 'workspace'
 }
 
+const OPEN_URLS = {
+  prod: 'https://developer.adobe.com/console/projects',
+  stage: 'https://developer-stage.adobe.com/console/projects'
+}
+
 module.exports = {
   ORG_TYPE_ENTERPRISE,
   CONFIG_KEYS,
-  API_KEYS
+  API_KEYS,
+  OPEN_URLS
 }

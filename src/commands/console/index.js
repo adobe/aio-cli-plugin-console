@@ -106,23 +106,24 @@ class ConsoleCommand extends Command {
    * @returns {*} config data
    */
   getConfig (key) {
-    return config.get(`${CONFIG_KEYS.CONSOLE}.${key}`)
+    if (key) {
+      return config.get(`${CONFIG_KEYS.CONSOLE}.${key}`)
+    } else {
+      return config.get(CONFIG_KEYS.CONSOLE)
+    }
   }
 
   /**
    * Clear console config
    *
-   * @param {string} key key to clear
+   * @param {string} key key to store value
    */
-  clearConfigKey (key) {
-    config.delete(`${CONFIG_KEYS.CONSOLE}.${key}`)
-  }
-
-  /**
-   * Clear console config
-   */
-  clearConfig () {
-    config.delete(CONFIG_KEYS.CONSOLE)
+  clearConfig (key) {
+    if (key) {
+      config.delete(`${CONFIG_KEYS.CONSOLE}.${key}`)
+    } else {
+      config.delete(CONFIG_KEYS.CONSOLE)
+    }
   }
 }
 
