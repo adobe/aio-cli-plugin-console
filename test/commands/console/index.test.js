@@ -215,6 +215,12 @@ describe('ConsoleCommand', () => {
       expect(config.get).toBeCalledWith(`${CONFIG_KEYS.CONSOLE}.test`)
     })
 
+    test('getConfig - nokey', () => {
+      const command = new ConsoleCommand([])
+      command.getConfig()
+      expect(config.get).toBeCalledWith(`${CONFIG_KEYS.CONSOLE}`)
+    })
+
     test('clearConfig', () => {
       const command = new ConsoleCommand([])
       command.clearConfig()
