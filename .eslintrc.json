@@ -1,5 +1,8 @@
 {
     "extends": ["@adobe/eslint-config-aio-lib-config"],
+    "parserOptions": {
+      "ecmaVersion": 2020
+    },
     "settings": {
       "jsdoc": {
         "ignorePrivate": true
