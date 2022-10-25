@@ -9,11 +9,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { stdout } = require('stdout-stderr')
-
 const TestCommand = require('../../../src/commands/console/open')
 const config = require('@adobe/aio-lib-core-config')
-const { PROD_ENV, STAGE_ENV, DEFAULT_ENV } = require('@adobe/aio-lib-env')
+const { STAGE_ENV } = require('@adobe/aio-lib-env')
 
 jest.mock('@oclif/core', () => {
   return {
@@ -28,17 +26,15 @@ jest.mock('@oclif/core', () => {
 const { Command, CliUx: { ux: cli } } = require('@oclif/core')
 
 let command
-beforeEach(() => {
-  config.get.mockReset()
-  delete process.env.AIO_CLI_ENV
-  command = new TestCommand([])
-})
-
 let ORIGINAL_AIO_CLI_ENV
 beforeAll(() => {
   ORIGINAL_AIO_CLI_ENV = process.env.AIO_CLI_ENV
 })
-afterAll(() => {
+beforeEach(() => {
+  config.get.mockReset()
+  command = new TestCommand([])
+})
+afterEach(() => {
   process.env.AIO_CLI_ENV = ORIGINAL_AIO_CLI_ENV
 })
 
@@ -71,17 +67,44 @@ describe('console:open', () => {
     expect(cli.open).toHaveBeenCalledWith('https://developer.adobe.com/console/projects')
   })
 
-
   test('should open a browser (stage_env)', async () => {
     process.env.AIO_CLI_ENV = STAGE_ENV
     await expect(command.run()).resolves.not.toThrowError()
     expect(cli.open).toHaveBeenCalledWith('https://developer-stage.adobe.com/console/projects')
   })
 
-  test('should open a browser with selected project', async () => {
-    config.get.mockReturnValue('{ project: { id:"1234", org_id: "5678"}}')
+  test('should open a browser with default view if no project/workspace selected', async () => {
+    config.get.mockReturnValue(null)
     await expect(command.run()).resolves.not.toThrowError()
-    expect(cli.open).toHaveBeenLastCalledWith('https://developerd.adobe.com/console/projects')
+    expect(cli.open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects')
   })
 
+  test('should open a browser with project overview', async () => {
+    config.get.mockReturnValue({
+      project: {
+        name: 'ghActionDeploy',
+        id: '4566206088344853970',
+        title: 'Deploy with Github actions',
+        description: 'see title ...',
+        org_id: '53444'
+      }
+    })
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(cli.open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects/53444/4566206088344853970/overview')
+  })
+
+  test('should open a browser with project workspace', async () => {
+    config.get.mockReturnValue({
+      project: {
+        name: 'ghActionDeploy',
+        id: '4566206088344853970',
+        title: 'Deploy with Github actions',
+        description: 'see title ...',
+        org_id: '53444'
+      },
+      workspace: { id: '4566206088344859372', name: 'Stage' }
+    })
+    await expect(command.run()).resolves.not.toThrowError()
+    expect(cli.open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects/53444/4566206088344853970/workspaces/4566206088344859372/details')
+  })
 })

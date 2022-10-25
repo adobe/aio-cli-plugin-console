@@ -10,20 +10,20 @@ governing permissions and limitations under the License.
 */
 const aioLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:open', { provider: 'debug' })
 const { getCliEnv } = require('@adobe/aio-lib-env')
-const { Flags, CliUx } = require('@oclif/core')
+const { CliUx } = require('@oclif/core')
 const { OPEN_URLS } = require('../../config')
 
 const ConsoleCommand = require('./index')
 class OpenCommand extends ConsoleCommand {
   async run () {
+    // TODO: we could support --orgId and --projectId flags to open the console for a specific org/project
+    // currently we open the console for the local config org/project
     // const { flags } = await this.parse(OpenCommand)
 
     aioLogger.debug('Inquiring currently selected Org, Project and Workspace')
     const cliEnv = getCliEnv()
-    console.log(cliEnv)
     const config = this.getConfig()
     let url = OPEN_URLS[cliEnv]
-    console.log('config = ', config)
     if (config?.project?.id && config?.project?.org_id) {
       url += `/${config.project.org_id}/${config.project.id}/`
       if (config.workspace && config.workspace.id) {
