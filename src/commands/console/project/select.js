@@ -33,7 +33,7 @@ class SelectCommand extends ConsoleCommand {
       const project = await this.selectProjectInteractive(orgId, args.projectIdOrName)
 
       this.setConfig(CONFIG_KEYS.PROJECT, project)
-      this.clearConfigKey(CONFIG_KEYS.WORKSPACE)
+      this.clearConfig(CONFIG_KEYS.WORKSPACE)
 
       this.log(`Project selected ${project.name}`)
 
