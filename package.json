@@ -10,7 +10,7 @@
     "@adobe/aio-lib-core-logging": "^2.0.0",
     "@adobe/aio-lib-env": "^2.0.0",
     "@adobe/aio-lib-ims": "^6.0.0",
-    "@oclif/core": "^1.4.0",
+    "@oclif/core": "^2.1.7",
     "js-yaml": "^3.13.1"
   },
   "devDependencies": {
