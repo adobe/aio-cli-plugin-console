@@ -29,7 +29,7 @@
     "eslint-plugin-jsdoc": "^37.5.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
-    "execa": "^4.0.0",
+    "execa": "^7.1.0",
     "jest": "^28",
     "jest-haste-map": "^27.5.1",
     "jest-junit": "^13.0.0",
