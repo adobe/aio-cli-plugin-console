@@ -38,6 +38,7 @@ $ aio console --help
 # Commands
 <!-- commands -->
 * [`aio console`](#aio-console)
+* [`aio console open`](#aio-console-open)
 * [`aio console org`](#aio-console-org)
 * [`aio console org list`](#aio-console-org-list)
 * [`aio console org ls`](#aio-console-org-ls)
@@ -67,6 +68,7 @@ $ aio console --help
 * [`aio console ws ls`](#aio-console-ws-ls)
 * [`aio console ws sel [WORKSPACEIDORNAME]`](#aio-console-ws-sel-workspaceidorname)
 * [`aio console ws select [WORKSPACEIDORNAME]`](#aio-console-ws-select-workspaceidorname)
+* [`aio open`](#aio-open)
 * [`aio where`](#aio-where)
 
 ## `aio console`
@@ -84,7 +86,25 @@ DESCRIPTION
   Console plugin for the Adobe I/O CLI
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/4.0.1/src/commands/console/index.js)_
+_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/4.1.0/src/commands/console/index.js)_
+
+## `aio console open`
+
+Open the developer console for the selected Organization, Project and Workspace
+
+```
+USAGE
+  $ aio console open [--help]
+
+FLAGS
+  --help  Show help
+
+DESCRIPTION
+  Open the developer console for the selected Organization, Project and Workspace
+
+ALIASES
+  $ aio open
+```
 
 ## `aio console org`
 
@@ -305,7 +325,7 @@ Delete a public key certificate from the selected Workspace
 
 ```
 USAGE
-  $ aio console publickey delete [IDORFINGERPRINT] [--help] [--orgId <value>] [--projectId <value>] [--workspaceId
+  $ aio console publickey delete IDORFINGERPRINT [--help] [--orgId <value>] [--projectId <value>] [--workspaceId
   <value>]
 
 ARGUMENTS
@@ -347,8 +367,7 @@ Upload a public key certificate to the selected Workspace
 
 ```
 USAGE
-  $ aio console publickey upload [FILE] [--help] [--orgId <value>] [--projectId <value>] [--workspaceId <value>] [-j |
-  -y]
+  $ aio console publickey upload FILE [--help] [--orgId <value>] [--projectId <value>] [--workspaceId <value>] [-j | -y]
 
 ARGUMENTS
   FILE  Path to public key certificate file in PEM format
@@ -720,6 +739,24 @@ ALIASES
   $ aio console workspace sel
   $ aio console ws select
   $ aio console ws sel
+```
+
+## `aio open`
+
+Open the developer console for the selected Organization, Project and Workspace
+
+```
+USAGE
+  $ aio open [--help]
+
+FLAGS
+  --help  Show help
+
+DESCRIPTION
+  Open the developer console for the selected Organization, Project and Workspace
+
+ALIASES
+  $ aio open
 ```
 
 ## `aio where`
