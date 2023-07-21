@@ -191,7 +191,7 @@ describe('ConsoleCommand', () => {
         })
         command.printConsoleConfig({ alternativeFormat: 'yml' })
         expect(command.log).toHaveBeenCalledTimes(1)
-        expect(command.log).toHaveBeenCalledWith(yaml.safeDump({ org: 'THE_ORG', project: 'THE_PROJECT', workspace: 'THE_WORKSPACE' }))
+        expect(command.log).toHaveBeenCalledWith(yaml.dump({ org: 'THE_ORG', project: 'THE_PROJECT', workspace: 'THE_WORKSPACE' }))
       })
       test('no selected in yml format', () => {
         config.get.mockImplementation(key => {
