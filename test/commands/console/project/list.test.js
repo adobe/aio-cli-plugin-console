@@ -92,34 +92,34 @@ describe('console:project:list', () => {
   })
 
   test('should throw error if org not set', async () => {
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('project/list-no-org.txt')
   })
 
   test('should return list of projects with selected orgId', async () => {
     config.get.mockReturnValue('someorgid')
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('project/list.txt')
     expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('someorgid')
   })
 
   test('should return list of projects with orgid as cli arg', async () => {
     command.argv = ['--orgId', '1001']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('project/list.txt')
     expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1001')
   })
 
   test('should return list of projects json', async () => {
     command.argv = ['--orgId', '1001', '--json']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(JSON.parse(stdout.output)).toMatchFixtureJson('project/list.json')
     expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1001')
   })
 
   test('should return list of projects yaml', async () => {
     command.argv = ['--orgId', '1001', '--yml']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('project/list.yml')
     expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1001')
   })
@@ -127,6 +127,6 @@ describe('console:project:list', () => {
   test('error returning list of projects', async () => {
     mockConsoleCLIInstance.getProjects.mockRejectedValue(new Error('Error retrieving Projects'))
     command.argv = ['--orgId', '1001']
-    await expect(command.run()).rejects.toThrowError('Error retrieving Projects')
+    await expect(command.run()).rejects.toThrow('Error retrieving Projects')
   })
 })

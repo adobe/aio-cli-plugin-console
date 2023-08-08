@@ -82,7 +82,7 @@ describe('console:workspace:select', () => {
   })
   test('should select the provided workspaceId', async () => {
     command.argv = ['111']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith(configOrgId, configProjectId)
     expect(mockConsoleCLIInstance.promptForSelectWorkspace).toHaveBeenCalledWith(
       workspaces, { workspaceId: '111', workspaceName: '111' }, { allowCreate: false }
@@ -94,7 +94,7 @@ describe('console:workspace:select', () => {
 
   test('should select the provided workspaceName', async () => {
     command.argv = ['name']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith(configOrgId, configProjectId)
     expect(mockConsoleCLIInstance.promptForSelectWorkspace).toHaveBeenCalledWith(
       workspaces, { workspaceId: 'name', workspaceName: 'name' }, { allowCreate: false }
@@ -106,7 +106,7 @@ describe('console:workspace:select', () => {
 
   test('should select the provided workspaceName with specified projectId and orgId', async () => {
     command.argv = ['name', '--projectId', '000', '--orgId', '3214']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith('3214', '000')
     expect(mockConsoleCLIInstance.promptForSelectWorkspace).toHaveBeenCalledWith(
       workspaces, { workspaceId: 'name', workspaceName: 'name' }, { allowCreate: false }
@@ -118,7 +118,7 @@ describe('console:workspace:select', () => {
 
   test('should prompt to select if workspace is not provided', async () => {
     command.argv = []
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith(configOrgId, configProjectId)
     expect(mockConsoleCLIInstance.promptForSelectWorkspace).toHaveBeenCalledWith(
       workspaces, { workspaceId: null, workspaceName: null }, { allowCreate: false }
@@ -130,7 +130,7 @@ describe('console:workspace:select', () => {
   test('should throw error if no org is selected nor passed by flag', async () => {
     config.get.mockImplementation(k => undefined)
     command.argv = ['111']
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('workspace/select-error1.txt')
   })
 
@@ -145,13 +145,13 @@ describe('console:workspace:select', () => {
       return undefined
     })
     command.argv = ['111']
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('workspace/select-error2.txt')
   })
 
   test('error while retrieving workspaces', async () => {
     command.argv = []
     mockConsoleCLIInstance.getWorkspaces.mockRejectedValue(new Error('Error retrieving Workspaces'))
-    await expect(command.run()).rejects.toThrowError('Error retrieving Workspaces')
+    await expect(command.run()).rejects.toThrow('Error retrieving Workspaces')
   })
 })

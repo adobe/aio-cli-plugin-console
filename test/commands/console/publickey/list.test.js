@@ -113,28 +113,28 @@ describe('console:publickey:list', () => {
 
   test('should return list of bindings', async () => {
     command.argv = []
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('publickey/list.txt')
     expect(mockConsoleCLIInstance.getBindingsForWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace)
   })
 
   test('should return list of bindings when passing orgId, projectId, workspaceId as flags', async () => {
     command.argv = ['--orgId', '000', '--projectId', '999', '--workspaceId', '321']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('publickey/list.txt')
     expect(mockConsoleCLIInstance.getBindingsForWorkspace).toHaveBeenCalledWith('000', consoleConfig.project, consoleConfig.project.workspace)
   })
 
   test('should return list of bindings as json', async () => {
     command.argv = ['--json']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
 
     expect(JSON.parse(stdout.output)).toMatchFixtureJson('publickey/list.json')
   })
 
   test('should return list of bindings as yaml', async () => {
     command.argv = ['--yml']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
 
     expect(stdout.output).toEqual(expect.stringContaining('bindingId: b1'))
     expect(stdout.output).toEqual(expect.stringContaining('bindingId: b2'))
@@ -145,7 +145,7 @@ describe('console:publickey:list', () => {
   test('should throw error no org selected', async () => {
     command.argv = []
     config.get.mockImplementation(k => undefined)
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('publickey/noOrg-error.txt')
   })
 
@@ -160,7 +160,7 @@ describe('console:publickey:list', () => {
       }
       return null
     })
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('publickey/noProj-error.txt')
   })
 
@@ -181,7 +181,7 @@ describe('console:publickey:list', () => {
       }
       return null
     })
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('publickey/noWork-error.txt')
   })
 
@@ -189,7 +189,7 @@ describe('console:publickey:list', () => {
     command.argv = []
     mockConsoleCLIInstance.getBindingsForWorkspace.mockRejectedValue(new Error('invalid workspace'))
     const spy = jest.spyOn(command, 'error')
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(spy).toHaveBeenCalledWith('invalid workspace')
   })
 })

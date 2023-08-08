@@ -82,28 +82,28 @@ describe('console:workspace:list', () => {
 
   test('should return list of workspaces', async () => {
     command.argv = []
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('workspace/list.txt')
     expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith(configOrgId, configProjectId)
   })
 
   test('should return list of workspaces when passing orgId and projectId as flags', async () => {
     command.argv = ['--orgId', '000', '--projectId', '999']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('workspace/list.txt')
     expect(mockConsoleCLIInstance.getWorkspaces).toHaveBeenCalledWith('000', '999')
   })
 
   test('should return list of workspaces as json', async () => {
     command.argv = ['--json']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
 
     expect(JSON.parse(stdout.output)).toMatchFixtureJson('workspace/list.json')
   })
 
   test('should return list of workspaces as yaml', async () => {
     command.argv = ['--yml']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
 
     expect(stdout.output).toEqual(expect.stringContaining('id: 1'))
     expect(stdout.output).toEqual(expect.stringContaining('id: 2'))
@@ -114,7 +114,7 @@ describe('console:workspace:list', () => {
   test('should throw error no org selected', async () => {
     command.argv = []
     config.get.mockImplementation(k => undefined)
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('workspace/list-error1.txt')
   })
 
@@ -129,7 +129,7 @@ describe('console:workspace:list', () => {
       }
       return null
     })
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('workspace/list-error2.txt')
   })
 
