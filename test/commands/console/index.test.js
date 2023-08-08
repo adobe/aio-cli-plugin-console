@@ -206,25 +206,25 @@ describe('ConsoleCommand', () => {
     test('setConfig', () => {
       const command = new ConsoleCommand([])
       command.setConfig('test', 'value')
-      expect(config.set).toBeCalledWith(`${CONFIG_KEYS.CONSOLE}.test`, 'value')
+      expect(config.set).toHaveBeenCalledWith(`${CONFIG_KEYS.CONSOLE}.test`, 'value')
     })
 
     test('getConfig', () => {
       const command = new ConsoleCommand([])
       command.getConfig('test')
-      expect(config.get).toBeCalledWith(`${CONFIG_KEYS.CONSOLE}.test`)
+      expect(config.get).toHaveBeenCalledWith(`${CONFIG_KEYS.CONSOLE}.test`)
     })
 
     test('getConfig - nokey', () => {
       const command = new ConsoleCommand([])
       command.getConfig()
-      expect(config.get).toBeCalledWith(`${CONFIG_KEYS.CONSOLE}`)
+      expect(config.get).toHaveBeenCalledWith(`${CONFIG_KEYS.CONSOLE}`)
     })
 
     test('clearConfig', () => {
       const command = new ConsoleCommand([])
       command.clearConfig()
-      expect(config.delete).toBeCalledWith(CONFIG_KEYS.CONSOLE)
+      expect(config.delete).toHaveBeenCalledWith(CONFIG_KEYS.CONSOLE)
     })
   })
 })

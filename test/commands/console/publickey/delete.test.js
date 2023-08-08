@@ -114,7 +114,7 @@ describe('console:publickey:delete', () => {
 
   test('should delete binding1', async () => {
     command.argv = ['b1']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toEqual(expect.stringContaining('Deleted binding b1'))
     expect(mockConsoleCLIInstance.getBindingsForWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace)
     expect(mockConsoleCLIInstance.deleteBindingFromWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace, binding1)
@@ -122,7 +122,7 @@ describe('console:publickey:delete', () => {
 
   test('should delete binding1 by fingerprint', async () => {
     command.argv = ['cf1']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toEqual(expect.stringContaining('Deleted binding b1'))
     expect(mockConsoleCLIInstance.getBindingsForWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace)
     expect(mockConsoleCLIInstance.deleteBindingFromWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace, binding1)
@@ -130,7 +130,7 @@ describe('console:publickey:delete', () => {
 
   test('should delete binding2', async () => {
     command.argv = ['b2']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toEqual(expect.stringContaining('Deleted binding b2'))
     expect(mockConsoleCLIInstance.getBindingsForWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace)
     expect(mockConsoleCLIInstance.deleteBindingFromWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace, binding2)
@@ -138,7 +138,7 @@ describe('console:publickey:delete', () => {
 
   test('should delete binding2 by fingerprint', async () => {
     command.argv = ['cf2']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toEqual(expect.stringContaining('Deleted binding b2'))
     expect(mockConsoleCLIInstance.getBindingsForWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace)
     expect(mockConsoleCLIInstance.deleteBindingFromWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace, binding2)
@@ -146,7 +146,7 @@ describe('console:publickey:delete', () => {
 
   test('should delete binding when passing orgId, projectId, workspaceId as flags', async () => {
     command.argv = ['--orgId', '000', '--projectId', '999', '--workspaceId', '321', 'b2']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toEqual(expect.stringContaining('Deleted binding b2'))
     expect(mockConsoleCLIInstance.getBindingsForWorkspace).toHaveBeenCalledWith('000', consoleConfig.project, consoleConfig.project.workspace)
     expect(mockConsoleCLIInstance.deleteBindingFromWorkspace).toHaveBeenCalledWith('000', consoleConfig.project, consoleConfig.project.workspace, binding2)
@@ -171,7 +171,7 @@ describe('console:publickey:delete', () => {
   test('should throw error no org selected', async () => {
     command.argv = ['b2']
     config.get.mockImplementation(k => undefined)
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('publickey/noOrg-error.txt')
   })
 
@@ -186,7 +186,7 @@ describe('console:publickey:delete', () => {
       }
       return null
     })
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('publickey/noProj-error.txt')
   })
 
@@ -207,7 +207,7 @@ describe('console:publickey:delete', () => {
       }
       return null
     })
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('publickey/noWork-error.txt')
   })
 
@@ -215,7 +215,7 @@ describe('console:publickey:delete', () => {
     command.argv = ['b2']
     mockConsoleCLIInstance.getBindingsForWorkspace.mockRejectedValue(new Error('invalid workspace'))
     const spy = jest.spyOn(command, 'error')
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(spy).toHaveBeenCalledWith('invalid workspace')
   })
 })

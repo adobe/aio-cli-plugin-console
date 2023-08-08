@@ -63,23 +63,23 @@ describe('console:org:list', () => {
     expect(command.run).toBeInstanceOf(Function)
   })
   test('should return list of orgs', async () => {
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('org/list.txt')
   })
 
   test('should return list of orgs as json', async () => {
     command.argv = ['--json']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(JSON.parse(stdout.output)).toMatchFixtureJson('org/list.json')
   })
 
   test('should return list of orgs as yaml', async () => {
     command.argv = ['--yml']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('org/list.yml')
   })
   test('fail to list org', async () => {
     mockConsoleCLIInstance.getOrganizations.mockRejectedValue(new Error('some error'))
-    await expect(command.run()).rejects.toThrowError(new Error('some error'))
+    await expect(command.run()).rejects.toThrow(new Error('some error'))
   })
 })

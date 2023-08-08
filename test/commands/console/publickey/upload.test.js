@@ -134,7 +134,7 @@ describe('console:publickey:upload', () => {
 
   test('should return uploaded binding', async () => {
     command.argv = ['certificate_pub.crt']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('publickey/upload.txt')
     expect(mockConsoleCLIInstance.getBindingsForWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace)
     expect(mockConsoleCLIInstance.uploadAndBindCertificateToWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace, 'certificate_pub.crt')
@@ -142,7 +142,7 @@ describe('console:publickey:upload', () => {
 
   test('should return uploaded binding when passing orgId, projectId, workspaceId as flags', async () => {
     command.argv = ['--orgId', '000', '--projectId', '999', '--workspaceId', '321', 'certificate_pub.crt']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('publickey/upload.txt')
     expect(mockConsoleCLIInstance.getBindingsForWorkspace).toHaveBeenCalledWith('000', consoleConfig.project, consoleConfig.project.workspace)
     expect(mockConsoleCLIInstance.uploadAndBindCertificateToWorkspace).toHaveBeenCalledWith('000', consoleConfig.project, consoleConfig.project.workspace, 'certificate_pub.crt')
@@ -151,7 +151,7 @@ describe('console:publickey:upload', () => {
   test('should return uploaded binding even if it exists', async () => {
     command.argv = ['certificate_pub.crt']
     mockConsoleCLIInstance.getBindingsForWorkspace = jest.fn().mockResolvedValue([binding1, binding2])
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(stdout.output).toMatchFixture('publickey/upload.txt')
     expect(mockConsoleCLIInstance.getBindingsForWorkspace).toHaveBeenCalledWith(configOrgId, consoleConfig.project, consoleConfig.project.workspace)
     expect(mockConsoleCLIInstance.uploadAndBindCertificateToWorkspace).toHaveBeenCalledTimes(0)
@@ -159,13 +159,13 @@ describe('console:publickey:upload', () => {
 
   test('should return list of single binding as json', async () => {
     command.argv = ['--json', 'certificate_pub.crt']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(JSON.parse(stdout.output)).toMatchFixtureJson('publickey/upload.json')
   })
 
   test('should return list of single binding bindings as yaml', async () => {
     command.argv = ['--yml', 'certificate_pub.crt']
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
 
     expect(stdout.output).toEqual(expect.stringContaining('bindingId: b2'))
     expect(stdout.output).toEqual(expect.stringContaining('certificateFingerprint: cf2'))
@@ -174,21 +174,21 @@ describe('console:publickey:upload', () => {
   test('should throw error if file not found', async () => {
     command.argv = ['no_file.crt']
     const spy = jest.spyOn(command, 'error')
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(spy).toHaveBeenCalledWith('Invalid publicKey file: no_file.crt')
   })
 
   test('should throw error if file is directory', async () => {
     command.argv = ['a_directory']
     const spy = jest.spyOn(command, 'error')
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(spy).toHaveBeenCalledWith('Invalid publicKey file: a_directory')
   })
 
   test('should throw error no org selected', async () => {
     command.argv = ['certificate_pub.crt']
     config.get.mockImplementation(k => undefined)
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('publickey/noOrg-error.txt')
   })
 
@@ -203,7 +203,7 @@ describe('console:publickey:upload', () => {
       }
       return null
     })
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('publickey/noProj-error.txt')
   })
 
@@ -224,7 +224,7 @@ describe('console:publickey:upload', () => {
       }
       return null
     })
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(stdout.output).toMatchFixture('publickey/noWork-error.txt')
   })
 
@@ -232,7 +232,7 @@ describe('console:publickey:upload', () => {
     command.argv = ['certificate_pub.crt']
     mockConsoleCLIInstance.getBindingsForWorkspace.mockRejectedValue(new Error('invalid workspace'))
     const spy = jest.spyOn(command, 'error')
-    await expect(command.run()).rejects.toThrowError()
+    await expect(command.run()).rejects.toThrow()
     expect(spy).toHaveBeenCalledWith('invalid workspace')
   })
 })
