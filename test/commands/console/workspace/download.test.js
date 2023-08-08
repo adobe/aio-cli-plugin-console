@@ -232,7 +232,7 @@ test('should fail if the workspace config is missing', async () => {
       return 'THE_ORG'
     }
   })
-  await expect(command.run()).rejects.toThrowError()
+  await expect(command.run()).rejects.toThrow()
   expect(stdout.output).toMatchFixture('workspace/download-error3.txt')
   expect(fs.writeFileSync).not.toHaveBeenCalled()
 })
@@ -246,7 +246,7 @@ test('should fail if the project config is missing', async () => {
       return 'THE_ORG'
     }
   })
-  await expect(command.run()).rejects.toThrowError()
+  await expect(command.run()).rejects.toThrow()
   expect(stdout.output).toMatchFixture('workspace/download-error2.txt')
   expect(fs.writeFileSync).not.toHaveBeenCalled()
 })
@@ -255,7 +255,7 @@ test('should fail if the org config is missing', async () => {
   config.get.mockImplementation(key => {
     return undefined
   })
-  await expect(command.run()).rejects.toThrowError()
+  await expect(command.run()).rejects.toThrow()
   expect(stdout.output).toMatchFixture('workspace/download-error1.txt')
   expect(fs.writeFileSync).not.toHaveBeenCalled()
 })

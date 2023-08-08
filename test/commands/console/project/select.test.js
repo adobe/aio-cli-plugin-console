@@ -95,7 +95,7 @@ test('exists', async () => {
 test('should select a project with given projectId and orgId', async () => {
   // Project id
   command.argv = ['1001', '--orgId', '1']
-  await expect(command.run()).resolves.not.toThrowError()
+  await expect(command.run()).resolves.not.toThrow()
   expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1')
   expect(mockConsoleCLIInstance.promptForSelectProject).toHaveBeenCalledWith(projects, { projectId: '1001', projectName: '1001' }, { allowCreate: false })
   expect(config.set).toHaveBeenCalledWith('console.project', selectedProject)
@@ -107,7 +107,7 @@ test('should select a project with given projectName and selected orgId', async 
   config.get.mockReturnValue('1')
   // Project name
   command.argv = ['name']
-  await expect(command.run()).resolves.not.toThrowError()
+  await expect(command.run()).resolves.not.toThrow()
   expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1')
   expect(mockConsoleCLIInstance.promptForSelectProject).toHaveBeenCalledWith(projects, { projectId: 'name', projectName: 'name' }, { allowCreate: false })
   expect(config.set).toHaveBeenCalledWith('console.project', selectedProject)
@@ -119,7 +119,7 @@ test('should prompt and select a project with orgId in config', async () => {
   config.get.mockReturnValue('1')
   // Project not passed in
   command.argv = []
-  await expect(command.run()).resolves.not.toThrowError()
+  await expect(command.run()).resolves.not.toThrow()
   expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1')
   expect(mockConsoleCLIInstance.promptForSelectProject).toHaveBeenCalledWith(projects, { projectId: undefined, projectName: undefined }, { allowCreate: false })
   expect(config.set).toHaveBeenCalledWith('console.project', selectedProject)
@@ -136,5 +136,5 @@ test('should fail if orgId is missing and not in config', async () => {
 test('error while retrieving Project', async () => {
   mockConsoleCLIInstance.getProjects.mockRejectedValue(new Error('Error retrieving Project'))
   command.argv = ['1001', '--orgId', '1']
-  await expect(command.run()).rejects.toThrowError(new Error('Error retrieving Project'))
+  await expect(command.run()).rejects.toThrow(new Error('Error retrieving Project'))
 })

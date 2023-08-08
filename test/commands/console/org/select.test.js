@@ -73,7 +73,7 @@ describe('console:org:select', () => {
 
   test('should select the provided org code', async () => {
     command.argv = [selectedOrg.code]
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: selectedOrg.code, orgId: selectedOrg.code })
     // stores the org configuration
     expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
@@ -82,7 +82,7 @@ describe('console:org:select', () => {
   })
   test('should select the provided org id', async () => {
     command.argv = [selectedOrg.id]
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: selectedOrg.id, orgId: selectedOrg.id })
     // stores the org configuration
     expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
@@ -91,7 +91,7 @@ describe('console:org:select', () => {
   })
   test('should prompt for selection if no org is provided', async () => {
     command.argv = []
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: undefined, orgId: undefined })
     // stores the org configuration
     expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
@@ -101,12 +101,12 @@ describe('console:org:select', () => {
 
   test('throw Error retrieving Orgs', async () => {
     mockConsoleCLIInstance.getOrganizations.mockRejectedValue(new Error('error org'))
-    await expect(command.run()).rejects.toThrowError(new Error('error org'))
+    await expect(command.run()).rejects.toThrow(new Error('error org'))
   })
 
   test('throw error with provided org', async () => {
     mockConsoleCLIInstance.promptForSelectOrganization.mockRejectedValue(new Error('error bad org'))
-    await expect(command.run(['yo'])).rejects.toThrowError(new Error('error bad org'))
+    await expect(command.run(['yo'])).rejects.toThrow(new Error('error bad org'))
   })
 
   test('error during config set', async () => {

@@ -63,19 +63,19 @@ describe('console:open', () => {
   })
 
   test('should open a browser', async () => {
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(cli.open).toHaveBeenCalledWith('https://developer.adobe.com/console/projects')
   })
 
   test('should open a browser (stage_env)', async () => {
     process.env.AIO_CLI_ENV = STAGE_ENV
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(cli.open).toHaveBeenCalledWith('https://developer-stage.adobe.com/console/projects')
   })
 
   test('should open a browser with default view if no project/workspace selected', async () => {
     config.get.mockReturnValue(null)
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(cli.open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects')
   })
 
@@ -89,7 +89,7 @@ describe('console:open', () => {
         org_id: '53444'
       }
     })
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(cli.open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects/53444/4566206088344853970/overview')
   })
 
@@ -104,7 +104,7 @@ describe('console:open', () => {
       },
       workspace: { id: '4566206088344859372', name: 'Stage' }
     })
-    await expect(command.run()).resolves.not.toThrowError()
+    await expect(command.run()).resolves.not.toThrow()
     expect(cli.open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects/53444/4566206088344853970/workspaces/4566206088344859372/details')
   })
 })
