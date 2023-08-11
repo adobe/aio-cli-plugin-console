@@ -58,7 +58,7 @@ function setDefaultMockConfigGet () {
     if (key === 'console.workspace.id') {
       return configWorkspaceId
     }
-    if (key === 'console.project.name') {
+    if (key === 'console.project.title') {
       return configProjectName
     }
     if (key === 'console.workspace.name') {
@@ -187,7 +187,7 @@ test('should download the config for the selected workspace, config workspaceNam
     if (key === 'console.workspace.id') {
       return configWorkspaceId
     }
-    if (key === 'console.project.name') {
+    if (key === 'console.project.title') {
       return configProjectName
     }
   })
@@ -225,7 +225,7 @@ test('should fail if the workspace config is missing', async () => {
     if (key === 'console.project.id') {
       return configProjectId
     }
-    if (key === 'console.project.name') {
+    if (key === 'console.project.title') {
       return configProjectName
     }
     if (key === 'console.org.name') {
