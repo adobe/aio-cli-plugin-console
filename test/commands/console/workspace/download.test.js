@@ -55,11 +55,11 @@ function setDefaultMockConfigGet () {
     if (key === 'console.project.id') {
       return configProjectId
     }
+    if (key === 'console.project.name') {
+      return configProjectName
+    }
     if (key === 'console.workspace.id') {
       return configWorkspaceId
-    }
-    if (key === 'console.project.title') {
-      return configProjectName
     }
     if (key === 'console.workspace.name') {
       return configWorkspaceName

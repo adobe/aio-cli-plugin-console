@@ -49,7 +49,7 @@ class DownloadCommand extends ConsoleCommand {
 
       let fileName = 'console.json'
       if (!flags.workspaceId && !flags.projectId && !flags.orgId) {
-        const projectName = this.getConfig(`${CONFIG_KEYS.PROJECT}.title`)
+        const projectName = this.getConfig(`${CONFIG_KEYS.PROJECT}.name`)
         const workspaceName = this.getConfig(`${CONFIG_KEYS.WORKSPACE}.name`)
         if (projectName && workspaceName) {
           // give a better default file name when possible
