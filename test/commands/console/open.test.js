@@ -12,18 +12,10 @@ governing permissions and limitations under the License.
 const TestCommand = require('../../../src/commands/console/open')
 const config = require('@adobe/aio-lib-core-config')
 const { STAGE_ENV } = require('@adobe/aio-lib-env')
+const { Command } = require('@oclif/core')
+const open = require('open')
 
-jest.mock('@oclif/core', () => {
-  return {
-    ...jest.requireActual('@oclif/core'),
-    CliUx: {
-      ux: {
-        open: jest.fn()
-      }
-    }
-  }
-})
-const { Command, CliUx: { ux: cli } } = require('@oclif/core')
+jest.mock('open', () => jest.fn())
 
 let command
 let ORIGINAL_AIO_CLI_ENV
@@ -64,19 +56,19 @@ describe('console:open', () => {
 
   test('should open a browser', async () => {
     await expect(command.run()).resolves.not.toThrow()
-    expect(cli.open).toHaveBeenCalledWith('https://developer.adobe.com/console/projects')
+    expect(open).toHaveBeenCalledWith('https://developer.adobe.com/console/projects')
   })
 
   test('should open a browser (stage_env)', async () => {
     process.env.AIO_CLI_ENV = STAGE_ENV
     await expect(command.run()).resolves.not.toThrow()
-    expect(cli.open).toHaveBeenCalledWith('https://developer-stage.adobe.com/console/projects')
+    expect(open).toHaveBeenCalledWith('https://developer-stage.adobe.com/console/projects')
   })
 
   test('should open a browser with default view if no project/workspace selected', async () => {
     config.get.mockReturnValue(null)
     await expect(command.run()).resolves.not.toThrow()
-    expect(cli.open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects')
+    expect(open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects')
   })
 
   test('should open a browser with project overview', async () => {
@@ -90,7 +82,7 @@ describe('console:open', () => {
       }
     })
     await expect(command.run()).resolves.not.toThrow()
-    expect(cli.open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects/53444/4566206088344853970/overview')
+    expect(open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects/53444/4566206088344853970/overview')
   })
 
   test('should open a browser with project workspace', async () => {
@@ -105,6 +97,6 @@ describe('console:open', () => {
       workspace: { id: '4566206088344859372', name: 'Stage' }
     })
     await expect(command.run()).resolves.not.toThrow()
-    expect(cli.open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects/53444/4566206088344853970/workspaces/4566206088344859372/details')
+    expect(open).toHaveBeenLastCalledWith('https://developer.adobe.com/console/projects/53444/4566206088344853970/workspaces/4566206088344859372/details')
   })
 })

@@ -8,9 +8,10 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const fs = require('fs')
-const { stdout } = require('stdout-stderr')
+
 const { Command } = require('@oclif/core')
+const { stdout } = require('stdout-stderr')
+const fs = jest.requireActual('fs')
 const path = require('path')
 
 // mock data
@@ -93,8 +94,9 @@ test('aliases', async () => {
 })
 
 test('args', async () => {
-  const destination = DownloadCommand.args[0]
-  expect(destination.name).toEqual('destination')
+  expect(DownloadCommand.args).toBeDefined()
+  expect(DownloadCommand.args).toBeInstanceOf(Object)
+  const destination = DownloadCommand.args.destination
   expect(destination.required).toEqual(false)
   expect(destination.description).toBeDefined()
 })

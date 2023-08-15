@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { Flags } = require('@oclif/core')
+const { Flags, Args } = require('@oclif/core')
 const ConsoleCommand = require('../index')
 const IndexCommand = require('./index')
 const fs = require('fs')
@@ -122,12 +122,11 @@ UploadAndBindCommand.flags = {
 
 UploadAndBindCommand.aliases = []
 
-UploadAndBindCommand.args = [
-  {
-    name: 'file',
-    required: true,
-    description: 'Path to public key certificate file in PEM format'
-  }
-]
+UploadAndBindCommand.args = {
+  file: Args.file({
+    description: 'Path to public key certificate file in PEM format',
+    required: true
+  })
+}
 
 module.exports = UploadAndBindCommand

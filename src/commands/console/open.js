@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 const aioLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:open', { provider: 'debug' })
 const { getCliEnv } = require('@adobe/aio-lib-env')
-const { CliUx } = require('@oclif/core')
+const open = require('open')
 const { OPEN_URLS } = require('../../config')
 
 const ConsoleCommand = require('./index')
@@ -33,7 +33,7 @@ class OpenCommand extends ConsoleCommand {
       }
     }
     aioLogger.debug(`opening url ${url}`)
-    CliUx.ux.open(url)
+    open(url)
   }
 }
 

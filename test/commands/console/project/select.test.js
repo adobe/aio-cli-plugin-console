@@ -77,10 +77,10 @@ test('aliases', async () => {
 })
 
 test('args', async () => {
-  const projectId = SelectCommand.args[0]
-  expect(projectId.name).toEqual('projectIdOrName')
-  expect(projectId.required).toEqual(false)
-  expect(projectId.description).toBeDefined()
+  expect(SelectCommand.args.projectIdOrName).toBeDefined()
+  const projectIdOrName = SelectCommand.args.projectIdOrName
+  expect(projectIdOrName.required).toEqual(false)
+  expect(projectIdOrName.description).toBeDefined()
 })
 
 test('flags', async () => {

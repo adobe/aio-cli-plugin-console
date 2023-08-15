@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { Flags } = require('@oclif/core')
+const { Flags, Args } = require('@oclif/core')
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:select', { provider: 'debug' })
 const { CONFIG_KEYS } = require('../../../config')
@@ -84,12 +84,11 @@ SelectCommand.flags = {
   })
 }
 
-SelectCommand.args = [
-  {
-    name: 'workspaceIdOrName',
-    required: false,
-    description: 'Adobe Developer Console Workspace id or Workspace name'
-  }
-]
+SelectCommand.args = {
+  workspaceIdOrName: Args.string({
+    description: 'Adobe Developer Console Workspace id or Workspace name',
+    required: false
+  })
+}
 
 module.exports = SelectCommand
