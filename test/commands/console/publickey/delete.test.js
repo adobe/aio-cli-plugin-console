@@ -202,7 +202,7 @@ describe('console:publickey:delete', () => {
       if (key === 'console.project.id') {
         return '123'
       }
-      if (key === 'console.project.name') {
+      if (key === 'console.project.title') {
         return 'THE_PROJECT'
       }
       return null
