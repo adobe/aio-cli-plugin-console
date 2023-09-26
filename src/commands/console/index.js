@@ -63,26 +63,26 @@ class ConsoleCommand extends Command {
    * @param {string} [options.alternativeFormat] can be set to: 'json', 'yml'
    */
   printConsoleConfig (options = {}) {
-    const config = {}
-    config.org = this.getConfig('org.name')
-    config.project = this.getConfig('project.name')
-    config.workspace = this.getConfig('workspace.name')
+    const state = {}
+    state.org = this.getConfig('org.name')
+    state.project = this.getConfig('project.title')
+    state.workspace = this.getConfig('workspace.name')
 
     // handling json output
     if (options.alternativeFormat === 'json') {
-      this.printJson(config)
+      this.printJson(state)
       return
     }
 
     if (options.alternativeFormat === 'yml') {
-      this.printYaml(config)
+      this.printYaml(state)
       return
     }
 
     this.log('You are currently in:')
-    this.log(`1. Org: ${config.org || '<no org selected>'}`)
-    this.log(`2. Project: ${config.project || '<no project selected>'}`)
-    this.log(`3. Workspace: ${config.workspace || '<no workspace selected>'}`)
+    this.log(`1. Org: ${state.org || '<no org selected>'}`)
+    this.log(`2. Project: ${state.project || '<no project selected>'}`)
+    this.log(`3. Workspace: ${state.workspace || '<no workspace selected>'}`)
   }
 
   cleanOutput () {

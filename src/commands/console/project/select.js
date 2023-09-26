@@ -35,7 +35,7 @@ class SelectCommand extends ConsoleCommand {
       this.setConfig(CONFIG_KEYS.PROJECT, project)
       this.clearConfig(CONFIG_KEYS.WORKSPACE)
 
-      this.log(`Project selected ${project.name}`)
+      this.log(`Project selected : ${project.title}`)
 
       this.printConsoleConfig()
     } catch (err) {

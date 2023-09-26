@@ -28,7 +28,7 @@
     "eslint-plugin-import": "^2.28.0",
     "eslint-plugin-jest": "^27.2.3",
     "eslint-plugin-jsdoc": "^42.0.0",
-    "eslint-plugin-n": "^16.0.1",
+    "eslint-plugin-n": "^15.7",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.1.1",
     "execa": "^4.0.0",
@@ -70,7 +70,7 @@
   "repository": "adobe/aio-cli-plugin-console",
   "scripts": {
     "eslint": "eslint src test e2e",
-    "test": "npm run eslint && npm run unit-tests",
+    "test": "npm run unit-tests && npm run eslint",
     "unit-tests": "jest --ci -w=2",
     "prepack": "oclif manifest && oclif readme --no-aliases",
     "postpack": "rm -f oclif.manifest.json",

@@ -119,7 +119,7 @@ describe('ConsoleCommand', () => {
           if (key === `${CONFIG_KEYS.CONSOLE}.org.name`) {
             return 'THE_ORG'
           }
-          if (key === `${CONFIG_KEYS.CONSOLE}.project.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.project.title`) {
             return 'THE_PROJECT'
           }
           return null
@@ -136,7 +136,7 @@ describe('ConsoleCommand', () => {
           if (key === `${CONFIG_KEYS.CONSOLE}.org.name`) {
             return 'THE_ORG'
           }
-          if (key === `${CONFIG_KEYS.CONSOLE}.project.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.project.title`) {
             return 'THE_PROJECT'
           }
           if (key === `${CONFIG_KEYS.CONSOLE}.workspace.name`) {
@@ -156,7 +156,7 @@ describe('ConsoleCommand', () => {
           if (key === `${CONFIG_KEYS.CONSOLE}.org.name`) {
             return 'THE_ORG'
           }
-          if (key === `${CONFIG_KEYS.CONSOLE}.project.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.project.title`) {
             return 'THE_PROJECT'
           }
           if (key === `${CONFIG_KEYS.CONSOLE}.workspace.name`) {
@@ -181,7 +181,7 @@ describe('ConsoleCommand', () => {
           if (key === `${CONFIG_KEYS.CONSOLE}.org.name`) {
             return 'THE_ORG'
           }
-          if (key === `${CONFIG_KEYS.CONSOLE}.project.name`) {
+          if (key === `${CONFIG_KEYS.CONSOLE}.project.title`) {
             return 'THE_PROJECT'
           }
           if (key === `${CONFIG_KEYS.CONSOLE}.workspace.name`) {
