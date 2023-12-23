@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { Flags } = require('@oclif/core')
+const { Flags, Args } = require('@oclif/core')
 const path = require('path')
 const ConsoleCommand = require('../index')
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:download', { provider: 'debug' })
@@ -102,8 +102,11 @@ DownloadCommand.aliases = [
   'console:ws:dl'
 ]
 
-DownloadCommand.args = [
-  { name: 'destination', required: false, description: 'Output file name or folder name where the Console Workspace configuration file should be saved' }
-]
+DownloadCommand.args = {
+  destination: Args.file({
+    description: 'Output file name or folder name where the Console Workspace configuration file should be saved',
+    required: false
+  })
+}
 
 module.exports = DownloadCommand

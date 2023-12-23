@@ -71,9 +71,13 @@ test('aliases', async () => {
 })
 
 test('args', async () => {
-  const workspaceId = SelectCommand.args[0]
-  expect(workspaceId.name).toEqual('workspaceIdOrName')
-  expect(workspaceId.required).toEqual(false)
+  expect(SelectCommand.args).toBeDefined()
+  expect(SelectCommand.args).toBeInstanceOf(Object)
+
+  const workspaceIdOrName = SelectCommand.args.workspaceIdOrName
+  expect(workspaceIdOrName).toBeDefined()
+  expect(workspaceIdOrName.description).toEqual('Adobe Developer Console Workspace id or Workspace name')
+  expect(workspaceIdOrName.required).toEqual(false)
 })
 
 describe('console:workspace:select', () => {

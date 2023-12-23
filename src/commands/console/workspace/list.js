@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const { Flags, CliUx: { ux: cli } } = require('@oclif/core')
+const { Flags, ux } = require('@oclif/core')
 const { CONFIG_KEYS } = require('../../../config')
 
 const ConsoleCommand = require('../index')
@@ -44,7 +44,7 @@ class ListCommand extends ConsoleCommand {
         this.printYaml(workspaces)
       } else {
         // print formatted result
-        cli.table(workspaces, {
+        ux.table(workspaces, {
           id: {
             minWidth: 25
           },

@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 
 const TheCommand = require('../../../../src/commands/console/publickey')
 const ConsoleCommand = require('../../../../src/commands/console')
-const { Help, CliUx: { ux: cli } } = require('@oclif/core')
+const { Help, ux } = require('@oclif/core')
 
 test('exports', async () => {
   expect(typeof TheCommand).toEqual('function')
@@ -23,7 +23,7 @@ test('description', async () => {
 })
 
 test('args', async () => {
-  expect(TheCommand.args).toBeUndefined()
+  expect(TheCommand.args).toStrictEqual({})
 })
 
 test('flags', async () => {
@@ -39,7 +39,7 @@ test('formatExpiry', async () => {
 test('printBindings', async () => {
   expect(typeof TheCommand.printBindings).toEqual('function')
   const spyFormatExpiry = jest.spyOn(TheCommand, 'formatExpiry')
-  const spyTable = jest.spyOn(cli, 'table')
+  const spyTable = jest.spyOn(ux, 'table')
   const bindingWithExpires = {
     bindingId: 'testBinding1',
     orgId: 'testOrgId',
