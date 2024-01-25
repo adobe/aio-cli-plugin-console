@@ -86,7 +86,7 @@ DESCRIPTION
   Console plugin for the Adobe I/O CLI
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/4.1.0/src/commands/console/index.js)_
+_See code: [src/commands/console/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/index.ts)_
 
 ## `aio console open`
 
@@ -106,6 +106,8 @@ ALIASES
   $ aio open
 ```
 
+_See code: [src/commands/console/open.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/open.ts)_
+
 ## `aio console org`
 
 Manage your Adobe I/O Console Organizations
@@ -120,6 +122,8 @@ FLAGS
 DESCRIPTION
   Manage your Adobe I/O Console Organizations
 ```
+
+_See code: [src/commands/console/org/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/org/index.ts)_
 
 ## `aio console org list`
 
@@ -140,6 +144,8 @@ DESCRIPTION
 ALIASES
   $ aio console org ls
 ```
+
+_See code: [src/commands/console/org/list.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/org/list.ts)_
 
 ## `aio console org ls`
 
@@ -203,6 +209,8 @@ ALIASES
   $ aio console org sel
 ```
 
+_See code: [src/commands/console/org/select.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/org/select.ts)_
+
 ## `aio console project`
 
 Manage your Adobe I/O Console Projects
@@ -217,6 +225,8 @@ FLAGS
 DESCRIPTION
   Manage your Adobe I/O Console Projects
 ```
+
+_See code: [src/commands/console/project/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/project/index.ts)_
 
 ## `aio console project list`
 
@@ -238,6 +248,8 @@ DESCRIPTION
 ALIASES
   $ aio console project ls
 ```
+
+_See code: [src/commands/console/project/list.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/project/list.ts)_
 
 ## `aio console project ls`
 
@@ -304,6 +316,8 @@ ALIASES
   $ aio console project sel
 ```
 
+_See code: [src/commands/console/project/select.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/project/select.ts)_
+
 ## `aio console publickey`
 
 Manage Public Key Bindings for your Adobe I/O Console Workspaces
@@ -318,6 +332,8 @@ FLAGS
 DESCRIPTION
   Manage Public Key Bindings for your Adobe I/O Console Workspaces
 ```
+
+_See code: [src/commands/console/publickey/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/publickey/index.ts)_
 
 ## `aio console publickey delete IDORFINGERPRINT`
 
@@ -341,6 +357,8 @@ DESCRIPTION
   Delete a public key certificate from the selected Workspace
 ```
 
+_See code: [src/commands/console/publickey/delete.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/publickey/delete.ts)_
+
 ## `aio console publickey list`
 
 List the public key certificates bound to the selected Workspace
@@ -360,6 +378,8 @@ FLAGS
 DESCRIPTION
   List the public key certificates bound to the selected Workspace
 ```
+
+_See code: [src/commands/console/publickey/list.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/publickey/list.ts)_
 
 ## `aio console publickey upload FILE`
 
@@ -384,6 +404,8 @@ DESCRIPTION
   Upload a public key certificate to the selected Workspace
 ```
 
+_See code: [src/commands/console/publickey/upload.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/publickey/upload.ts)_
+
 ## `aio console where`
 
 Show the currently selected Organization, Project and Workspace
@@ -404,6 +426,8 @@ ALIASES
   $ aio where
 ```
 
+_See code: [src/commands/console/where/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/where/index.ts)_
+
 ## `aio console workspace`
 
 Manage your Adobe I/O Console Workspaces
@@ -421,6 +445,8 @@ DESCRIPTION
 ALIASES
   $ aio console ws
 ```
+
+_See code: [src/commands/console/workspace/index.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/workspace/index.ts)_
 
 ## `aio console workspace dl [DESTINATION]`
 
@@ -475,6 +501,8 @@ ALIASES
   $ aio console ws dl
 ```
 
+_See code: [src/commands/console/workspace/download.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/workspace/download.ts)_
+
 ## `aio console workspace list`
 
 List your Workspaces for your selected Project
@@ -498,6 +526,8 @@ ALIASES
   $ aio console ws list
   $ aio console ws ls
 ```
+
+_See code: [src/commands/console/workspace/list.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/workspace/list.ts)_
 
 ## `aio console workspace ls`
 
@@ -572,6 +602,8 @@ ALIASES
   $ aio console ws select
   $ aio console ws sel
 ```
+
+_See code: [src/commands/console/workspace/select.ts](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/workspace/select.ts)_
 
 ## `aio console ws`
 
