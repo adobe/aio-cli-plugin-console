@@ -14,7 +14,7 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "@adobe/eslint-config-aio-lib-config": "^2.0.1",
+    "@adobe/eslint-config-aio-lib-config": "^3.0.0",
     "@babel/core": "^7.9.6",
     "@types/jest": "^29.5.3",
     "babel-jest": "^29.6.1",
@@ -36,8 +36,7 @@
     "jest-junit": "^16.0.0",
     "jest-plugin-fs": "^2.9.0",
     "oclif": "^3.2.0",
-    "stdout-stderr": "^0.1.9",
-    "typescript": "^5.1.6"
+    "stdout-stderr": "^0.1.9"
   },
   "engines": {
     "node": ">=18"
