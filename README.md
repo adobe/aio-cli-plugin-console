@@ -41,9 +41,13 @@ $ aio console --help
 * [`aio console open`](#aio-console-open)
 * [`aio console org`](#aio-console-org)
 * [`aio console org list`](#aio-console-org-list)
+* [`aio console org ls`](#aio-console-org-ls)
+* [`aio console org sel [ORGCODE]`](#aio-console-org-sel-orgcode)
 * [`aio console org select [ORGCODE]`](#aio-console-org-select-orgcode)
 * [`aio console project`](#aio-console-project)
 * [`aio console project list`](#aio-console-project-list)
+* [`aio console project ls`](#aio-console-project-ls)
+* [`aio console project sel [PROJECTIDORNAME]`](#aio-console-project-sel-projectidorname)
 * [`aio console project select [PROJECTIDORNAME]`](#aio-console-project-select-projectidorname)
 * [`aio console publickey`](#aio-console-publickey)
 * [`aio console publickey delete IDORFINGERPRINT`](#aio-console-publickey-delete-idorfingerprint)
@@ -51,9 +55,21 @@ $ aio console --help
 * [`aio console publickey upload FILE`](#aio-console-publickey-upload-file)
 * [`aio console where`](#aio-console-where)
 * [`aio console workspace`](#aio-console-workspace)
+* [`aio console workspace dl [DESTINATION]`](#aio-console-workspace-dl-destination)
 * [`aio console workspace download [DESTINATION]`](#aio-console-workspace-download-destination)
 * [`aio console workspace list`](#aio-console-workspace-list)
+* [`aio console workspace ls`](#aio-console-workspace-ls)
+* [`aio console workspace sel [WORKSPACEIDORNAME]`](#aio-console-workspace-sel-workspaceidorname)
 * [`aio console workspace select [WORKSPACEIDORNAME]`](#aio-console-workspace-select-workspaceidorname)
+* [`aio console ws`](#aio-console-ws)
+* [`aio console ws dl [DESTINATION]`](#aio-console-ws-dl-destination)
+* [`aio console ws download [DESTINATION]`](#aio-console-ws-download-destination)
+* [`aio console ws list`](#aio-console-ws-list)
+* [`aio console ws ls`](#aio-console-ws-ls)
+* [`aio console ws sel [WORKSPACEIDORNAME]`](#aio-console-ws-sel-workspaceidorname)
+* [`aio console ws select [WORKSPACEIDORNAME]`](#aio-console-ws-select-workspaceidorname)
+* [`aio open`](#aio-open)
+* [`aio where`](#aio-where)
 
 ## `aio console`
 
@@ -70,7 +86,7 @@ DESCRIPTION
   Console plugin for the Adobe I/O CLI
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/index.js)_
+_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/index.js)_
 
 ## `aio console open`
 
@@ -90,7 +106,7 @@ ALIASES
   $ aio open
 ```
 
-_See code: [src/commands/console/open.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/open.js)_
+_See code: [src/commands/console/open.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/open.js)_
 
 ## `aio console org`
 
@@ -107,7 +123,7 @@ DESCRIPTION
   Manage your Adobe I/O Console Organizations
 ```
 
-_See code: [src/commands/console/org/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/org/index.js)_
+_See code: [src/commands/console/org/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/org/index.js)_
 
 ## `aio console org list`
 
@@ -129,7 +145,48 @@ ALIASES
   $ aio console org ls
 ```
 
-_See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/org/list.js)_
+_See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/org/list.js)_
+
+## `aio console org ls`
+
+List your Organizations
+
+```
+USAGE
+  $ aio console org ls [--help] [-j | -y]
+
+FLAGS
+  -j, --json  Output json
+  -y, --yml   Output yml
+  --help      Show help
+
+DESCRIPTION
+  List your Organizations
+
+ALIASES
+  $ aio console org ls
+```
+
+## `aio console org sel [ORGCODE]`
+
+Select an Organization
+
+```
+USAGE
+  $ aio console org sel [ORGCODE] [--help]
+
+ARGUMENTS
+  ORGCODE  Adobe Developer Console Org code
+
+FLAGS
+  --help  Show help
+
+DESCRIPTION
+  Select an Organization
+
+ALIASES
+  $ aio console org sel
+```
 
 ## `aio console org select [ORGCODE]`
 
@@ -152,7 +209,7 @@ ALIASES
   $ aio console org sel
 ```
 
-_See code: [src/commands/console/org/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/org/select.js)_
+_See code: [src/commands/console/org/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/org/select.js)_
 
 ## `aio console project`
 
@@ -169,7 +226,7 @@ DESCRIPTION
   Manage your Adobe I/O Console Projects
 ```
 
-_See code: [src/commands/console/project/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/project/index.js)_
+_See code: [src/commands/console/project/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/project/index.js)_
 
 ## `aio console project list`
 
@@ -192,7 +249,50 @@ ALIASES
   $ aio console project ls
 ```
 
-_See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/project/list.js)_
+_See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/project/list.js)_
+
+## `aio console project ls`
+
+List your Projects for the selected Organization
+
+```
+USAGE
+  $ aio console project ls [--help] [--orgId <value>] [-j | -y]
+
+FLAGS
+  -j, --json       Output json
+  -y, --yml        Output yml
+  --help           Show help
+  --orgId=<value>  OrgID for listing projects
+
+DESCRIPTION
+  List your Projects for the selected Organization
+
+ALIASES
+  $ aio console project ls
+```
+
+## `aio console project sel [PROJECTIDORNAME]`
+
+Select a Project for the selected Organization
+
+```
+USAGE
+  $ aio console project sel [PROJECTIDORNAME] [--help] [--orgId <value>]
+
+ARGUMENTS
+  PROJECTIDORNAME  Adobe Developer Console Project id or Project name
+
+FLAGS
+  --help           Show help
+  --orgId=<value>  Organization id of the Console Project to select
+
+DESCRIPTION
+  Select a Project for the selected Organization
+
+ALIASES
+  $ aio console project sel
+```
 
 ## `aio console project select [PROJECTIDORNAME]`
 
@@ -216,7 +316,7 @@ ALIASES
   $ aio console project sel
 ```
 
-_See code: [src/commands/console/project/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/project/select.js)_
+_See code: [src/commands/console/project/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/project/select.js)_
 
 ## `aio console publickey`
 
@@ -233,7 +333,7 @@ DESCRIPTION
   Manage Public Key Bindings for your Adobe I/O Console Workspaces
 ```
 
-_See code: [src/commands/console/publickey/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/publickey/index.js)_
+_See code: [src/commands/console/publickey/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/publickey/index.js)_
 
 ## `aio console publickey delete IDORFINGERPRINT`
 
@@ -257,7 +357,7 @@ DESCRIPTION
   Delete a public key certificate from the selected Workspace
 ```
 
-_See code: [src/commands/console/publickey/delete.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/publickey/delete.js)_
+_See code: [src/commands/console/publickey/delete.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/publickey/delete.js)_
 
 ## `aio console publickey list`
 
@@ -279,7 +379,7 @@ DESCRIPTION
   List the public key certificates bound to the selected Workspace
 ```
 
-_See code: [src/commands/console/publickey/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/publickey/list.js)_
+_See code: [src/commands/console/publickey/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/publickey/list.js)_
 
 ## `aio console publickey upload FILE`
 
@@ -304,7 +404,7 @@ DESCRIPTION
   Upload a public key certificate to the selected Workspace
 ```
 
-_See code: [src/commands/console/publickey/upload.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/publickey/upload.js)_
+_See code: [src/commands/console/publickey/upload.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/publickey/upload.js)_
 
 ## `aio console where`
 
@@ -326,7 +426,7 @@ ALIASES
   $ aio where
 ```
 
-_See code: [src/commands/console/where/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/where/index.js)_
+_See code: [src/commands/console/where/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/where/index.js)_
 
 ## `aio console workspace`
 
@@ -346,7 +446,33 @@ ALIASES
   $ aio console ws
 ```
 
-_See code: [src/commands/console/workspace/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/workspace/index.js)_
+_See code: [src/commands/console/workspace/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/workspace/index.js)_
+
+## `aio console workspace dl [DESTINATION]`
+
+Downloads the configuration for the selected Workspace
+
+```
+USAGE
+  $ aio console workspace dl [DESTINATION] [--help] [--orgId <value>] [--projectId <value>] [--workspaceId <value>]
+
+ARGUMENTS
+  DESTINATION  Output file name or folder name where the Console Workspace configuration file should be saved
+
+FLAGS
+  --help                 Show help
+  --orgId=<value>        Organization id of the Console Workspace configuration to download
+  --projectId=<value>    Project id of the Console Workspace configuration to download
+  --workspaceId=<value>  Workspace id of the Console Workspace configuration to download
+
+DESCRIPTION
+  Downloads the configuration for the selected Workspace
+
+ALIASES
+  $ aio console workspace dl
+  $ aio console ws download
+  $ aio console ws dl
+```
 
 ## `aio console workspace download [DESTINATION]`
 
@@ -375,7 +501,7 @@ ALIASES
   $ aio console ws dl
 ```
 
-_See code: [src/commands/console/workspace/download.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/workspace/download.js)_
+_See code: [src/commands/console/workspace/download.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/workspace/download.js)_
 
 ## `aio console workspace list`
 
@@ -401,7 +527,56 @@ ALIASES
   $ aio console ws ls
 ```
 
-_See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/workspace/list.js)_
+_See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/workspace/list.js)_
+
+## `aio console workspace ls`
+
+List your Workspaces for your selected Project
+
+```
+USAGE
+  $ aio console workspace ls [--help] [-j | -y] [--orgId <value>] [--projectId <value>]
+
+FLAGS
+  -j, --json           Output json
+  -y, --yml            Output yml
+  --help               Show help
+  --orgId=<value>      Organization id of the Console Workspaces to list
+  --projectId=<value>  Project id of the Console Workspaces to list
+
+DESCRIPTION
+  List your Workspaces for your selected Project
+
+ALIASES
+  $ aio console workspace ls
+  $ aio console ws list
+  $ aio console ws ls
+```
+
+## `aio console workspace sel [WORKSPACEIDORNAME]`
+
+Select a Workspace for the selected Project
+
+```
+USAGE
+  $ aio console workspace sel [WORKSPACEIDORNAME] [--help] [--orgId <value>] [--projectId <value>]
+
+ARGUMENTS
+  WORKSPACEIDORNAME  Adobe Developer Console Workspace id or Workspace name
+
+FLAGS
+  --help               Show help
+  --orgId=<value>      Organization id of the Console Workspace to select
+  --projectId=<value>  Project id of the Console Workspace to select
+
+DESCRIPTION
+  Select a Workspace for the selected Project
+
+ALIASES
+  $ aio console workspace sel
+  $ aio console ws select
+  $ aio console ws sel
+```
 
 ## `aio console workspace select [WORKSPACEIDORNAME]`
 
@@ -428,5 +603,211 @@ ALIASES
   $ aio console ws sel
 ```
 
-_See code: [src/commands/console/workspace/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.0/src/commands/console/workspace/select.js)_
+_See code: [src/commands/console/workspace/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.0.1/src/commands/console/workspace/select.js)_
+
+## `aio console ws`
+
+Manage your Adobe I/O Console Workspaces
+
+```
+USAGE
+  $ aio console ws [--help]
+
+FLAGS
+  --help  Show help
+
+DESCRIPTION
+  Manage your Adobe I/O Console Workspaces
+
+ALIASES
+  $ aio console ws
+```
+
+## `aio console ws dl [DESTINATION]`
+
+Downloads the configuration for the selected Workspace
+
+```
+USAGE
+  $ aio console ws dl [DESTINATION] [--help] [--orgId <value>] [--projectId <value>] [--workspaceId <value>]
+
+ARGUMENTS
+  DESTINATION  Output file name or folder name where the Console Workspace configuration file should be saved
+
+FLAGS
+  --help                 Show help
+  --orgId=<value>        Organization id of the Console Workspace configuration to download
+  --projectId=<value>    Project id of the Console Workspace configuration to download
+  --workspaceId=<value>  Workspace id of the Console Workspace configuration to download
+
+DESCRIPTION
+  Downloads the configuration for the selected Workspace
+
+ALIASES
+  $ aio console workspace dl
+  $ aio console ws download
+  $ aio console ws dl
+```
+
+## `aio console ws download [DESTINATION]`
+
+Downloads the configuration for the selected Workspace
+
+```
+USAGE
+  $ aio console ws download [DESTINATION] [--help] [--orgId <value>] [--projectId <value>] [--workspaceId <value>]
+
+ARGUMENTS
+  DESTINATION  Output file name or folder name where the Console Workspace configuration file should be saved
+
+FLAGS
+  --help                 Show help
+  --orgId=<value>        Organization id of the Console Workspace configuration to download
+  --projectId=<value>    Project id of the Console Workspace configuration to download
+  --workspaceId=<value>  Workspace id of the Console Workspace configuration to download
+
+DESCRIPTION
+  Downloads the configuration for the selected Workspace
+
+ALIASES
+  $ aio console workspace dl
+  $ aio console ws download
+  $ aio console ws dl
+```
+
+## `aio console ws list`
+
+List your Workspaces for your selected Project
+
+```
+USAGE
+  $ aio console ws list [--help] [-j | -y] [--orgId <value>] [--projectId <value>]
+
+FLAGS
+  -j, --json           Output json
+  -y, --yml            Output yml
+  --help               Show help
+  --orgId=<value>      Organization id of the Console Workspaces to list
+  --projectId=<value>  Project id of the Console Workspaces to list
+
+DESCRIPTION
+  List your Workspaces for your selected Project
+
+ALIASES
+  $ aio console workspace ls
+  $ aio console ws list
+  $ aio console ws ls
+```
+
+## `aio console ws ls`
+
+List your Workspaces for your selected Project
+
+```
+USAGE
+  $ aio console ws ls [--help] [-j | -y] [--orgId <value>] [--projectId <value>]
+
+FLAGS
+  -j, --json           Output json
+  -y, --yml            Output yml
+  --help               Show help
+  --orgId=<value>      Organization id of the Console Workspaces to list
+  --projectId=<value>  Project id of the Console Workspaces to list
+
+DESCRIPTION
+  List your Workspaces for your selected Project
+
+ALIASES
+  $ aio console workspace ls
+  $ aio console ws list
+  $ aio console ws ls
+```
+
+## `aio console ws sel [WORKSPACEIDORNAME]`
+
+Select a Workspace for the selected Project
+
+```
+USAGE
+  $ aio console ws sel [WORKSPACEIDORNAME] [--help] [--orgId <value>] [--projectId <value>]
+
+ARGUMENTS
+  WORKSPACEIDORNAME  Adobe Developer Console Workspace id or Workspace name
+
+FLAGS
+  --help               Show help
+  --orgId=<value>      Organization id of the Console Workspace to select
+  --projectId=<value>  Project id of the Console Workspace to select
+
+DESCRIPTION
+  Select a Workspace for the selected Project
+
+ALIASES
+  $ aio console workspace sel
+  $ aio console ws select
+  $ aio console ws sel
+```
+
+## `aio console ws select [WORKSPACEIDORNAME]`
+
+Select a Workspace for the selected Project
+
+```
+USAGE
+  $ aio console ws select [WORKSPACEIDORNAME] [--help] [--orgId <value>] [--projectId <value>]
+
+ARGUMENTS
+  WORKSPACEIDORNAME  Adobe Developer Console Workspace id or Workspace name
+
+FLAGS
+  --help               Show help
+  --orgId=<value>      Organization id of the Console Workspace to select
+  --projectId=<value>  Project id of the Console Workspace to select
+
+DESCRIPTION
+  Select a Workspace for the selected Project
+
+ALIASES
+  $ aio console workspace sel
+  $ aio console ws select
+  $ aio console ws sel
+```
+
+## `aio open`
+
+Open the developer console for the selected Organization, Project and Workspace
+
+```
+USAGE
+  $ aio open [--help]
+
+FLAGS
+  --help  Show help
+
+DESCRIPTION
+  Open the developer console for the selected Organization, Project and Workspace
+
+ALIASES
+  $ aio open
+```
+
+## `aio where`
+
+Show the currently selected Organization, Project and Workspace
+
+```
+USAGE
+  $ aio where [--help] [-j | -y]
+
+FLAGS
+  -j, --json  Output json
+  -y, --yml   Output yml
+  --help      Show help
+
+DESCRIPTION
+  Show the currently selected Organization, Project and Workspace
+
+ALIASES
+  $ aio where
+```
 <!-- commandsstop -->
