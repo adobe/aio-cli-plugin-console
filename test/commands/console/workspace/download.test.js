@@ -93,8 +93,7 @@ test('aliases', async () => {
 })
 
 test('args', async () => {
-  const destination = DownloadCommand.args[0]
-  expect(destination.name).toEqual('destination')
+  const destination = DownloadCommand.args.destination
   expect(destination.required).toEqual(false)
   expect(destination.description).toBeDefined()
 })

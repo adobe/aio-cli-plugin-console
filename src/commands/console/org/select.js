@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:org:select', { provider: 'debug' })
 const { CONFIG_KEYS } = require('../../../config')
-
+const { Args } = require('@oclif/core')
 const ConsoleCommand = require('../index')
 
 class SelectCommand extends ConsoleCommand {
@@ -53,13 +53,12 @@ class SelectCommand extends ConsoleCommand {
 
 SelectCommand.description = 'Select an Organization'
 
-SelectCommand.args = [
-  {
-    name: 'orgCode',
+SelectCommand.args = {
+  orgCode: Args.string({
     required: false,
     description: 'Adobe Developer Console Org code'
-  }
-]
+  })
+}
 
 SelectCommand.aliases = [
   'console:org:sel'

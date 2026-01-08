@@ -10,8 +10,9 @@
     "@adobe/aio-lib-core-logging": "^3",
     "@adobe/aio-lib-env": "^3",
     "@adobe/aio-lib-ims": "^7",
-    "@oclif/core": "^1.4.0",
-    "js-yaml": "^4.1.0"
+    "@oclif/core": "^2.0.0",
+    "js-yaml": "^4.1.0",
+    "open": "^8.4.2"
   },
   "devDependencies": {
     "@adobe/eslint-config-aio-lib-config": "^4.0.0",
