@@ -5,18 +5,6 @@ const path = require('path')
 
 jest.setTimeout(30000)
 
-// don't touch the real fs
-const mockFs = require('jest-plugin-fs/mock')
-jest.mock('fs', () => mockFs)
-
-const oclifCorePackagePath = path.join(__dirname, '../node_modules/@oclif/core/package.json')
-if (fs.existsSync(oclifCorePackagePath)) {
-  const oclifCorePackage = fs.readFileSync(oclifCorePackagePath, 'utf8')
-  const virtualPath = path.join(process.cwd(), 'node_modules/@oclif/core/package.json')
-  const ffs = require('jest-plugin-fs').default
-  ffs.mock({ [virtualPath]: oclifCorePackage })
-}
-
 // clear env variables
 
 // trap console log
