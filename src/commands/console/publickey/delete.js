@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:publickey:list', { provider: 'debug' })
-const { Flags } = require('@oclif/core')
+const { Flags, Args } = require('@oclif/core')
 const { CONFIG_KEYS } = require('../../../config')
 const ConsoleCommand = require('../index')
 
@@ -83,13 +83,12 @@ DeleteCommand.flags = {
   })
 }
 
-DeleteCommand.args = [
-  {
-    name: 'idOrFingerprint',
+DeleteCommand.args = {
+  idOrFingerprint: Args.string({
     required: true,
     description: 'The bindingId or the fingerprint of the public key binding to delete'
-  }
-]
+  })
+}
 
 DeleteCommand.aliases = []
 

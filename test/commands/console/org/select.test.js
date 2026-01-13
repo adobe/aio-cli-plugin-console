@@ -56,8 +56,7 @@ test('aliases', async () => {
 })
 
 test('args', async () => {
-  const orgCode = SelectCommand.args[0]
-  expect(orgCode.name).toEqual('orgCode')
+  const orgCode = SelectCommand.args.orgCode
   expect(orgCode.required).toEqual(false)
   expect(orgCode.description).toBeDefined()
 })

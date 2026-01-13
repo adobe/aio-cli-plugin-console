@@ -10,9 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:select', { provider: 'debug' })
-const { Flags } = require('@oclif/core')
+const { Flags, Args } = require('@oclif/core')
 const { CONFIG_KEYS } = require('../../../config')
-
 const ConsoleCommand = require('../index')
 
 class SelectCommand extends ConsoleCommand {
@@ -59,13 +58,12 @@ class SelectCommand extends ConsoleCommand {
 
 SelectCommand.description = 'Select a Project for the selected Organization'
 
-SelectCommand.args = [
-  {
-    name: 'projectIdOrName',
+SelectCommand.args = {
+  projectIdOrName: Args.string({
     required: false,
     description: 'Adobe Developer Console Project id or Project name'
-  }
-]
+  })
+}
 
 SelectCommand.flags = {
   ...ConsoleCommand.flags,

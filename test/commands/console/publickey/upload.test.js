@@ -56,22 +56,27 @@ jest.mock('@adobe/aio-cli-lib-console', () => ({
   init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
   cleanStdOut: jest.fn()
 }))
-jest.spyOn(fs, 'statSync').mockImplementation(file => {
-  if (file === 'certificate_pub.crt') {
-    return { isFile: () => { return true } }
-  } else if (file === 'a_directory') {
-    return { isFile: () => { return false } }
-  } else {
-    throw new Error('file does not exist')
-  }
-})
-jest.spyOn(fs, 'readFileSync').mockImplementation(file => {
-  if (file === 'certificate_pub.crt') {
-    return Buffer.from('a PEM encoded cert')
-  } else {
-    throw new Error('dOEs NoT c()MUPt3')
-  }
-})
+
+const realStatSync = fs.statSync
+const realReadFileSync = fs.readFileSync
+const mockStatSync = jest.spyOn(fs, 'statSync')
+const mockReadFileSync = jest.spyOn(fs, 'readFileSync')
+
+/** @private */
+function setDefaultMockFs () {
+  mockStatSync.mockReset().mockImplementation(file => {
+    const fileStr = String(file)
+    if (fileStr === 'certificate_pub.crt') return { isFile: () => true }
+    if (fileStr === 'a_directory') return { isFile: () => false }
+    return realStatSync(file)
+  })
+
+  mockReadFileSync.mockReset().mockImplementation(file => {
+    const fileStr = String(file)
+    if (fileStr === 'certificate_pub.crt') return Buffer.from('a PEM encoded cert')
+    return realReadFileSync(file)
+  })
+}
 
 const UploadAndBindCommand = require('../../../../src/commands/console/publickey/upload')
 
@@ -120,6 +125,7 @@ describe('console:publickey:upload', () => {
   beforeEach(() => {
     setDefaultMockConsoleCLI()
     setDefaultMockConfigGet()
+    setDefaultMockFs()
     config.set.mockReset()
     command = new UploadAndBindCommand([])
   })

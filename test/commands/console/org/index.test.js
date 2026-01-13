@@ -23,7 +23,7 @@ test('description', async () => {
 })
 
 test('args', async () => {
-  expect(TheCommand.args).toBeUndefined()
+  expect(TheCommand.args).toEqual({})
 })
 
 test('flags', async () => {

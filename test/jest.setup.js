@@ -5,9 +5,6 @@ const path = require('path')
 
 jest.setTimeout(30000)
 
-// don't touch the real fs
-jest.mock('fs', () => require('jest-plugin-fs/mock'))
-
 // clear env variables
 
 // trap console log

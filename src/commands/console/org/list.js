@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 */
 
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:org:list', { provider: 'debug' })
-const { Flags, CliUx: { ux: cli } } = require('@oclif/core')
+const { Flags, ux } = require('@oclif/core')
 const { ORG_TYPE_ENTERPRISE } = require('../../../config')
 
 const ConsoleCommand = require('../index')
@@ -73,7 +73,7 @@ class ListCommand extends ConsoleCommand {
         header: 'Org Name'
       }
     }
-    cli.table(orgs, columns)
+    ux.table(orgs, columns)
   }
 }
 
