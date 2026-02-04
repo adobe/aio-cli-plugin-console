@@ -31,6 +31,7 @@ class OpenCommand extends ConsoleCommand {
       }
     }
     aioLogger.debug(`opening url ${url}`)
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
     const { default: open } = await import('open')
     open(url)
   }

@@ -14,7 +14,9 @@ const config = require('@adobe/aio-lib-core-config')
 const { STAGE_ENV } = require('@adobe/aio-lib-env')
 
 const mockOpen = jest.fn()
-jest.mock('open', () => ({ default: mockOpen }), { virtual: true })
+jest.unstable_mockModule('open', () => ({
+  default: mockOpen
+}))
 const { Command } = require('@oclif/core')
 
 let command
