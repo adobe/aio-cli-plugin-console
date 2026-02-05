@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 const aioLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:open', { provider: 'debug' })
 const { getCliEnv } = require('@adobe/aio-lib-env')
 const { OPEN_URLS } = require('../../config')
-const open = require('open')
 const ConsoleCommand = require('./index')
 class OpenCommand extends ConsoleCommand {
   async run () {
@@ -32,6 +31,8 @@ class OpenCommand extends ConsoleCommand {
       }
     }
     aioLogger.debug(`opening url ${url}`)
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const { default: open } = await import('open')
     open(url)
   }
 }
