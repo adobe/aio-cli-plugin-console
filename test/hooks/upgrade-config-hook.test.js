@@ -11,7 +11,6 @@ governing permissions and limitations under the License.
 */
 
 const hook = require('../../src/hooks/upgrade-config-hook')
-// eslint-disable-next-line no-unused-vars
 const config = require('@adobe/aio-lib-core-config')
 const { CONFIG_KEYS } = require('../../src/config')
 const OLD_CONSOLE_CONFIG_KEY = '$console'
@@ -42,7 +41,6 @@ test('should export a function', () => {
   expect(typeof hook).toBe('function')
 })
 
-// eslint-disable-next-line jest/expect-expect
 test('oldConfig: does not exist, newConfig: does not exist. (do nothing)', () => {
   mockConfig()
   return hook().then(() => {
@@ -51,7 +49,6 @@ test('oldConfig: does not exist, newConfig: does not exist. (do nothing)', () =>
   })
 })
 
-// eslint-disable-next-line jest/expect-expect
 test('oldConfig: does not exist, newConfig: exists. (do nothing)', () => {
   const newConfig = { foo: 'bar' }
   mockConfig({ newConfig })
@@ -61,7 +58,6 @@ test('oldConfig: does not exist, newConfig: exists. (do nothing)', () => {
   })
 })
 
-// eslint-disable-next-line jest/expect-expect
 test('oldConfig: exists, newConfig: does not exist. (migrate to new, delete old)', () => {
   const oldConfig = { foo: 'bar' }
   mockConfig({ oldConfig })
@@ -71,7 +67,6 @@ test('oldConfig: exists, newConfig: does not exist. (migrate to new, delete old)
   })
 })
 
-// eslint-disable-next-line jest/expect-expect
 test('oldConfig: exists, newConfig: exists (do nothing)', () => {
   const oldConfig = { foo: 'bar' }
   const newConfig = { baz: 'faz' }

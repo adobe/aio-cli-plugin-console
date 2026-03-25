@@ -9,9 +9,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+jest.mock('../../../../src/utils/table')
 const TheCommand = require('../../../../src/commands/console/publickey')
 const ConsoleCommand = require('../../../../src/commands/console')
-const { Help, ux } = require('@oclif/core')
+const { Help } = require('@oclif/core')
+const tableUtils = require('../../../../src/utils/table')
 
 test('exports', async () => {
   expect(typeof TheCommand).toEqual('function')
@@ -39,7 +41,7 @@ test('formatExpiry', async () => {
 test('printBindings', async () => {
   expect(typeof TheCommand.printBindings).toEqual('function')
   const spyFormatExpiry = jest.spyOn(TheCommand, 'formatExpiry')
-  const spyTable = jest.spyOn(ux, 'table')
+  const spyTable = jest.spyOn(tableUtils, 'table')
   const bindingWithExpires = {
     bindingId: 'testBinding1',
     orgId: 'testOrgId',

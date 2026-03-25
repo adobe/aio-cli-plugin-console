@@ -9,7 +9,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Help, ux } = require('@oclif/core')
+const { Help } = require('@oclif/core')
+const { table } = require('../../../utils/table')
 const ConsoleCommand = require('../')
 
 class IndexCommand extends ConsoleCommand {
@@ -47,7 +48,7 @@ IndexCommand.printBindings = function (bindings) {
     decorated.expiresString = binding.notAfter ? this.formatExpiry(binding.notAfter) : ''
     decorateds.push(decorated)
   })
-  ux.table(decorateds, columns)
+  table(decorateds, columns)
 }
 
 /**
