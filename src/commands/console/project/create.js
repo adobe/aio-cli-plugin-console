@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:create', { provider: 'debug' })
+// const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:create', { provider: 'debug' })
 const { Flags } = require('@oclif/core')
 const ConsoleCommand = require('../index')
 
@@ -18,14 +18,7 @@ class CreateCommand extends ConsoleCommand {
     const { flags } = await this.parse(CreateCommand)
     const orgId = flags.orgId || this.getConfig('org.id')
     if (!orgId) {
-      this.log('You have not selected an Organization. Please select first.')
-      this.printConsoleConfig()
-      this.exit(1)
-    }
-
-    if (!flags.name) {
-      this.log('You have not provided a name for the project. Please provide a name.')
-      this.exit(1)
+      this.error('You have not selected an Organization. Please select first.')
     }
 
     const projectDetails = {
@@ -35,20 +28,38 @@ class CreateCommand extends ConsoleCommand {
     }
 
     await this.initSdk()
+
+    // first validate name, before calling server to check if it is already in use
+    // Project name allows only alphanumeric values
+    if (!/^[a-zA-Z0-9]+$/.test(projectDetails.name)) {
+      this.error(`Project name ${projectDetails.name} is invalid. It should only contain alphanumeric values.`)
+    }
+    // Project name must be between 3 and 45 characters long.
+    if (projectDetails.name.length < 3 || projectDetails.name.length > 45) {
+      this.error('Project name is too long. It must be between 3 and 45 characters long.')
+    }
+    // check name is not already in use
+    const projects = await this.consoleCLI.getProjects(orgId)
+    if (projects.find(project => project.name === projectDetails.name)) {
+      this.error(`Project ${projectDetails.name} already exists. Please choose a different name.`)
+    }
+
+    // Project title should only contain English alphanumeric or Latin alphabet characters and spaces.
+    if (!/^[a-zA-Z0-9\s]+$/.test(projectDetails.title)) {
+      this.error(`Project title ${projectDetails.title} is invalid. It should only contain English alphanumeric or Latin alphabet characters and spaces.`)
+    }
+    // Project title must be between 3 and 45 characters long.
+    if (projectDetails.title.length < 3 || projectDetails.title.length > 45) {
+      this.error('Project title is too long. It must be between 3 and 45 characters long.')
+    }
+    // Description cannot be over 1000 characters.
+    if (projectDetails.description.length > 1000) {
+      this.error('Project description is too long. It cannot be over 1000 characters.')
+    }
+    // if we get here, all validation passed, so call server to create project
     const project = await this.consoleCLI.createProject(orgId, projectDetails)
     this.log(`Project ${project.name} created successfully.`)
     return project
-  }
-
-  /**
-   * Retrieve projects from an Org
-   *
-   * @param {string} orgId organization id
-   * @returns {Promise<Array>} Projects
-   */
-  async getConsoleOrgProjects (orgId) {
-    const response = await this.consoleCLI.getProjects(orgId)
-    return response
   }
 }
 
