@@ -132,19 +132,19 @@ describe('console:project:create', () => {
 
   it('should not create a project if the description is too long', async () => {
     command.argv = ['--name', 'testproject', '--title', 'Test Project', '--description', 'Test Project Description'.repeat(1000), '--orgId', '1234567890']
-    await expect(command.run()).rejects.toThrow('Project description is too long. It cannot be over 1000 characters.')
+    await expect(command.run()).rejects.toThrow('Project description cannot be over 1000 characters.')
     expect(mockConsoleCLIInstance.createProject).not.toHaveBeenCalled()
   })
 
   it('should not create a project if the name is too long', async () => {
     command.argv = ['--name', 'testproject'.repeat(50), '--title', 'Test Project', '--description', 'Test Project Description', '--orgId', '1234567890']
-    await expect(command.run()).rejects.toThrow('Project name is too long. It must be between 3 and 45 characters long.')
+    await expect(command.run()).rejects.toThrow('Project name must be between 3 and 45 characters long.')
     expect(mockConsoleCLIInstance.createProject).not.toHaveBeenCalled()
   })
 
   it('should not create a project if the title is too long', async () => {
     command.argv = ['--name', 'testName', '--title', 'Test Project'.repeat(50), '--description', 'Test Project Description', '--orgId', '1234567890']
-    await expect(command.run()).rejects.toThrow('Project title is too long. It must be between 3 and 45 characters long.')
+    await expect(command.run()).rejects.toThrow('Project title must be between 3 and 45 characters long.')
     expect(mockConsoleCLIInstance.createProject).not.toHaveBeenCalled()
   })
 })

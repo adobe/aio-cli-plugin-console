@@ -36,7 +36,7 @@ class CreateCommand extends ConsoleCommand {
     }
     // Project name must be between 3 and 45 characters long.
     if (projectDetails.name.length < 3 || projectDetails.name.length > 45) {
-      this.error('Project name is too long. It must be between 3 and 45 characters long.')
+      this.error('Project name must be between 3 and 45 characters long.')
     }
     // check name is not already in use
     const projects = await this.consoleCLI.getProjects(orgId)
@@ -50,11 +50,11 @@ class CreateCommand extends ConsoleCommand {
     }
     // Project title must be between 3 and 45 characters long.
     if (projectDetails.title.length < 3 || projectDetails.title.length > 45) {
-      this.error('Project title is too long. It must be between 3 and 45 characters long.')
+      this.error('Project title must be between 3 and 45 characters long.')
     }
     // Description cannot be over 1000 characters.
     if (projectDetails.description.length > 1000) {
-      this.error('Project description is too long. It cannot be over 1000 characters.')
+      this.error('Project description cannot be over 1000 characters.')
     }
     // if we get here, all validation passed, so call server to create project
     const project = await this.consoleCLI.createProject(orgId, projectDetails)
