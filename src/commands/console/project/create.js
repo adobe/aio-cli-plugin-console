@@ -27,8 +27,6 @@ class CreateCommand extends ConsoleCommand {
       description: flags.description || flags.name
     }
 
-    await this.initSdk()
-
     // first validate name, before calling server to check if it is already in use
     // Project name allows only alphanumeric values
     if (!/^[a-zA-Z0-9]+$/.test(projectDetails.name)) {
@@ -37,11 +35,6 @@ class CreateCommand extends ConsoleCommand {
     // Project name must be between 3 and 45 characters long.
     if (projectDetails.name.length < 3 || projectDetails.name.length > 45) {
       this.error('Project name must be between 3 and 45 characters long.')
-    }
-    // check name is not already in use
-    const projects = await this.consoleCLI.getProjects(orgId)
-    if (projects.find(project => project.name === projectDetails.name)) {
-      this.error(`Project ${projectDetails.name} already exists. Please choose a different name.`)
     }
 
     // Project title should only contain English alphanumeric or Latin alphabet characters and spaces.
@@ -56,6 +49,14 @@ class CreateCommand extends ConsoleCommand {
     if (projectDetails.description.length > 1000) {
       this.error('Project description cannot be over 1000 characters.')
     }
+
+    await this.initSdk()
+    // check name is not already in use
+    const projects = await this.consoleCLI.getProjects(orgId)
+    if (projects.find(project => project.name === projectDetails.name)) {
+      this.error(`Project ${projectDetails.name} already exists. Please choose a different name.`)
+    }
+
     // if we get here, all validation passed, so call server to create project
     const project = await this.consoleCLI.createProject(orgId, projectDetails)
     this.log(`Project ${project.name} created successfully.`)
