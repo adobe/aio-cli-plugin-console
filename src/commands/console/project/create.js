@@ -9,7 +9,7 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTA
 OF ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 */
-// const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:create', { provider: 'debug' })
+const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:create', { provider: 'debug' })
 const { Flags } = require('@oclif/core')
 const ConsoleCommand = require('../index')
 
@@ -56,10 +56,17 @@ class CreateCommand extends ConsoleCommand {
     if (projects.find(project => project.name === projectDetails.name)) {
       this.error(`Project ${projectDetails.name} already exists. Please choose a different name.`)
     }
-
+    aioConsoleLogger.info(`Project ${projectDetails.name} is valid not already in use.`)
     // if we get here, all validation passed, so call server to create project
     const project = await this.consoleCLI.createProject(orgId, projectDetails)
-    this.log(`Project ${project.name} created successfully.`)
+    // Output handling: honor --json/--yml flags for structured output
+    if (flags.json) {
+      this.printJson(project)
+    } else if (flags.yml) {
+      this.printYaml(project)
+    } else {
+      this.log(`Project ${project.name} created successfully.`)
+    }
     return project
   }
 }
@@ -69,17 +76,21 @@ CreateCommand.description = 'Create a new App Builder Project for the selected O
 CreateCommand.flags = {
   ...ConsoleCommand.flags,
   orgId: Flags.string({
-    description: 'OrgID to create the project in'
+    description: 'OrgID to create the project in',
+    char: 'o'
   }),
   name: Flags.string({
     description: 'Name of the project',
-    required: true
+    required: true,
+    char: 'n'
   }),
   title: Flags.string({
-    description: 'Title of the project, defaults to the name'
+    description: 'Title of the project, defaults to the name',
+    char: 't'
   }),
   description: Flags.string({
-    description: 'Description of the project, defaults to the name'
+    description: 'Description of the project, defaults to the name',
+    char: 'd'
   }),
   json: Flags.boolean({
     description: 'Output json',
