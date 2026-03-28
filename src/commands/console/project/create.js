@@ -114,7 +114,6 @@ CreateCommand.flags = {
 }
 
 CreateCommand.aliases = [
-  'console:project:create',
   'console:project:init'
 ]
 
