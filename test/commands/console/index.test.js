@@ -166,7 +166,7 @@ describe('ConsoleCommand', () => {
         })
         command.printConsoleConfig({ alternativeFormat: 'json' })
         expect(command.log).toHaveBeenCalledTimes(1)
-        expect(command.log).toHaveBeenCalledWith(JSON.stringify({ org: 'THE_ORG', project: 'THE_PROJECT', workspace: 'THE_WORKSPACE' }, 0, 2))
+        expect(command.log).toHaveBeenCalledWith(JSON.stringify({ org: 'THE_ORG', project: 'THE_PROJECT', workspace: 'THE_WORKSPACE' }, null, 2))
       })
       test('no selected in json format', () => {
         config.get.mockImplementation(key => {
