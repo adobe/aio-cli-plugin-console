@@ -133,7 +133,7 @@ describe('console:project:create', () => {
 
   it('should not create a project if the title is invalid', async () => {
     command.argv = ['--name', 'testproject', '--title', 'Test Project!', '--description', 'Test Project Description', '--orgId', '1234567890']
-    await expect(command.run()).rejects.toThrow('Project title Test Project! is invalid. It should only contain English alphanumeric or Latin alphabet characters and spaces.')
+    await expect(command.run()).rejects.toThrow('Project title Test Project! is invalid. It should only contain alphanumeric characters and spaces.')
     expect(mockConsoleCLIInstance.createProject).not.toHaveBeenCalled()
   })
 

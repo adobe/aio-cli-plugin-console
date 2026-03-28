@@ -39,9 +39,9 @@ class CreateCommand extends ConsoleCommand {
       this.error('Project name must be between 3 and 45 characters long.')
     }
 
-    // Project title should only contain English alphanumeric or Latin alphabet characters and spaces.
+    // Project title allows only alphanumeric values and spaces
     if (!/^[a-zA-Z0-9\s]+$/.test(projectDetails.title)) {
-      this.error(`Project title ${projectDetails.title} is invalid. It should only contain English alphanumeric or Latin alphabet characters and spaces.`)
+      this.error(`Project title ${projectDetails.title} is invalid. It should only contain alphanumeric characters and spaces.`)
     }
     // Project title must be between 3 and 45 characters long.
     if (projectDetails.title.length < 3 || projectDetails.title.length > 45) {
