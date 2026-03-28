@@ -18,7 +18,9 @@ class CreateCommand extends ConsoleCommand {
     const { flags } = await this.parse(CreateCommand)
     const orgId = flags.orgId || this.getConfig('org.id')
     if (!orgId) {
-      this.error('You have not selected an Organization. Please select first.')
+      this.log('You have not selected an Organization. Please select one first.')
+      this.printConsoleConfig()
+      this.exit(1)
     }
 
     const projectDetails = {
