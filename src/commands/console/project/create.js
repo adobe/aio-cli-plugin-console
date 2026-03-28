@@ -53,23 +53,30 @@ class CreateCommand extends ConsoleCommand {
     }
 
     await this.initSdk()
-    // check name is not already in use
-    const projects = await this.consoleCLI.getProjects(orgId)
-    if (projects.find(project => project.name === projectDetails.name)) {
-      this.error(`Project ${projectDetails.name} already exists. Please choose a different name.`)
+    try {
+      // check name is not already in use
+      const projects = await this.consoleCLI.getProjects(orgId)
+      if (projects.find(project => project.name === projectDetails.name)) {
+        this.error(`Project ${projectDetails.name} already exists. Please choose a different name.`)
+      }
+      aioConsoleLogger.info(`Project ${projectDetails.name} is valid not already in use.`)
+      // if we get here, all validation passed, so call server to create project
+      const project = await this.consoleCLI.createProject(orgId, projectDetails)
+      // Output handling: honor --json/--yml flags for structured output
+      if (flags.json) {
+        this.printJson(project)
+      } else if (flags.yml) {
+        this.printYaml(project)
+      } else {
+        this.log(`Project ${project.name} created successfully.`)
+      }
+      return project
+    } catch (err) {
+      aioConsoleLogger.debug(err)
+      this.error(err.message)
+    } finally {
+      this.cleanOutput()
     }
-    aioConsoleLogger.info(`Project ${projectDetails.name} is valid not already in use.`)
-    // if we get here, all validation passed, so call server to create project
-    const project = await this.consoleCLI.createProject(orgId, projectDetails)
-    // Output handling: honor --json/--yml flags for structured output
-    if (flags.json) {
-      this.printJson(project)
-    } else if (flags.yml) {
-      this.printYaml(project)
-    } else {
-      this.log(`Project ${project.name} created successfully.`)
-    }
-    return project
   }
 }
 
