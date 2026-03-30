@@ -46,9 +46,9 @@ class CreateCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
-      // resolve project by name or title to project id
+      // resolve project by name to project id
       const projects = await this.consoleCLI.getProjects(orgId)
-      const project = projects.find(p => p.name === flags.projectName || p.title === flags.projectName)
+      const project = projects.find(p => p.name === flags.projectName)
       if (!project) {
         this.error(`Project ${flags.projectName} not found in the Organization.`)
       }
@@ -84,7 +84,7 @@ CreateCommand.flags = {
     description: 'OrgID of the organization that contains the project to create the workspace in'
   }),
   projectName: Flags.string({
-    description: 'Name or title of the project to create the workspace in',
+    description: 'Name of the project to create the workspace in',
     required: true
   }),
   name: Flags.string({
@@ -107,7 +107,6 @@ CreateCommand.flags = {
 }
 
 CreateCommand.aliases = [
-  'console:workspace:create',
   'console:workspace:init',
   'console:ws:create',
   'console:ws:init'

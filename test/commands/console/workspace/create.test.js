@@ -132,7 +132,7 @@ describe('console:workspace:create', () => {
       const stderr = stderrSpy.mock.calls.map(args => args[0]).join('')
 
       const combinedOutput = stdout + stderr
-      expect(combinedOutput).toContain('You have not selected an Organization. Please select first.')
+      expect(combinedOutput).toContain('You have not selected an Organization. Please select one first.')
       expect(mockConsoleCLIInstance.createWorkspace).not.toHaveBeenCalled()
     } finally {
       stdoutSpy.mockRestore()
@@ -151,17 +151,6 @@ describe('console:workspace:create', () => {
     expect(mockConsoleCLIInstance.createWorkspace).toHaveBeenCalledWith('0987654321', '9999', {
       name: 'testworkspace',
       title: 'Test Workspace'
-    })
-    expect(result).toEqual(mockWorkspace)
-  })
-
-  it('should resolve project by title', async () => {
-    command.argv = ['--name', 'testworkspace', '--projectName', 'My Project', '--orgId', '1234567890']
-    const result = await command.run()
-    expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1234567890')
-    expect(mockConsoleCLIInstance.createWorkspace).toHaveBeenCalledWith('1234567890', '9999', {
-      name: 'testworkspace',
-      title: 'testworkspace'
     })
     expect(result).toEqual(mockWorkspace)
   })
