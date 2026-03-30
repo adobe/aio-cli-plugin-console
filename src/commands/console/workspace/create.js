@@ -81,7 +81,7 @@ CreateCommand.description = 'Create a new Workspace for the selected Project'
 CreateCommand.flags = {
   ...ConsoleCommand.flags,
   orgId: Flags.string({
-    description: 'OrgID of the project to create the workspace in'
+    description: 'OrgID of the organization that contains the project to create the workspace in'
   }),
   projectName: Flags.string({
     description: 'Name or title of the project to create the workspace in',
