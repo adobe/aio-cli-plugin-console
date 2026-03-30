@@ -42,7 +42,7 @@ class ConsoleCommand extends Command {
    * @param {object} data JSON data to print
    */
   printJson (data) {
-    this.log(JSON.stringify(data))
+    this.log(JSON.stringify(data, null, 2))
   }
 
   /**

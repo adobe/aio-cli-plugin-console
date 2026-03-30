@@ -1,0 +1,12 @@
+{
+  "appId": null,
+  "date_created": "2020-04-29T10:14:17.000Z",
+  "date_last_modified": "2020-04-29T10:14:17.000Z",
+  "deleted": 0,
+  "description": "Description 1",
+  "id": "1000000001",
+  "name": "name1",
+  "org_id": 1234567890,
+  "title": "Title 1",
+  "type": "default"
+}
