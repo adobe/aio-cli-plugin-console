@@ -63,6 +63,49 @@ describe('console:workspace:create', () => {
     expect(result).toEqual(mockWorkspace)
   })
 
+  it('should output JSON when --json is used', async () => {
+    const stdoutSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => true)
+    const stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => true)
+
+    try {
+      command.argv = ['--name', 'testworkspace', '--title', 'Test Workspace', '--projectName', 'myproject', '--orgId', '1234567890', '--json']
+      await command.run()
+
+      const stdout = stdoutSpy.mock.calls.map(args => args[0]).join('')
+      const stderr = stderrSpy.mock.calls.map(args => args[0]).join('')
+
+      expect(stderr).toBe('')
+      let parsed
+      expect(() => { parsed = JSON.parse(stdout) }).not.toThrow()
+      expect(parsed).toMatchObject(mockWorkspace)
+    } finally {
+      stdoutSpy.mockRestore()
+      stderrSpy.mockRestore()
+    }
+  })
+
+  it('should output YAML when --yml is used', async () => {
+    const stdoutSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => true)
+    const stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => true)
+
+    try {
+      command.argv = ['--name', 'testworkspace', '--title', 'Test Workspace', '--projectName', 'myproject', '--orgId', '1234567890', '--yml']
+      await command.run()
+
+      const stdout = stdoutSpy.mock.calls.map(args => args[0]).join('')
+      const stderr = stderrSpy.mock.calls.map(args => args[0]).join('')
+
+      expect(stderr).toBe('')
+      expect(stdout).toContain('id:')
+      expect(stdout).toContain('name:')
+      expect(stdout).toContain('title:')
+      expect(stdout).toContain('Test Workspace')
+      expect(stdout).toContain('TestWorkspace')
+    } finally {
+      stdoutSpy.mockRestore()
+      stderrSpy.mockRestore()
+    }
+  })
   it('should not create a workspace if the name is not provided', async () => {
     command.argv = ['--projectName', 'myproject', '--orgId', '1234567890']
     await expect(command.run()).rejects.toThrow('Missing required flag name')
