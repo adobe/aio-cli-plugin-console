@@ -17,9 +17,9 @@ class CreateCommand extends ConsoleCommand {
     const { flags } = await this.parse(CreateCommand)
     const orgId = flags.orgId || this.getConfig('org.id')
     if (!orgId) {
-      this.log('You have not selected an Organization. Please select one before running this command.')
+      this.log('You have not selected an Organization. Please select one first.')
       this.printConsoleConfig()
-      process.exit(1)
+      this.exit(1)
     }
 
     const workspaceDetails = {
