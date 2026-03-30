@@ -119,10 +119,25 @@ describe('console:workspace:create', () => {
   })
 
   it('should not create a workspace if the orgId is not provided and no config', async () => {
-    command.argv = ['--name', 'testworkspace', '--projectName', 'myproject']
-    command.getConfig = jest.fn().mockReturnValue(null)
-    await expect(command.run()).rejects.toThrow('You have not selected an Organization. Please select first.')
-    expect(mockConsoleCLIInstance.createWorkspace).not.toHaveBeenCalled()
+    const stdoutSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => true)
+    const stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => true)
+
+    try {
+      command.argv = ['--name', 'testworkspace', '--projectName', 'myproject']
+      command.getConfig = jest.fn().mockReturnValue(null)
+
+      await expect(command.run()).rejects.toThrow()
+
+      const stdout = stdoutSpy.mock.calls.map(args => args[0]).join('')
+      const stderr = stderrSpy.mock.calls.map(args => args[0]).join('')
+
+      const combinedOutput = stdout + stderr
+      expect(combinedOutput).toContain('You have not selected an Organization. Please select first.')
+      expect(mockConsoleCLIInstance.createWorkspace).not.toHaveBeenCalled()
+    } finally {
+      stdoutSpy.mockRestore()
+      stderrSpy.mockRestore()
+    }
   })
 
   it('should use config org.id if orgId flag is not provided', async () => {
