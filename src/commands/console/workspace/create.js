@@ -34,7 +34,7 @@ class CreateCommand extends ConsoleCommand {
     }
 
     // Workspace title should only contain alphanumeric characters and spaces
-    if (!/^[a-zA-Z0-9\s]+$/.test(workspaceDetails.title)) {
+    if (!/^[a-zA-Z0-9 ]+$/.test(workspaceDetails.title)) {
       this.error(`Workspace title ${workspaceDetails.title} is invalid. It should only contain alphanumeric characters and spaces.`)
     }
     if (workspaceDetails.title.length < 3 || workspaceDetails.title.length > 45) {
