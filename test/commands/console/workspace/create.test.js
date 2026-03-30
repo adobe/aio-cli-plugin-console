@@ -39,7 +39,7 @@ describe('console:workspace:create', () => {
   let command
 
   beforeEach(() => {
-    command = new TheCommand()
+    command = new TheCommand([])
     mockConsoleCLIInstance.createWorkspace.mockReset()
     mockConsoleCLIInstance.createWorkspace.mockResolvedValue(mockWorkspace)
     mockConsoleCLIInstance.getWorkspaces.mockReset()
