@@ -58,7 +58,13 @@ class CreateCommand extends ConsoleCommand {
       }
 
       const workspace = await this.consoleCLI.createWorkspace(orgId, projectId, workspaceDetails)
-      this.log(`Workspace ${workspace.name} created successfully.`)
+      if (flags.json) {
+        this.printJson(workspace)
+      } else if (flags.yml) {
+        this.printYaml(workspace)
+      } else {
+        this.log(`Workspace ${workspace.name} created successfully.`)
+      }
       return workspace
     } catch (err) {
       this.error(err.message)
