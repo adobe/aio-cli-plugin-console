@@ -9,6 +9,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+const { stdout } = require('stdout-stderr')
+
 const mockProject = {
   appId: null,
   date_created: '2020-04-29T10:14:17.000Z',
@@ -38,8 +40,12 @@ describe('console:project:create', () => {
   let command
 
   beforeEach(() => {
-    command = new TheCommand()
+    command = new TheCommand([])
+    jest.clearAllMocks()
     mockConsoleCLIInstance.createProject.mockReset()
+    mockConsoleCLIInstance.createProject = jest.fn().mockResolvedValue(mockProject)
+    mockConsoleCLIInstance.getProjects.mockReset()
+    mockConsoleCLIInstance.getProjects = jest.fn().mockResolvedValue([])
   })
 
   afterEach(() => {
@@ -67,7 +73,8 @@ describe('console:project:create', () => {
   it('should not create a project if the orgId is not provided', async () => {
     command.argv = ['--name', 'testproject', '--title', 'Test Project', '--description', 'Test Project Description']
     command.getConfig = jest.fn().mockReturnValue(null)
-    await expect(command.run()).rejects.toThrow('You have not selected an Organization. Please select first.')
+    await expect(command.run()).rejects.toThrow()
+    expect(stdout.output).toMatchFixture('project/list-no-org.txt')
     expect(mockConsoleCLIInstance.createProject).not.toHaveBeenCalled()
   })
 
@@ -126,7 +133,7 @@ describe('console:project:create', () => {
 
   it('should not create a project if the title is invalid', async () => {
     command.argv = ['--name', 'testproject', '--title', 'Test Project!', '--description', 'Test Project Description', '--orgId', '1234567890']
-    await expect(command.run()).rejects.toThrow('Project title Test Project! is invalid. It should only contain English alphanumeric or Latin alphabet characters and spaces.')
+    await expect(command.run()).rejects.toThrow('Project title Test Project! is invalid. It should only contain alphanumeric characters and spaces.')
     expect(mockConsoleCLIInstance.createProject).not.toHaveBeenCalled()
   })
 
@@ -154,5 +161,19 @@ describe('console:project:create', () => {
     command.argv = ['--name', 'testName', '--title', 'HI', '--orgId', '1234567890']
     await expect(command.run()).rejects.toThrow('Project title must be between 3 and 45 characters long.')
     expect(mockConsoleCLIInstance.createProject).not.toHaveBeenCalled()
+  })
+
+  it('respects --json flag', async () => {
+    command.argv = ['--name', 'testproject', '--title', 'Test Project', '--description', 'Test Project Description', '--orgId', '1234567890', '--json']
+    const result = await command.run()
+    expect(result).toEqual(mockProject)
+    expect(stdout.output).toMatchFixture('project/create-json.txt')
+  })
+
+  it('respects --yml flag', async () => {
+    command.argv = ['--name', 'testproject', '--title', 'Test Project', '--description', 'Test Project Description', '--orgId', '1234567890', '--yml']
+    const result = await command.run()
+    expect(result).toEqual(mockProject)
+    expect(stdout.output).toMatchFixture('project/create-yml.txt')
   })
 })

@@ -20,21 +20,21 @@ class DeleteCommand extends ConsoleCommand {
 
     const orgId = flags.orgId || this.getConfig(`${CONFIG_KEYS.ORG}.id`)
     if (!orgId) {
-      this.log('You have not selected an Organization. Please select first.')
+      this.log('You have not selected an Organization. Please select one first.')
       this.printConsoleConfig()
       this.exit(1)
     }
 
     const projectId = flags.projectId || this.getConfig(`${CONFIG_KEYS.PROJECT}.id`)
     if (!projectId) {
-      this.log('You have not selected a Project. Please select first.')
+      this.log('You have not selected a Project. Please select one first.')
       this.printConsoleConfig()
       this.exit(1)
     }
 
     const workspaceId = flags.workspaceId || this.getConfig(`${CONFIG_KEYS.WORKSPACE}.id`)
     if (!workspaceId) {
-      this.log('You have not selected a Workspace. Please select first.')
+      this.log('You have not selected a Workspace. Please select one first.')
       this.printConsoleConfig()
       this.exit(1)
     }

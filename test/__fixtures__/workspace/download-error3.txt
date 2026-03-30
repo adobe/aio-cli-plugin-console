@@ -1,4 +1,4 @@
-You have not selected a Workspace. Please select first.
+You have not selected a Workspace. Please select one first.
 You are currently in:
 1. Org: THE_ORG
 2. Project: THE_PROJECT
