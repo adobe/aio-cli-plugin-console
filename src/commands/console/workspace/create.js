@@ -76,7 +76,7 @@ class CreateCommand extends ConsoleCommand {
   }
 }
 
-CreateCommand.description = 'Create a new Workspace for the selected Project'
+CreateCommand.description = 'Create a new Workspace in the specified Project'
 
 CreateCommand.flags = {
   ...ConsoleCommand.flags,
