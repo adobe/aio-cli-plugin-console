@@ -10,7 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:project:list', { provider: 'debug' })
-const { Flags, ux } = require('@oclif/core')
+const { Flags } = require('@oclif/core')
+const { table } = require('../../../utils/table')
 const ConsoleCommand = require('../index')
 
 class ListCommand extends ConsoleCommand {
@@ -67,7 +68,7 @@ class ListCommand extends ConsoleCommand {
         header: 'Title'
       }
     }
-    ux.table(projects, columns)
+    table(projects, columns)
   }
 }
 

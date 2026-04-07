@@ -1,4 +1,16 @@
 const { stdout, stderr } = require('stdout-stderr')
+const { Command } = require('@oclif/core')
+
+// @oclif/core v4: parse() requires this.config to have runHook.
+// When instantiating commands directly in tests (new MyCommand([])), config is not set up.
+// Patch parse() to provide a minimal mock config in that case.
+const origParse = Command.prototype.parse
+Command.prototype.parse = async function (options, argv) {
+  if (!this.config) {
+    this.config = { runHook: async () => ({ successes: [], failures: [] }) }
+  }
+  return origParse.call(this, options, argv)
+}
 const fs = jest.requireActual('fs')
 const eol = require('eol')
 const path = require('path')
