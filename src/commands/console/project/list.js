@@ -19,7 +19,7 @@ class ListCommand extends ConsoleCommand {
     const { flags } = await this.parse(ListCommand)
     const orgId = flags.orgId || this.getConfig('org.id')
     if (!orgId) {
-      this.log('You have not selected an Organization. Please select first.')
+      this.log('You have not selected an Organization. Please select one first.')
       this.printConsoleConfig()
       this.exit(1)
     }
