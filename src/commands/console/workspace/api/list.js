@@ -10,13 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 const { Flags } = require('@oclif/core')
-const ConsoleCommand = require('../index')
-const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:add-api', { provider: 'debug' })
+const ConsoleCommand = require('../../index')
+const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:api:list', { provider: 'debug' })
 const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
 
-class AddApiCommand extends ConsoleCommand {
+class ListCommand extends ConsoleCommand {
   async run () {
-    const { flags } = await this.parse(AddApiCommand)
+    const { flags } = await this.parse(ListCommand)
 
     const orgId = flags.orgId || this.getConfig('org.id')
     if (!orgId) {
@@ -40,51 +40,40 @@ class AddApiCommand extends ConsoleCommand {
         this.error(`Workspace ${flags.workspaceName} not found in Project ${flags.projectName}.`)
       }
 
-      const requestedCodes = flags['service-code'].split(',').map(s => s.trim()).filter(Boolean)
-      if (requestedCodes.length === 0) {
-        this.error('At least one service code must be provided.')
-      }
-
-      const enabledServices = await this.consoleCLI.getEnabledServicesForOrg(orgId)
-      aioConsoleLogger.debug(`Enabled services: ${JSON.stringify(enabledServices.map(s => s.code))}`)
-
-      const serviceProperties = []
-      const notFound = []
-      for (const code of requestedCodes) {
-        const service = enabledServices.find(s => s.code === code)
-        if (!service) {
-          notFound.push(code)
-          continue
-        }
-        serviceProperties.push({
-          name: service.name,
-          sdkCode: service.code,
-          roles: (service.properties && service.properties.roles) || null,
-          licenseConfigs: (service.properties && service.properties.licenseConfigs) || null
-        })
-      }
-
-      if (notFound.length > 0) {
-        this.error(`Service code(s) not found or not enabled in the Organization: ${notFound.join(', ')}`)
-      }
-
-      const result = await this.consoleCLI.subscribeToServicesWithCredentialType({
+      const supportedServices = await this.consoleCLI.getEnabledServicesForOrg(orgId)
+      const serviceProperties = await this.consoleCLI.getServicePropertiesFromWorkspaceWithCredentialType({
         orgId,
-        project,
+        projectId: project.id,
         workspace,
-        serviceProperties,
+        supportedServices,
         credentialType: LibConsoleCLI.OAUTH_SERVER_TO_SERVER_CREDENTIAL
       })
 
+      aioConsoleLogger.debug(`Subscribed services: ${JSON.stringify(serviceProperties.map(s => s.sdkCode))}`)
+
       if (flags.json) {
-        this.printJson(result)
+        this.printJson(serviceProperties)
       } else if (flags.yml) {
-        this.printYaml(result)
+        this.printYaml(serviceProperties)
       } else {
-        this.log(`Successfully added API(s) ${requestedCodes.join(', ')} to Workspace ${workspace.name}.`)
+        if (serviceProperties.length === 0) {
+          this.log(`Workspace ${workspace.name} has no API services subscribed.`)
+          return []
+        }
+        this.log(`API services subscribed to Workspace ${workspace.name} (${serviceProperties.length}):`)
+        this.log('')
+        for (const sp of serviceProperties) {
+          this.log(`  ${sp.sdkCode}`)
+          this.log(`    Name: ${sp.name}`)
+          if (sp.licenseConfigs && sp.licenseConfigs.length > 0) {
+            const names = sp.licenseConfigs.map(lc => lc.name).join(', ')
+            this.log(`    Product Profiles: ${names}`)
+          }
+          this.log('')
+        }
       }
 
-      return result
+      return serviceProperties
     } catch (err) {
       aioConsoleLogger.debug(err)
       this.error(err.message)
@@ -94,9 +83,9 @@ class AddApiCommand extends ConsoleCommand {
   }
 }
 
-AddApiCommand.description = 'Add API service(s) to a Workspace'
+ListCommand.description = 'List API services currently subscribed to a Workspace'
 
-AddApiCommand.flags = {
+ListCommand.flags = {
   ...ConsoleCommand.flags,
   orgId: Flags.string({
     description: 'Organization id'
@@ -106,11 +95,7 @@ AddApiCommand.flags = {
     required: true
   }),
   workspaceName: Flags.string({
-    description: 'Name of the workspace to add the API to',
-    required: true
-  }),
-  'service-code': Flags.string({
-    description: 'Comma-separated list of API service codes to add (e.g. AssetComputeSDK,AdobeAnalyticsSDK)',
+    description: 'Name of the workspace to list services for',
     required: true
   }),
   json: Flags.boolean({
@@ -125,8 +110,10 @@ AddApiCommand.flags = {
   })
 }
 
-AddApiCommand.aliases = [
-  'console:ws:add-api'
+ListCommand.aliases = [
+  'console:workspace:api:ls',
+  'console:ws:api:list',
+  'console:ws:api:ls'
 ]
 
-module.exports = AddApiCommand
+module.exports = ListCommand

@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 const { Flags } = require('@oclif/core')
 const ConsoleCommand = require('../index')
-const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:workspace:list-apis', { provider: 'debug' })
+const aioConsoleLogger = require('@adobe/aio-lib-core-logging')('@adobe/aio-cli-plugin-console:api:list', { provider: 'debug' })
 
-class ListApisCommand extends ConsoleCommand {
+class ListCommand extends ConsoleCommand {
   async run () {
-    const { flags } = await this.parse(ListApisCommand)
+    const { flags } = await this.parse(ListCommand)
 
     const orgId = flags.orgId || this.getConfig('org.id')
     if (!orgId) {
@@ -42,8 +42,12 @@ class ListApisCommand extends ConsoleCommand {
         this.log(`Enabled API services for the Organization (${enabledServices.length}):`)
         this.log('')
         for (const service of enabledServices) {
+          const hasProfiles = Boolean(service.properties && service.properties.licenseConfigs && service.properties.licenseConfigs.length > 0)
           this.log(`  ${service.code}`)
           this.log(`    Name: ${service.name}`)
+          if (hasProfiles) {
+            this.log('    Requires product profile: yes')
+          }
           this.log('')
         }
       }
@@ -58,9 +62,9 @@ class ListApisCommand extends ConsoleCommand {
   }
 }
 
-ListApisCommand.description = 'List available API services for the Organization'
+ListCommand.description = 'List API services available to the Organization'
 
-ListApisCommand.flags = {
+ListCommand.flags = {
   ...ConsoleCommand.flags,
   orgId: Flags.string({
     description: 'Organization id'
@@ -77,8 +81,8 @@ ListApisCommand.flags = {
   })
 }
 
-ListApisCommand.aliases = [
-  'console:ws:list-apis'
+ListCommand.aliases = [
+  'console:api:ls'
 ]
 
-module.exports = ListApisCommand
+module.exports = ListCommand

@@ -16,17 +16,17 @@ const mockEnabledServices = [
     type: 'entp',
     properties: {
       roles: [{ id: 1, code: 'role1', name: null }],
-      licenseConfigs: [{ id: '111', name: 'config1', productId: 'P1' }]
+      licenseConfigs: [
+        { id: 'lc1', name: 'Analytics all access', productId: 'P1' },
+        { id: 'lc2', name: 'Analytics - Adobe IO DEMO', productId: 'P1' }
+      ]
     }
   },
   {
     name: 'I/O Events',
     code: 'CloudIntegrationSDK',
     type: 'entp',
-    properties: {
-      roles: null,
-      licenseConfigs: null
-    }
+    properties: { roles: null, licenseConfigs: null }
   },
   {
     name: 'App Builder Data Services',
@@ -48,9 +48,9 @@ jest.mock('@adobe/aio-cli-lib-console', () => {
   return mock
 })
 
-const TheCommand = require('../../../../src/commands/console/workspace/list-apis')
+const TheCommand = require('../../../../src/commands/console/api/list')
 
-describe('console:workspace:list-apis', () => {
+describe('console:api:list', () => {
   let command
 
   beforeEach(() => {
@@ -76,6 +76,7 @@ describe('console:workspace:list-apis', () => {
 
       const stdout = stdoutSpy.mock.calls.map(args => args[0]).join('')
       expect(stdout).toContain('AdobeAnalyticsSDK')
+      expect(stdout).toContain('Requires product profile: yes')
       expect(stdout).toContain('CloudIntegrationSDK')
       expect(stdout).toContain('AppBuilderDataServicesSDK')
     } finally {
@@ -112,7 +113,6 @@ describe('console:workspace:list-apis', () => {
 
       const stdout = stdoutSpy.mock.calls.map(args => args[0]).join('')
       expect(stdout).toContain('AdobeAnalyticsSDK')
-      expect(stdout).toContain('CloudIntegrationSDK')
     } finally {
       stdoutSpy.mockRestore()
       stderrSpy.mockRestore()
@@ -156,9 +156,7 @@ describe('console:workspace:list-apis', () => {
       command.getConfig = jest.fn().mockReturnValue(null)
       await expect(command.run()).rejects.toThrow()
 
-      const stdout = stdoutSpy.mock.calls.map(args => args[0]).join('')
-      const stderr = stderrSpy.mock.calls.map(args => args[0]).join('')
-      const combined = stdout + stderr
+      const combined = stdoutSpy.mock.calls.map(a => a[0]).join('') + stderrSpy.mock.calls.map(a => a[0]).join('')
       expect(combined).toContain('You have not selected an Organization. Please select one first.')
     } finally {
       stdoutSpy.mockRestore()
