@@ -34,7 +34,7 @@ jobs:
             # Intentionally require admin or maintain; write collaborators are excluded to
             # limit who can trigger potentially expensive/sensitive review automation.
             if [ "$PERM" = "admin" ] || [ "$PERM" = "maintain" ]; then
-              DATA=$(gh api repos/$GITHUB_REPOSITORY/pulls/$ISSUE_NUMBER)
+              DATA=$(gh api repos/$GITHUB_REPOSITORY/pulls/$ISSUE_NUMBER) || { echo "allowed=false" >> $GITHUB_OUTPUT; exit 0; }
               echo "allowed=true" >> $GITHUB_OUTPUT
               echo "pr_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
               echo "head_sha=$(echo "$DATA" | jq -r '.head.sha')" >> $GITHUB_OUTPUT
