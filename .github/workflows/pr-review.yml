@@ -35,9 +35,11 @@ jobs:
             # limit who can trigger potentially expensive/sensitive review automation.
             if [ "$PERM" = "admin" ] || [ "$PERM" = "maintain" ]; then
               DATA=$(gh api repos/$GITHUB_REPOSITORY/pulls/$ISSUE_NUMBER) || { echo "allowed=false" >> $GITHUB_OUTPUT; exit 0; }
+              HEAD_SHA_VALUE=$(echo "$DATA" | jq -r '.head.sha')
+              if [ -z "$HEAD_SHA_VALUE" ] || [ "$HEAD_SHA_VALUE" = "null" ]; then echo "allowed=false" >> $GITHUB_OUTPUT; exit 0; fi
               echo "allowed=true" >> $GITHUB_OUTPUT
               echo "pr_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
-              echo "head_sha=$(echo "$DATA" | jq -r '.head.sha')" >> $GITHUB_OUTPUT
+              echo "head_sha=$HEAD_SHA_VALUE" >> $GITHUB_OUTPUT
             else
               echo "allowed=false" >> $GITHUB_OUTPUT
             fi
