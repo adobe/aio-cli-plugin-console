@@ -222,6 +222,28 @@ describe('console:workspace:add-api', () => {
     expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('0987654321')
   })
 
+  it('should error if all service codes are empty after parsing', async () => {
+    command.argv = [
+      '--service-code', ' , , ',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345'
+    ]
+    await expect(command.run()).rejects.toThrow('At least one service code must be provided.')
+    expect(mockConsoleCLIInstance.subscribeToServicesWithCredentialType).not.toHaveBeenCalled()
+  })
+
+  it('should handle SDK errors from subscribeToServices', async () => {
+    mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mockRejectedValue(new Error('SDK subscribe failed'))
+    command.argv = [
+      '--service-code', 'AdobeAnalyticsSDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345'
+    ]
+    await expect(command.run()).rejects.toThrow('SDK subscribe failed')
+  })
+
   it('should error if required flags are missing', async () => {
     command.argv = ['--projectName', 'myproject', '--orgId', '12345']
     await expect(command.run()).rejects.toThrow()
