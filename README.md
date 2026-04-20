@@ -38,6 +38,9 @@ $ aio console --help
 # Commands
 <!-- commands -->
 * [`aio console`](#aio-console)
+* [`aio console api`](#aio-console-api)
+* [`aio console api list`](#aio-console-api-list)
+* [`aio console api ls`](#aio-console-api-ls)
 * [`aio console open`](#aio-console-open)
 * [`aio console org`](#aio-console-org)
 * [`aio console org list`](#aio-console-org-list)
@@ -57,6 +60,10 @@ $ aio console --help
 * [`aio console publickey upload FILE`](#aio-console-publickey-upload-file)
 * [`aio console where`](#aio-console-where)
 * [`aio console workspace`](#aio-console-workspace)
+* [`aio console workspace api`](#aio-console-workspace-api)
+* [`aio console workspace api add`](#aio-console-workspace-api-add)
+* [`aio console workspace api list`](#aio-console-workspace-api-list)
+* [`aio console workspace api ls`](#aio-console-workspace-api-ls)
 * [`aio console workspace create`](#aio-console-workspace-create)
 * [`aio console workspace dl [DESTINATION]`](#aio-console-workspace-dl-destination)
 * [`aio console workspace download [DESTINATION]`](#aio-console-workspace-download-destination)
@@ -66,6 +73,10 @@ $ aio console --help
 * [`aio console workspace sel [WORKSPACEIDORNAME]`](#aio-console-workspace-sel-workspaceidorname)
 * [`aio console workspace select [WORKSPACEIDORNAME]`](#aio-console-workspace-select-workspaceidorname)
 * [`aio console ws`](#aio-console-ws)
+* [`aio console ws api`](#aio-console-ws-api)
+* [`aio console ws api add`](#aio-console-ws-api-add)
+* [`aio console ws api list`](#aio-console-ws-api-list)
+* [`aio console ws api ls`](#aio-console-ws-api-ls)
 * [`aio console ws create`](#aio-console-ws-create)
 * [`aio console ws dl [DESTINATION]`](#aio-console-ws-dl-destination)
 * [`aio console ws download [DESTINATION]`](#aio-console-ws-download-destination)
@@ -92,7 +103,68 @@ DESCRIPTION
   Console plugin for the Adobe I/O CLI
 ```
 
-_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/index.js)_
+_See code: [src/commands/console/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/index.js)_
+
+## `aio console api`
+
+Manage API services available to your Organization
+
+```
+USAGE
+  $ aio console api [--help]
+
+FLAGS
+  --help  Show help
+
+DESCRIPTION
+  Manage API services available to your Organization
+```
+
+_See code: [src/commands/console/api/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/api/index.js)_
+
+## `aio console api list`
+
+List API services available to the Organization
+
+```
+USAGE
+  $ aio console api list [--help] [--orgId <value>] [-j | -y]
+
+FLAGS
+  -j, --json           Output json
+  -y, --yml            Output yml
+      --help           Show help
+      --orgId=<value>  Organization id
+
+DESCRIPTION
+  List API services available to the Organization
+
+ALIASES
+  $ aio console api ls
+```
+
+_See code: [src/commands/console/api/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/api/list.js)_
+
+## `aio console api ls`
+
+List API services available to the Organization
+
+```
+USAGE
+  $ aio console api ls [--help] [--orgId <value>] [-j | -y]
+
+FLAGS
+  -j, --json           Output json
+  -y, --yml            Output yml
+      --help           Show help
+      --orgId=<value>  Organization id
+
+DESCRIPTION
+  List API services available to the Organization
+
+ALIASES
+  $ aio console api ls
+```
 
 ## `aio console open`
 
@@ -112,7 +184,7 @@ ALIASES
   $ aio open
 ```
 
-_See code: [src/commands/console/open.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/open.js)_
+_See code: [src/commands/console/open.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/open.js)_
 
 ## `aio console org`
 
@@ -129,7 +201,7 @@ DESCRIPTION
   Manage your Adobe I/O Console Organizations
 ```
 
-_See code: [src/commands/console/org/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/org/index.js)_
+_See code: [src/commands/console/org/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/org/index.js)_
 
 ## `aio console org list`
 
@@ -151,7 +223,7 @@ ALIASES
   $ aio console org ls
 ```
 
-_See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/org/list.js)_
+_See code: [src/commands/console/org/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/org/list.js)_
 
 ## `aio console org ls`
 
@@ -215,7 +287,7 @@ ALIASES
   $ aio console org sel
 ```
 
-_See code: [src/commands/console/org/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/org/select.js)_
+_See code: [src/commands/console/org/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/org/select.js)_
 
 ## `aio console project`
 
@@ -232,7 +304,7 @@ DESCRIPTION
   Manage your Adobe I/O Console Projects
 ```
 
-_See code: [src/commands/console/project/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/project/index.js)_
+_See code: [src/commands/console/project/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/project/index.js)_
 
 ## `aio console project create`
 
@@ -258,7 +330,7 @@ ALIASES
   $ aio console project init
 ```
 
-_See code: [src/commands/console/project/create.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/project/create.js)_
+_See code: [src/commands/console/project/create.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/project/create.js)_
 
 ## `aio console project init`
 
@@ -305,7 +377,7 @@ ALIASES
   $ aio console project ls
 ```
 
-_See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/project/list.js)_
+_See code: [src/commands/console/project/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/project/list.js)_
 
 ## `aio console project ls`
 
@@ -372,7 +444,7 @@ ALIASES
   $ aio console project sel
 ```
 
-_See code: [src/commands/console/project/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/project/select.js)_
+_See code: [src/commands/console/project/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/project/select.js)_
 
 ## `aio console publickey`
 
@@ -389,7 +461,7 @@ DESCRIPTION
   Manage Public Key Bindings for your Adobe I/O Console Workspaces
 ```
 
-_See code: [src/commands/console/publickey/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/publickey/index.js)_
+_See code: [src/commands/console/publickey/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/publickey/index.js)_
 
 ## `aio console publickey delete IDORFINGERPRINT`
 
@@ -413,7 +485,7 @@ DESCRIPTION
   Delete a public key certificate from the selected Workspace
 ```
 
-_See code: [src/commands/console/publickey/delete.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/publickey/delete.js)_
+_See code: [src/commands/console/publickey/delete.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/publickey/delete.js)_
 
 ## `aio console publickey list`
 
@@ -435,7 +507,7 @@ DESCRIPTION
   List the public key certificates bound to the selected Workspace
 ```
 
-_See code: [src/commands/console/publickey/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/publickey/list.js)_
+_See code: [src/commands/console/publickey/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/publickey/list.js)_
 
 ## `aio console publickey upload FILE`
 
@@ -460,7 +532,7 @@ DESCRIPTION
   Upload a public key certificate to the selected Workspace
 ```
 
-_See code: [src/commands/console/publickey/upload.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/publickey/upload.js)_
+_See code: [src/commands/console/publickey/upload.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/publickey/upload.js)_
 
 ## `aio console where`
 
@@ -482,7 +554,7 @@ ALIASES
   $ aio where
 ```
 
-_See code: [src/commands/console/where/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/where/index.js)_
+_See code: [src/commands/console/where/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/where/index.js)_
 
 ## `aio console workspace`
 
@@ -502,7 +574,109 @@ ALIASES
   $ aio console ws
 ```
 
-_See code: [src/commands/console/workspace/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/workspace/index.js)_
+_See code: [src/commands/console/workspace/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/workspace/index.js)_
+
+## `aio console workspace api`
+
+Manage API services subscribed to a Workspace
+
+```
+USAGE
+  $ aio console workspace api [--help]
+
+FLAGS
+  --help  Show help
+
+DESCRIPTION
+  Manage API services subscribed to a Workspace
+
+ALIASES
+  $ aio console ws api
+```
+
+_See code: [src/commands/console/workspace/api/index.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/workspace/api/index.js)_
+
+## `aio console workspace api add`
+
+Add API service(s) to a Workspace
+
+```
+USAGE
+  $ aio console workspace api add --projectName <value> --workspaceName <value> --service-code <value> [--help] [--orgId
+    <value>] [--license-config <value>...] [-j | -y]
+
+FLAGS
+  -j, --json                       Output json
+  -y, --yml                        Output yml
+      --help                       Show help
+      --license-config=<value>...  Product profile(s) for a service, format:
+                                   '<sdkCode>=<profileNameOrId>[,<profileNameOrId>...]'. Repeat for multiple services.
+      --orgId=<value>              Organization id
+      --projectName=<value>        (required) Name of the project containing the workspace
+      --service-code=<value>       (required) Comma-separated list of API service codes to add (e.g.
+                                   AssetComputeSDK,AdobeAnalyticsSDK)
+      --workspaceName=<value>      (required) Name of the workspace to add the API to
+
+DESCRIPTION
+  Add API service(s) to a Workspace
+
+ALIASES
+  $ aio console ws api add
+```
+
+_See code: [src/commands/console/workspace/api/add.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/workspace/api/add.js)_
+
+## `aio console workspace api list`
+
+List API services currently subscribed to a Workspace
+
+```
+USAGE
+  $ aio console workspace api list --projectName <value> --workspaceName <value> [--help] [--orgId <value>] [-j | -y]
+
+FLAGS
+  -j, --json                   Output json
+  -y, --yml                    Output yml
+      --help                   Show help
+      --orgId=<value>          Organization id
+      --projectName=<value>    (required) Name of the project containing the workspace
+      --workspaceName=<value>  (required) Name of the workspace to list services for
+
+DESCRIPTION
+  List API services currently subscribed to a Workspace
+
+ALIASES
+  $ aio console workspace api ls
+  $ aio console ws api list
+  $ aio console ws api ls
+```
+
+_See code: [src/commands/console/workspace/api/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/workspace/api/list.js)_
+
+## `aio console workspace api ls`
+
+List API services currently subscribed to a Workspace
+
+```
+USAGE
+  $ aio console workspace api ls --projectName <value> --workspaceName <value> [--help] [--orgId <value>] [-j | -y]
+
+FLAGS
+  -j, --json                   Output json
+  -y, --yml                    Output yml
+      --help                   Show help
+      --orgId=<value>          Organization id
+      --projectName=<value>    (required) Name of the project containing the workspace
+      --workspaceName=<value>  (required) Name of the workspace to list services for
+
+DESCRIPTION
+  List API services currently subscribed to a Workspace
+
+ALIASES
+  $ aio console workspace api ls
+  $ aio console ws api list
+  $ aio console ws api ls
+```
 
 ## `aio console workspace create`
 
@@ -531,7 +705,7 @@ ALIASES
   $ aio console ws init
 ```
 
-_See code: [src/commands/console/workspace/create.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/workspace/create.js)_
+_See code: [src/commands/console/workspace/create.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/workspace/create.js)_
 
 ## `aio console workspace dl [DESTINATION]`
 
@@ -586,7 +760,7 @@ ALIASES
   $ aio console ws dl
 ```
 
-_See code: [src/commands/console/workspace/download.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/workspace/download.js)_
+_See code: [src/commands/console/workspace/download.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/workspace/download.js)_
 
 ## `aio console workspace init`
 
@@ -639,7 +813,7 @@ ALIASES
   $ aio console ws ls
 ```
 
-_See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/workspace/list.js)_
+_See code: [src/commands/console/workspace/list.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/workspace/list.js)_
 
 ## `aio console workspace ls`
 
@@ -715,7 +889,7 @@ ALIASES
   $ aio console ws sel
 ```
 
-_See code: [src/commands/console/workspace/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.2.0/src/commands/console/workspace/select.js)_
+_See code: [src/commands/console/workspace/select.js](https://github.com/adobe/aio-cli-plugin-console/blob/5.3.0/src/commands/console/workspace/select.js)_
 
 ## `aio console ws`
 
@@ -733,6 +907,102 @@ DESCRIPTION
 
 ALIASES
   $ aio console ws
+```
+
+## `aio console ws api`
+
+Manage API services subscribed to a Workspace
+
+```
+USAGE
+  $ aio console ws api [--help]
+
+FLAGS
+  --help  Show help
+
+DESCRIPTION
+  Manage API services subscribed to a Workspace
+
+ALIASES
+  $ aio console ws api
+```
+
+## `aio console ws api add`
+
+Add API service(s) to a Workspace
+
+```
+USAGE
+  $ aio console ws api add --projectName <value> --workspaceName <value> --service-code <value> [--help] [--orgId
+    <value>] [--license-config <value>...] [-j | -y]
+
+FLAGS
+  -j, --json                       Output json
+  -y, --yml                        Output yml
+      --help                       Show help
+      --license-config=<value>...  Product profile(s) for a service, format:
+                                   '<sdkCode>=<profileNameOrId>[,<profileNameOrId>...]'. Repeat for multiple services.
+      --orgId=<value>              Organization id
+      --projectName=<value>        (required) Name of the project containing the workspace
+      --service-code=<value>       (required) Comma-separated list of API service codes to add (e.g.
+                                   AssetComputeSDK,AdobeAnalyticsSDK)
+      --workspaceName=<value>      (required) Name of the workspace to add the API to
+
+DESCRIPTION
+  Add API service(s) to a Workspace
+
+ALIASES
+  $ aio console ws api add
+```
+
+## `aio console ws api list`
+
+List API services currently subscribed to a Workspace
+
+```
+USAGE
+  $ aio console ws api list --projectName <value> --workspaceName <value> [--help] [--orgId <value>] [-j | -y]
+
+FLAGS
+  -j, --json                   Output json
+  -y, --yml                    Output yml
+      --help                   Show help
+      --orgId=<value>          Organization id
+      --projectName=<value>    (required) Name of the project containing the workspace
+      --workspaceName=<value>  (required) Name of the workspace to list services for
+
+DESCRIPTION
+  List API services currently subscribed to a Workspace
+
+ALIASES
+  $ aio console workspace api ls
+  $ aio console ws api list
+  $ aio console ws api ls
+```
+
+## `aio console ws api ls`
+
+List API services currently subscribed to a Workspace
+
+```
+USAGE
+  $ aio console ws api ls --projectName <value> --workspaceName <value> [--help] [--orgId <value>] [-j | -y]
+
+FLAGS
+  -j, --json                   Output json
+  -y, --yml                    Output yml
+      --help                   Show help
+      --orgId=<value>          Organization id
+      --projectName=<value>    (required) Name of the project containing the workspace
+      --workspaceName=<value>  (required) Name of the workspace to list services for
+
+DESCRIPTION
+  List API services currently subscribed to a Workspace
+
+ALIASES
+  $ aio console workspace api ls
+  $ aio console ws api list
+  $ aio console ws api ls
 ```
 
 ## `aio console ws create`
