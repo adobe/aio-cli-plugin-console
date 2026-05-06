@@ -18,7 +18,7 @@ const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const { getCliEnv } = require('@adobe/aio-lib-env')
 const yaml = require('js-yaml')
-const { CONFIG_KEYS, API_KEYS, OPEN_URLS, ORG_FEATURE_RUNTIME, ORG_TYPE_DEVELOPER, ORG_TYPE_ENTERPRISE } = require('../../config')
+const { CONFIG_KEYS, API_KEYS, CONSOLE_API_URLS, ORG_FEATURE_RUNTIME, ORG_TYPE_DEVELOPER, ORG_TYPE_ENTERPRISE } = require('../../config')
 
 class ConsoleCommand extends Command {
   async run () {
@@ -43,7 +43,7 @@ class ConsoleCommand extends Command {
    * @returns {Promise<Array<{name: string, description: string}>>} feature flags
    */
   async getOrgFeatures (orgId) {
-    const baseUrl = (OPEN_URLS[this.cliEnv] || OPEN_URLS.prod).replace('/console/projects', '')
+    const baseUrl = CONSOLE_API_URLS[this.cliEnv] || CONSOLE_API_URLS.prod
     const response = await fetch(`${baseUrl}/console/api/organizations/${orgId}/features`, {
       headers: {
         accept: 'application/json',
@@ -52,6 +52,7 @@ class ConsoleCommand extends Command {
       }
     })
     if (!response.ok) {
+      aioConsoleLogger.debug(`getOrgFeatures: non-ok response ${response.status} for org ${orgId}`)
       return []
     }
     return response.json()
@@ -80,15 +81,16 @@ class ConsoleCommand extends Command {
    * @returns {Promise<Array<object>>} selectable organizations
    */
   async getSelectableOrgs (orgs) {
-    const selectableOrgs = []
-    for (const org of orgs) {
+    const checks = await Promise.all(orgs.map(async org => {
       if (org.type === ORG_TYPE_ENTERPRISE) {
-        selectableOrgs.push(org)
-      } else if (org.type === ORG_TYPE_DEVELOPER && await this.hasRuntimeFeature(org.id)) {
-        selectableOrgs.push(org)
+        return true
       }
-    }
-    return selectableOrgs
+      if (org.type === ORG_TYPE_DEVELOPER) {
+        return this.hasRuntimeFeature(org.id)
+      }
+      return false
+    }))
+    return orgs.filter((_, i) => checks[i])
   }
 
   /**

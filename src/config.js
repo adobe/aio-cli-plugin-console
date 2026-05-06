@@ -30,11 +30,17 @@ const OPEN_URLS = {
   stage: 'https://developer-stage.adobe.com/console/projects'
 }
 
+const CONSOLE_API_URLS = {
+  prod: 'https://developer.adobe.com',
+  stage: 'https://developer-stage.adobe.com'
+}
+
 module.exports = {
   ORG_TYPE_ENTERPRISE,
   ORG_TYPE_DEVELOPER,
   ORG_FEATURE_RUNTIME,
   CONFIG_KEYS,
   API_KEYS,
-  OPEN_URLS
+  OPEN_URLS,
+  CONSOLE_API_URLS
 }
