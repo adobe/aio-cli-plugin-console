@@ -18,7 +18,7 @@ const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const { getCliEnv } = require('@adobe/aio-lib-env')
 const yaml = require('js-yaml')
-const { CONFIG_KEYS, API_KEYS } = require('../../config')
+const { CONFIG_KEYS, API_KEYS, OPEN_URLS, ORG_FEATURE_RUNTIME, ORG_TYPE_DEVELOPER, ORG_TYPE_ENTERPRISE } = require('../../config')
 
 class ConsoleCommand extends Command {
   async run () {
@@ -34,6 +34,61 @@ class ConsoleCommand extends Command {
     aioConsoleLogger.debug('Retrieving Auth Token')
     this.accessToken = await getToken(CLI)
     this.consoleCLI = await LibConsoleCLI.init({ accessToken: this.accessToken, apiKey: this.apiKey, env: this.cliEnv })
+  }
+
+  /**
+   * Retrieve enabled feature flags for an org from the Developer Console web API.
+   *
+   * @param {string} orgId Organization AMS ID
+   * @returns {Promise<Array<{name: string, description: string}>>} feature flags
+   */
+  async getOrgFeatures (orgId) {
+    const baseUrl = (OPEN_URLS[this.cliEnv] || OPEN_URLS.prod).replace('/console/projects', '')
+    const response = await fetch(`${baseUrl}/console/api/organizations/${orgId}/features`, {
+      headers: {
+        accept: 'application/json',
+        authorization: `Bearer ${this.accessToken}`,
+        'x-api-key': this.apiKey
+      }
+    })
+    if (!response.ok) {
+      return []
+    }
+    return response.json()
+  }
+
+  /**
+   * Test whether an org has the Runtime feature.
+   *
+   * @param {string} orgId Organization AMS ID
+   * @returns {Promise<boolean>} true when Runtime is enabled
+   */
+  async hasRuntimeFeature (orgId) {
+    try {
+      const features = await this.getOrgFeatures(orgId)
+      return features.some(feature => feature.name === ORG_FEATURE_RUNTIME)
+    } catch (err) {
+      aioConsoleLogger.debug(err)
+      return false
+    }
+  }
+
+  /**
+   * Filter orgs to those that can be used by Developer Console App Builder flows.
+   *
+   * @param {Array<{id: string, type: string}>} orgs organizations
+   * @returns {Promise<Array<object>>} selectable organizations
+   */
+  async getSelectableOrgs (orgs) {
+    const selectableOrgs = []
+    for (const org of orgs) {
+      if (org.type === ORG_TYPE_ENTERPRISE) {
+        selectableOrgs.push(org)
+      } else if (org.type === ORG_TYPE_DEVELOPER && await this.hasRuntimeFeature(org.id)) {
+        selectableOrgs.push(org)
+      }
+    }
+    return selectableOrgs
   }
 
   /**

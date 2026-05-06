@@ -16,9 +16,13 @@ const orgs = [
   { id: '1', code: 'CODE01', name: 'ORG01', type: 'entp' },
   { id: '2', code: 'CODE02', name: 'ORG02', type: 'entp' },
   { id: '3', code: 'CODE03', name: 'ORG03', type: 'entp' },
-  { id: '33', code: 'CODE03', name: 'ORG03', type: 'not_entp' }
+  { id: '4', code: 'CODE04', name: 'ORG04', type: 'developer' },
+  { id: '6', code: 'CODE06', name: 'ORG06', type: 'developer' },
+  { id: '33', code: 'CODE33', name: 'ORG33', type: 'not_entp' }
 ]
+const selectableOrgs = orgs.slice(0, 4)
 const selectedOrg = { id: '1', code: 'CODE01', name: 'ORG01', type: 'entp' }
+const selectedDeveloperOrg = { id: '4', code: 'CODE04', name: 'ORG04', type: 'developer' }
 /** @private */
 function setDefaultMockConsoleCLI () {
   mockConsoleCLIInstance.getOrganizations = jest.fn().mockResolvedValue(orgs)
@@ -36,6 +40,10 @@ let command
 beforeEach(() => {
   command = new SelectCommand([])
   setDefaultMockConsoleCLI()
+  global.fetch = jest.fn(url => Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve(url.endsWith('/4/features') ? [{ name: 'RUNTIME' }] : [])
+  }))
   config.set.mockReset()
   config.delete.mockReset()
 })
@@ -73,7 +81,7 @@ describe('console:org:select', () => {
   test('should select the provided org code', async () => {
     command.argv = [selectedOrg.code]
     await expect(command.run()).resolves.not.toThrow()
-    expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: selectedOrg.code, orgId: selectedOrg.code })
+    expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(selectableOrgs, { orgCode: selectedOrg.code, orgId: selectedOrg.code })
     // stores the org configuration
     expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
     expect(config.delete).toHaveBeenCalledWith('console.project')
@@ -82,7 +90,7 @@ describe('console:org:select', () => {
   test('should select the provided org id', async () => {
     command.argv = [selectedOrg.id]
     await expect(command.run()).resolves.not.toThrow()
-    expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: selectedOrg.id, orgId: selectedOrg.id })
+    expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(selectableOrgs, { orgCode: selectedOrg.id, orgId: selectedOrg.id })
     // stores the org configuration
     expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
     expect(config.delete).toHaveBeenCalledWith('console.project')
@@ -91,9 +99,19 @@ describe('console:org:select', () => {
   test('should prompt for selection if no org is provided', async () => {
     command.argv = []
     await expect(command.run()).resolves.not.toThrow()
-    expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(orgs, { orgCode: undefined, orgId: undefined })
+    expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(selectableOrgs, { orgCode: undefined, orgId: undefined })
     // stores the org configuration
     expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedOrg.code, id: selectedOrg.id, name: selectedOrg.name })
+    expect(config.delete).toHaveBeenCalledWith('console.project')
+    expect(config.delete).toHaveBeenCalledWith('console.workspace')
+  })
+
+  test('should select the provided developer org id', async () => {
+    mockConsoleCLIInstance.promptForSelectOrganization.mockResolvedValue(selectedDeveloperOrg)
+    command.argv = [selectedDeveloperOrg.id]
+    await expect(command.run()).resolves.not.toThrow()
+    expect(mockConsoleCLIInstance.promptForSelectOrganization).toHaveBeenCalledWith(selectableOrgs, { orgCode: selectedDeveloperOrg.id, orgId: selectedDeveloperOrg.id })
+    expect(config.set).toHaveBeenCalledWith('console.org', { code: selectedDeveloperOrg.code, id: selectedDeveloperOrg.id, name: selectedDeveloperOrg.name })
     expect(config.delete).toHaveBeenCalledWith('console.project')
     expect(config.delete).toHaveBeenCalledWith('console.workspace')
   })

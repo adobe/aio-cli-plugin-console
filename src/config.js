@@ -10,6 +10,8 @@ governing permissions and limitations under the License.
 */
 
 const ORG_TYPE_ENTERPRISE = 'entp'
+const ORG_TYPE_DEVELOPER = 'developer'
+const ORG_FEATURE_RUNTIME = 'RUNTIME'
 
 const API_KEYS = {
   prod: 'aio-cli-console-auth',
@@ -30,6 +32,8 @@ const OPEN_URLS = {
 
 module.exports = {
   ORG_TYPE_ENTERPRISE,
+  ORG_TYPE_DEVELOPER,
+  ORG_FEATURE_RUNTIME,
   CONFIG_KEYS,
   API_KEYS,
   OPEN_URLS
