@@ -18,7 +18,9 @@ function setDefaultMockConsoleCLI () {
     { id: 1, code: 'CODE01', name: 'ORG01', type: 'entp' },
     { id: 2, code: 'CODE02', name: 'ORG02', type: 'entp' },
     { id: 3, code: 'CODE03', name: 'ORG03', type: 'entp' },
-    { id: 3, code: 'CODE03', name: 'ORG03', type: 'not_entp' }
+    { id: 4, code: 'CODE04', name: 'ORGFOURXX', type: 'developer' },
+    { id: 5, code: 'CODE05', name: 'ORG05', type: 'not_entp' },
+    { id: 6, code: 'CODE06', name: 'ORG06', type: 'developer' }
   ])
 }
 jest.mock('@adobe/aio-cli-lib-console', () => ({
@@ -31,6 +33,10 @@ const ListCommand = require('../../../../src/commands/console/org/list')
 let command
 beforeEach(() => {
   setDefaultMockConsoleCLI()
+  global.fetch = jest.fn(url => Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve(url.endsWith('/4/features') ? [{ name: 'RUNTIME' }] : [])
+  }))
   command = new ListCommand([])
 })
 
@@ -64,7 +70,7 @@ describe('console:org:list', () => {
   })
   test('should return list of orgs', async () => {
     await expect(command.run()).resolves.not.toThrow()
-    expect(stdout.output).toMatchFixture('org/list.txt')
+    expect(stdout.output).toMatchFixtureIgnoreWhite('org/list.txt')
   })
 
   test('should return list of orgs as json', async () => {
