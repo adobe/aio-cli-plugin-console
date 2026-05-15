@@ -47,7 +47,7 @@ class ListCommand extends ConsoleCommand {
    */
   async getConsoleOrgs () {
     // this returns the orgs that can be used by
-    // App Builder flows (entp + developer-with-Runtime), so no need to 
+    // App Builder flows (entp + developer-with-Runtime), so no need to
     // filter more
     const response = await this.consoleCLI.getOrganizations()
     return response.map(({ id, code, name }) => ({ id, code, name }))
