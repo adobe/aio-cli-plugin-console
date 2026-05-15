@@ -18,7 +18,7 @@ const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const { getCliEnv } = require('@adobe/aio-lib-env')
 const yaml = require('js-yaml')
-const { CONFIG_KEYS, API_KEYS, CONSOLE_API_URLS, ORG_FEATURE_RUNTIME, ORG_TYPE_DEVELOPER, ORG_TYPE_ENTERPRISE } = require('../../config')
+const { CONFIG_KEYS, API_KEYS } = require('../../config')
 
 class ConsoleCommand extends Command {
   async run () {
@@ -34,63 +34,6 @@ class ConsoleCommand extends Command {
     aioConsoleLogger.debug('Retrieving Auth Token')
     this.accessToken = await getToken(CLI)
     this.consoleCLI = await LibConsoleCLI.init({ accessToken: this.accessToken, apiKey: this.apiKey, env: this.cliEnv })
-  }
-
-  /**
-   * Retrieve enabled feature flags for an org from the Developer Console web API.
-   *
-   * @param {string} orgId Organization AMS ID
-   * @returns {Promise<Array<{name: string, description: string}>>} feature flags
-   */
-  async getOrgFeatures (orgId) {
-    const baseUrl = CONSOLE_API_URLS[this.cliEnv] || CONSOLE_API_URLS.prod
-    const response = await fetch(`${baseUrl}/console/api/organizations/${orgId}/features`, {
-      headers: {
-        accept: 'application/json',
-        authorization: `Bearer ${this.accessToken}`,
-        'x-api-key': this.apiKey
-      }
-    })
-    if (!response.ok) {
-      aioConsoleLogger.debug(`getOrgFeatures: non-ok response ${response.status} for org ${orgId}`)
-      return []
-    }
-    return response.json()
-  }
-
-  /**
-   * Test whether an org has the Runtime feature.
-   *
-   * @param {string} orgId Organization AMS ID
-   * @returns {Promise<boolean>} true when Runtime is enabled
-   */
-  async hasRuntimeFeature (orgId) {
-    try {
-      const features = await this.getOrgFeatures(orgId)
-      return features.some(feature => feature.name === ORG_FEATURE_RUNTIME)
-    } catch (err) {
-      aioConsoleLogger.debug(err)
-      return false
-    }
-  }
-
-  /**
-   * Filter orgs to those that can be used by Developer Console App Builder flows.
-   *
-   * @param {Array<{id: string, type: string}>} orgs organizations
-   * @returns {Promise<Array<object>>} selectable organizations
-   */
-  async getSelectableOrgs (orgs) {
-    const checks = await Promise.all(orgs.map(async org => {
-      if (org.type === ORG_TYPE_ENTERPRISE) {
-        return true
-      }
-      if (org.type === ORG_TYPE_DEVELOPER) {
-        return this.hasRuntimeFeature(org.id)
-      }
-      return false
-    }))
-    return orgs.filter((_, i) => checks[i])
   }
 
   /**

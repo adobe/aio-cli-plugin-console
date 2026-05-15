@@ -41,7 +41,10 @@ class SelectCommand extends ConsoleCommand {
   }
 
   async selectOrgInteractive (preSelectedOrgIdOrCode) {
-    const orgs = await this.getSelectableOrgs(await this.consoleCLI.getOrganizations())
+    // this returns the orgs that can be used by
+    // App Builder flows (entp + developer-with-Runtime), so no need to
+    // filter more
+    const orgs = await this.consoleCLI.getOrganizations()
     const org = await this.consoleCLI.promptForSelectOrganization(
       orgs,
       { orgId: preSelectedOrgIdOrCode, orgCode: preSelectedOrgIdOrCode }
