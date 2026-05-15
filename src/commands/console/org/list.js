@@ -46,13 +46,11 @@ class ListCommand extends ConsoleCommand {
    * @returns {Promise<Array<{id, code, name}>>} Array of Orgs
    */
   async getConsoleOrgs () {
+    // this returns the orgs that can be used by
+    // App Builder flows (entp + developer-with-Runtime), so no need to 
+    // filter more
     const response = await this.consoleCLI.getOrganizations()
-    const selectableOrgs = await this.getSelectableOrgs(response)
-    const orgs = selectableOrgs
-      // Omit props
-      .map(({ id, code, name }) => ({ id, code, name }))
-
-    return orgs
+    return response.map(({ id, code, name }) => ({ id, code, name }))
   }
 
   /**

@@ -12,20 +12,20 @@ governing permissions and limitations under the License.
 const { Command } = require('@oclif/core')
 
 const mockConsoleCLIInstance = {}
-const orgs = [
+// `aio-cli-lib-console` is responsible for filtering to selectable orgs
+// (enterprise + developer-with-RUNTIME), so the plugin layer just hands the
+// list straight to `promptForSelectOrganization`.
+const selectableOrgs = [
   { id: '1', code: 'CODE01', name: 'ORG01', type: 'entp' },
   { id: '2', code: 'CODE02', name: 'ORG02', type: 'entp' },
   { id: '3', code: 'CODE03', name: 'ORG03', type: 'entp' },
-  { id: '4', code: 'CODE04', name: 'ORG04', type: 'developer' },
-  { id: '6', code: 'CODE06', name: 'ORG06', type: 'developer' },
-  { id: '33', code: 'CODE33', name: 'ORG33', type: 'not_entp' }
+  { id: '4', code: 'CODE04', name: 'ORG04', type: 'developer' }
 ]
-const selectableOrgs = orgs.slice(0, 4)
-const selectedOrg = { id: '1', code: 'CODE01', name: 'ORG01', type: 'entp' }
-const selectedDeveloperOrg = { id: '4', code: 'CODE04', name: 'ORG04', type: 'developer' }
+const selectedOrg = selectableOrgs[0]
+const selectedDeveloperOrg = selectableOrgs[3]
 /** @private */
 function setDefaultMockConsoleCLI () {
-  mockConsoleCLIInstance.getOrganizations = jest.fn().mockResolvedValue(orgs)
+  mockConsoleCLIInstance.getOrganizations = jest.fn().mockResolvedValue(selectableOrgs)
   mockConsoleCLIInstance.promptForSelectOrganization = jest.fn().mockResolvedValue(selectedOrg)
 }
 jest.mock('@adobe/aio-cli-lib-console', () => ({
@@ -40,10 +40,6 @@ let command
 beforeEach(() => {
   command = new SelectCommand([])
   setDefaultMockConsoleCLI()
-  global.fetch = jest.fn(url => Promise.resolve({
-    ok: true,
-    json: () => Promise.resolve(url.endsWith('/4/features') ? [{ name: 'RUNTIME' }] : [])
-  }))
   config.set.mockReset()
   config.delete.mockReset()
 })
