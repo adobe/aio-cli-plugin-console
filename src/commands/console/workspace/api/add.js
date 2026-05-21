@@ -126,8 +126,9 @@ function dedupeServicesByCode (services) {
   for (const s of services) {
     if (seen.has(s.code)) continue
     seen.add(s.code)
-    const picked = pickServiceForCode(services, s.code)
-    if (picked) result.push(picked)
+    // pickServiceForCode is guaranteed to return a record because s itself
+    // is in services and matches by code.
+    result.push(pickServiceForCode(services, s.code))
   }
   return result
 }
@@ -275,7 +276,7 @@ class AddCommand extends ConsoleCommand {
           workspace,
           supportedServices,
           credentialType: LibConsoleCLI.OAUTH_SERVER_TO_SERVER_CREDENTIAL
-        }) || []
+        })
       } catch (err) {
         aioConsoleLogger.debug(`Could not fetch existing services for workspace ${workspace.name}: ${err.message}`)
       }

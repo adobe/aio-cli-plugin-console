@@ -247,6 +247,24 @@ describe('assertSubscribeSuccess', () => {
     expect(() => assertSubscribeSuccess({ error: ['SomeSDK'] }))
       .toThrow(/Failed to add API service\(s\)[\s\S]*SomeSDK/)
   })
+
+  it('should format error details that lack a sdkCode', () => {
+    expect(() => assertSubscribeSuccess({
+      errorDetails: [{ domain: 'JIL', code: 500, message: 'kaboom' }]
+    })).toThrow(/Failed to add API service\(s\)[\s\S]*kaboom/)
+  })
+
+  it('should fall back to JSON.stringify when an error detail lacks a message', () => {
+    expect(() => assertSubscribeSuccess({
+      errorDetails: [{ sdkCode: 'WeirdSDK', code: 418 }]
+    })).toThrow(/Failed to add API service\(s\)[\s\S]*WeirdSDK:[\s\S]*"code":\s*418/)
+  })
+
+  it('should tolerate a null entry inside errorDetails', () => {
+    expect(() => assertSubscribeSuccess({
+      errorDetails: [null]
+    })).toThrow(/Failed to add API service\(s\)/)
+  })
 })
 
 describe('console:workspace:api:add', () => {
