@@ -383,6 +383,21 @@ describe('console:workspace:api:add', () => {
     await expect(command.run()).rejects.toThrow('Product profile(s) not found for service AdobeAnalyticsSDK: UnknownProfile')
   })
 
+  it('should error when --license-config references a code not in --service-code', async () => {
+    // Catches typos / casing mismatches that would otherwise silently
+    // drop the license-config entry while the unrelated --service-code
+    // succeeds.
+    command.argv = [
+      '--service-code', 'AppBuilderDataServicesSDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345',
+      '--license-config', 'FrameIOAPISDK=875473476'
+    ]
+    await expect(command.run()).rejects.toThrow(/--license-config given for service code\(s\) not in --service-code: FrameIOAPISDK[\s\S]*Requested service codes: AppBuilderDataServicesSDK/)
+    expect(mockConsoleCLIInstance.subscribeToServicesWithCredentialType).not.toHaveBeenCalled()
+  })
+
   it('should error on malformed --license-config value', async () => {
     command.argv = [
       '--service-code', 'AdobeAnalyticsSDK',

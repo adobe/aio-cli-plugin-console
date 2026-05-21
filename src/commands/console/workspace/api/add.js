@@ -218,6 +218,18 @@ class AddCommand extends ConsoleCommand {
 
       const licenseConfigMap = parseLicenseConfigFlags(flags['license-config'] || [])
 
+      // Fail fast if --license-config references a service code that isn't in
+      // --service-code. Otherwise the entry is silently ignored, which is the
+      // exact silent-drop class of bug this command was patched against.
+      const requestedSet = new Set(requestedCodes)
+      const orphanLicenseConfigs = Object.keys(licenseConfigMap).filter(c => !requestedSet.has(c))
+      if (orphanLicenseConfigs.length > 0) {
+        this.error(
+          `--license-config given for service code(s) not in --service-code: ${orphanLicenseConfigs.join(', ')}. ` +
+          `Requested service codes: ${requestedCodes.join(', ')}.`
+        )
+      }
+
       const enabledServices = await this.consoleCLI.getEnabledServicesForOrg(orgId)
       const supportedServices = dedupeServicesByCode(enabledServices)
       aioConsoleLogger.debug(`Enabled services (deduped): ${JSON.stringify(supportedServices.map(s => s.code))}`)
