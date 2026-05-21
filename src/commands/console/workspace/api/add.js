@@ -178,7 +178,7 @@ function assertSubscribeSuccess (response) {
   const formatted = errorDetails.length > 0
     ? errorDetails.map(d => {
       const where = d && d.sdkCode ? `${d.sdkCode}: ` : ''
-      const message = (d && d.message) || JSON.stringify(d)
+      const message = d == null ? '(unknown error)' : (d.message || JSON.stringify(d))
       return `  ${where}${message}`
     }).join('\n')
     : `  ${errorCodes.join(', ')}`

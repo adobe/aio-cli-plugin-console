@@ -260,10 +260,10 @@ describe('assertSubscribeSuccess', () => {
     })).toThrow(/Failed to add API service\(s\)[\s\S]*WeirdSDK:[\s\S]*"code":\s*418/)
   })
 
-  it('should tolerate a null entry inside errorDetails', () => {
+  it('should render a null entry inside errorDetails as "(unknown error)"', () => {
     expect(() => assertSubscribeSuccess({
       errorDetails: [null]
-    })).toThrow(/Failed to add API service\(s\)/)
+    })).toThrow(/Failed to add API service\(s\)[\s\S]*\(unknown error\)/)
   })
 })
 
