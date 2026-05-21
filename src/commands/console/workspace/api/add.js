@@ -293,7 +293,10 @@ class AddCommand extends ConsoleCommand {
           credentialType: LibConsoleCLI.OAUTH_SERVER_TO_SERVER_CREDENTIAL
         })
       } catch (err) {
-        aioConsoleLogger.debug(`Could not fetch existing services for workspace ${workspace.name}: ${err.message}`)
+        // Lib returns [] (not throws) for a missing credential, so a thrown
+        // error here is something real (auth, network, server) and worth
+        // surfacing — proceeding with an empty list could overwrite state.
+        aioConsoleLogger.warn(`Could not fetch existing services for workspace ${workspace.name} (proceeding with empty list): ${err.message}`)
       }
       const mergedProperties = mergeServiceProperties(existingProperties, serviceProperties)
       aioConsoleLogger.debug(`Submitting service list: ${JSON.stringify(mergedProperties.map(sp => sp.sdkCode))}`)
