@@ -56,7 +56,7 @@ jest.mock('@adobe/aio-cli-lib-console', () => ({
 }))
 
 const TheCommand = require('../../../../../src/commands/console/workspace/api/add')
-const { parseLicenseConfigFlags, resolveLicenseConfigs, assertSubscribeSuccess } = TheCommand
+const { parseLicenseConfigFlags, resolveLicenseConfigs, assertSubscribeSuccess, pickServiceForCode } = TheCommand
 
 describe('parseLicenseConfigFlags', () => {
   it('should parse a single sdkCode with one profile', () => {
@@ -135,6 +135,40 @@ describe('resolveLicenseConfigs', () => {
   it('should throw when a profile cannot be matched', () => {
     expect(() => resolveLicenseConfigs(available, ['bogus'], 'X'))
       .toThrow('Product profile(s) not found for service X: bogus')
+  })
+})
+
+describe('pickServiceForCode', () => {
+  it('should return undefined when no service matches the code', () => {
+    expect(pickServiceForCode([{ code: 'A', type: 'entp' }], 'B')).toBeUndefined()
+  })
+
+  it('should return the single match when there is no duplicate', () => {
+    const s = { code: 'A', type: 'entp', properties: { licenseConfigs: [{ id: 'lc1' }] } }
+    expect(pickServiceForCode([s], 'A')).toBe(s)
+  })
+
+  it('should prefer the entp record with populated licenseConfigs when a code appears twice', () => {
+    // Repro of the Frame.io case in getEnabledServicesForOrg
+    const adobeid = { code: 'FrameioAPISDK', type: 'adobeid', properties: null }
+    const entp = {
+      code: 'FrameioAPISDK',
+      type: 'entp',
+      properties: { licenseConfigs: [{ id: '875473476', productId: 'AA458DFE4F7020A0441A' }] }
+    }
+    expect(pickServiceForCode([adobeid, entp], 'FrameioAPISDK')).toBe(entp)
+  })
+
+  it('should fall back to an entp record without profiles before an adobeid record', () => {
+    const adobeid = { code: 'X', type: 'adobeid', properties: null }
+    const entp = { code: 'X', type: 'entp', properties: null }
+    expect(pickServiceForCode([adobeid, entp], 'X')).toBe(entp)
+  })
+
+  it('should fall back to the first match when no entp record exists', () => {
+    const a = { code: 'Y', type: 'adobeid' }
+    const b = { code: 'Y', type: 'adobeid' }
+    expect(pickServiceForCode([a, b], 'Y')).toBe(a)
   })
 })
 
@@ -390,6 +424,40 @@ describe('console:workspace:api:add', () => {
       '--orgId', '12345'
     ]
     await expect(command.run()).rejects.toThrow('SDK subscribe failed')
+  })
+
+  it('should prefer the entp duplicate service record when adobeid is listed first', async () => {
+    // Repro of the Frame.io shape in getEnabledServicesForOrg: same sdkCode
+    // appears once as adobeid (no licenseConfigs) and once as entp (with
+    // licenseConfigs). The pre-dedup code subscribed against the adobeid
+    // record and dropped --license-config silently.
+    mockConsoleCLIInstance.getEnabledServicesForOrg.mockResolvedValue([
+      { name: 'Frame.io API', code: 'FrameioAPISDK', type: 'adobeid', properties: null },
+      {
+        name: 'Frame.io API',
+        code: 'FrameioAPISDK',
+        type: 'entp',
+        properties: {
+          roles: [{ id: 1102, code: 'frame.s2s.all', name: null }],
+          licenseConfigs: [{ id: '875473476', name: 'Default Frame.io Enterprise', productId: 'AA458DFE4F7020A0441A' }]
+        }
+      }
+    ])
+    command.argv = [
+      '--service-code', 'FrameioAPISDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345',
+      '--license-config', 'FrameioAPISDK=875473476'
+    ]
+    await command.run()
+
+    const call = mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mock.calls[0][0]
+    expect(call.serviceProperties).toHaveLength(1)
+    expect(call.serviceProperties[0].sdkCode).toBe('FrameioAPISDK')
+    expect(call.serviceProperties[0].licenseConfigs).toEqual([
+      { id: '875473476', name: 'Default Frame.io Enterprise', productId: 'AA458DFE4F7020A0441A' }
+    ])
   })
 
   it('should surface JIL embedded errors as a CLI error', async () => {

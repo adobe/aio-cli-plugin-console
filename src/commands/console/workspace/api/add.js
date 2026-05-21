@@ -80,6 +80,39 @@ function resolveLicenseConfigs (available, requested, sdkCode) {
 }
 
 /**
+ * Pick the best service record to subscribe when multiple records share
+ * the same sdkCode.
+ *
+ * Some services (notably Frame.io) appear twice in `getEnabledServicesForOrg`:
+ * once as `type: 'adobeid'` with no licenseConfigs (browser/SPA flow) and
+ * once as `type: 'entp'` with the product profile metadata required for
+ * OAuth Server-to-Server. `Array.find` returns whichever the API lists
+ * first, which silently drops `--license-config` when the adobeid record
+ * wins and causes JIL to reject the subscription. Since this command
+ * always uses OAuth Server-to-Server credentials, prefer the `entp` record
+ * (and, within that, the one that actually carries licenseConfigs).
+ *
+ * @param {Array<object>} services full enabled-services list
+ * @param {string} code sdkCode to look up
+ * @returns {object|undefined} the chosen service record, or undefined
+ */
+function pickServiceForCode (services, code) {
+  const matches = services.filter(s => s.code === code)
+  if (matches.length === 0) {
+    return undefined
+  }
+  const entpWithProfiles = matches.find(s => s.type === 'entp' && s.properties && Array.isArray(s.properties.licenseConfigs) && s.properties.licenseConfigs.length > 0)
+  if (entpWithProfiles) {
+    return entpWithProfiles
+  }
+  const entp = matches.find(s => s.type === 'entp')
+  if (entp) {
+    return entp
+  }
+  return matches[0]
+}
+
+/**
  * Detect JIL subscription errors embedded in a 200 response and throw
  * a CLI-friendly error if any are found.
  *
@@ -148,7 +181,7 @@ class AddCommand extends ConsoleCommand {
       const notFound = []
       const missingProfiles = []
       for (const code of requestedCodes) {
-        const service = enabledServices.find(s => s.code === code)
+        const service = pickServiceForCode(enabledServices, code)
         if (!service) {
           notFound.push(code)
           continue
@@ -259,3 +292,4 @@ module.exports = AddCommand
 module.exports.parseLicenseConfigFlags = parseLicenseConfigFlags
 module.exports.resolveLicenseConfigs = resolveLicenseConfigs
 module.exports.assertSubscribeSuccess = assertSubscribeSuccess
+module.exports.pickServiceForCode = pickServiceForCode
