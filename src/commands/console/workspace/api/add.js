@@ -281,23 +281,17 @@ class AddCommand extends ConsoleCommand {
       // JIL's PUT-services endpoint replaces the credential's service list,
       // so fetch what's already subscribed and submit the union — otherwise
       // a later `api add` call silently wipes services attached by an earlier
-      // one. Treat any failure as "no existing services" so a brand-new
-      // workspace (no credential yet) still works.
-      let existingProperties = []
-      try {
-        existingProperties = await this.consoleCLI.getServicePropertiesFromWorkspaceWithCredentialType({
-          orgId,
-          projectId: project.id,
-          workspace,
-          supportedServices,
-          credentialType: LibConsoleCLI.OAUTH_SERVER_TO_SERVER_CREDENTIAL
-        })
-      } catch (err) {
-        // Lib returns [] (not throws) for a missing credential, so a thrown
-        // error here is something real (auth, network, server) and worth
-        // surfacing — proceeding with an empty list could overwrite state.
-        aioConsoleLogger.warn(`Could not fetch existing services for workspace ${workspace.name} (proceeding with empty list): ${err.message}`)
-      }
+      // one. The lib returns [] (not throws) for a workspace without a
+      // credential yet, so any thrown error here is real (auth, network,
+      // server) and we let it propagate: proceeding with an empty list
+      // would cause the very overwrite this merge is supposed to prevent.
+      const existingProperties = await this.consoleCLI.getServicePropertiesFromWorkspaceWithCredentialType({
+        orgId,
+        projectId: project.id,
+        workspace,
+        supportedServices,
+        credentialType: LibConsoleCLI.OAUTH_SERVER_TO_SERVER_CREDENTIAL
+      })
       const mergedProperties = mergeServiceProperties(existingProperties, serviceProperties)
       aioConsoleLogger.debug(`Submitting service list: ${JSON.stringify(mergedProperties.map(sp => sp.sdkCode))}`)
 

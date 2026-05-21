@@ -555,20 +555,21 @@ describe('console:workspace:api:add', () => {
     expect(call.serviceProperties.map(sp => sp.sdkCode)).toEqual(['ExistingSDK', 'AppBuilderDataServicesSDK'])
   })
 
-  it('should not fail when fetching existing services errors out', async () => {
-    // A brand-new workspace has no credential yet; the lib's getServiceProperties
-    // call may reject. The command should fall back to "no existing services".
-    mockConsoleCLIInstance.getServicePropertiesFromWorkspaceWithCredentialType.mockRejectedValue(new Error('No credential'))
+  it('should propagate failures to fetch existing services instead of overwriting silently', async () => {
+    // The lib returns [] (not throws) for a workspace without a credential
+    // yet, so a thrown error here is a real auth/network/server failure.
+    // Swallowing it and proceeding with [] would cause the credential's
+    // current services to be replaced by just the requested adds — the
+    // exact overwrite this merge is supposed to prevent.
+    mockConsoleCLIInstance.getServicePropertiesFromWorkspaceWithCredentialType.mockRejectedValue(new Error('network blew up'))
     command.argv = [
       '--service-code', 'AppBuilderDataServicesSDK',
       '--projectName', 'myproject',
       '--workspaceName', 'Stage',
       '--orgId', '12345'
     ]
-    await command.run()
-
-    const call = mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mock.calls[0][0]
-    expect(call.serviceProperties.map(sp => sp.sdkCode)).toEqual(['AppBuilderDataServicesSDK'])
+    await expect(command.run()).rejects.toThrow('network blew up')
+    expect(mockConsoleCLIInstance.subscribeToServicesWithCredentialType).not.toHaveBeenCalled()
   })
 
   it('should surface JIL embedded errors as a CLI error', async () => {
