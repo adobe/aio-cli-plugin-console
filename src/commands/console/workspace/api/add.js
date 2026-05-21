@@ -101,7 +101,8 @@ function pickServiceForCode (services, code) {
   if (matches.length === 0) {
     return undefined
   }
-  const entpWithProfiles = matches.find(s => s.type === 'entp' && s.properties && Array.isArray(s.properties.licenseConfigs) && s.properties.licenseConfigs.length > 0)
+  const hasLicenseConfigs = s => s.properties && Array.isArray(s.properties.licenseConfigs) && s.properties.licenseConfigs.length > 0
+  const entpWithProfiles = matches.find(s => s.type === 'entp' && hasLicenseConfigs(s))
   if (entpWithProfiles) {
     return entpWithProfiles
   }
