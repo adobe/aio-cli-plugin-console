@@ -113,6 +113,45 @@ function pickServiceForCode (services, code) {
 }
 
 /**
+ * Reduce the enabled-services list to one record per sdkCode using
+ * pickServiceForCode. Preserves the original ordering of the chosen records.
+ *
+ * @param {Array<object>} services enabled services
+ * @returns {Array<object>} deduplicated services
+ */
+function dedupeServicesByCode (services) {
+  const seen = new Set()
+  const result = []
+  for (const s of services) {
+    if (seen.has(s.code)) continue
+    seen.add(s.code)
+    const picked = pickServiceForCode(services, s.code)
+    if (picked) result.push(picked)
+  }
+  return result
+}
+
+/**
+ * Merge new service-subscription requests with existing services on the
+ * credential. JIL's PUT-services endpoint replaces the credential's
+ * service list rather than appending to it, so without this merge a
+ * subsequent `aio console workspace api add` call would silently wipe
+ * the services subscribed by an earlier call.
+ *
+ * For codes present in both, the new entry wins (the user is overriding
+ * the existing subscription, including any licenseConfig changes).
+ *
+ * @param {Array<object>} existing serviceProperties currently on the credential
+ * @param {Array<object>} requested serviceProperties the user is adding
+ * @returns {Array<object>} merged serviceProperties
+ */
+function mergeServiceProperties (existing, requested) {
+  const requestedCodes = new Set(requested.map(sp => sp.sdkCode))
+  const kept = existing.filter(sp => !requestedCodes.has(sp.sdkCode))
+  return [...kept, ...requested]
+}
+
+/**
  * Detect JIL subscription errors embedded in a 200 response and throw
  * a CLI-friendly error if any are found.
  *
@@ -175,13 +214,14 @@ class AddCommand extends ConsoleCommand {
       const licenseConfigMap = parseLicenseConfigFlags(flags['license-config'] || [])
 
       const enabledServices = await this.consoleCLI.getEnabledServicesForOrg(orgId)
-      aioConsoleLogger.debug(`Enabled services: ${JSON.stringify(enabledServices.map(s => s.code))}`)
+      const supportedServices = dedupeServicesByCode(enabledServices)
+      aioConsoleLogger.debug(`Enabled services (deduped): ${JSON.stringify(supportedServices.map(s => s.code))}`)
 
       const serviceProperties = []
       const notFound = []
       const missingProfiles = []
       for (const code of requestedCodes) {
-        const service = pickServiceForCode(enabledServices, code)
+        const service = supportedServices.find(s => s.code === code)
         if (!service) {
           notFound.push(code)
           continue
@@ -221,11 +261,31 @@ class AddCommand extends ConsoleCommand {
         )
       }
 
+      // JIL's PUT-services endpoint replaces the credential's service list,
+      // so fetch what's already subscribed and submit the union — otherwise
+      // a later `api add` call silently wipes services attached by an earlier
+      // one. Treat any failure as "no existing services" so a brand-new
+      // workspace (no credential yet) still works.
+      let existingProperties = []
+      try {
+        existingProperties = await this.consoleCLI.getServicePropertiesFromWorkspaceWithCredentialType({
+          orgId,
+          projectId: project.id,
+          workspace,
+          supportedServices,
+          credentialType: LibConsoleCLI.OAUTH_SERVER_TO_SERVER_CREDENTIAL
+        }) || []
+      } catch (err) {
+        aioConsoleLogger.debug(`Could not fetch existing services for workspace ${workspace.name}: ${err.message}`)
+      }
+      const mergedProperties = mergeServiceProperties(existingProperties, serviceProperties)
+      aioConsoleLogger.debug(`Submitting service list: ${JSON.stringify(mergedProperties.map(sp => sp.sdkCode))}`)
+
       const result = await this.consoleCLI.subscribeToServicesWithCredentialType({
         orgId,
         project,
         workspace,
-        serviceProperties,
+        serviceProperties: mergedProperties,
         credentialType: LibConsoleCLI.OAUTH_SERVER_TO_SERVER_CREDENTIAL
       })
 
@@ -293,3 +353,5 @@ module.exports.parseLicenseConfigFlags = parseLicenseConfigFlags
 module.exports.resolveLicenseConfigs = resolveLicenseConfigs
 module.exports.assertSubscribeSuccess = assertSubscribeSuccess
 module.exports.pickServiceForCode = pickServiceForCode
+module.exports.dedupeServicesByCode = dedupeServicesByCode
+module.exports.mergeServiceProperties = mergeServiceProperties

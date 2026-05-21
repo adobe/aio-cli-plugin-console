@@ -45,6 +45,7 @@ const mockConsoleCLIInstance = {
   getProjects: jest.fn().mockResolvedValue([mockProject]),
   getWorkspaces: jest.fn().mockResolvedValue([mockWorkspace]),
   getEnabledServicesForOrg: jest.fn().mockResolvedValue(mockEnabledServices),
+  getServicePropertiesFromWorkspaceWithCredentialType: jest.fn().mockResolvedValue([]),
   subscribeToServicesWithCredentialType: jest.fn().mockResolvedValue(mockSubscribeResponse)
 }
 
@@ -56,7 +57,7 @@ jest.mock('@adobe/aio-cli-lib-console', () => ({
 }))
 
 const TheCommand = require('../../../../../src/commands/console/workspace/api/add')
-const { parseLicenseConfigFlags, resolveLicenseConfigs, assertSubscribeSuccess, pickServiceForCode } = TheCommand
+const { parseLicenseConfigFlags, resolveLicenseConfigs, assertSubscribeSuccess, pickServiceForCode, dedupeServicesByCode, mergeServiceProperties } = TheCommand
 
 describe('parseLicenseConfigFlags', () => {
   it('should parse a single sdkCode with one profile', () => {
@@ -172,6 +173,48 @@ describe('pickServiceForCode', () => {
   })
 })
 
+describe('dedupeServicesByCode', () => {
+  it('should return a single record per code, preferring entp+licenseConfigs', () => {
+    const services = [
+      { code: 'FrameioAPISDK', type: 'adobeid', properties: null },
+      { code: 'FrameioAPISDK', type: 'entp', properties: { licenseConfigs: [{ id: 'lc1' }] } },
+      { code: 'OtherSDK', type: 'entp' }
+    ]
+    const deduped = dedupeServicesByCode(services)
+    expect(deduped).toHaveLength(2)
+    expect(deduped.find(s => s.code === 'FrameioAPISDK')).toBe(services[1])
+    expect(deduped.find(s => s.code === 'OtherSDK')).toBe(services[2])
+  })
+
+  it('should be a no-op when no duplicates exist', () => {
+    const services = [{ code: 'A', type: 'entp' }, { code: 'B', type: 'entp' }]
+    expect(dedupeServicesByCode(services)).toEqual(services)
+  })
+})
+
+describe('mergeServiceProperties', () => {
+  it('should append new services when there is no overlap', () => {
+    const existing = [{ sdkCode: 'A' }]
+    const requested = [{ sdkCode: 'B' }]
+    expect(mergeServiceProperties(existing, requested)).toEqual([{ sdkCode: 'A' }, { sdkCode: 'B' }])
+  })
+
+  it('should let the requested entry win for overlapping sdkCodes', () => {
+    const existing = [{ sdkCode: 'A', licenseConfigs: [{ id: 'old' }] }]
+    const requested = [{ sdkCode: 'A', licenseConfigs: [{ id: 'new' }] }]
+    expect(mergeServiceProperties(existing, requested)).toEqual([{ sdkCode: 'A', licenseConfigs: [{ id: 'new' }] }])
+  })
+
+  it('should preserve existing services not in the requested list', () => {
+    const existing = [{ sdkCode: 'KeepMe' }, { sdkCode: 'Override' }]
+    const requested = [{ sdkCode: 'Override', updated: true }]
+    expect(mergeServiceProperties(existing, requested)).toEqual([
+      { sdkCode: 'KeepMe' },
+      { sdkCode: 'Override', updated: true }
+    ])
+  })
+})
+
 describe('assertSubscribeSuccess', () => {
   it('should not throw on a normal success response', () => {
     expect(() => assertSubscribeSuccess({ sdkList: ['AdobeAnalyticsSDK'] })).not.toThrow()
@@ -215,6 +258,7 @@ describe('console:workspace:api:add', () => {
     mockConsoleCLIInstance.getProjects.mockResolvedValue([mockProject])
     mockConsoleCLIInstance.getWorkspaces.mockResolvedValue([mockWorkspace])
     mockConsoleCLIInstance.getEnabledServicesForOrg.mockResolvedValue(mockEnabledServices)
+    mockConsoleCLIInstance.getServicePropertiesFromWorkspaceWithCredentialType.mockResolvedValue([])
     mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mockResolvedValue(mockSubscribeResponse)
   })
 
@@ -458,6 +502,40 @@ describe('console:workspace:api:add', () => {
     expect(call.serviceProperties[0].licenseConfigs).toEqual([
       { id: '875473476', name: 'Default Frame.io Enterprise', productId: 'AA458DFE4F7020A0441A' }
     ])
+  })
+
+  it('should merge new services with services already on the credential', async () => {
+    // JIL's PUT-services replaces the credential's service list, so the
+    // command must submit the union of existing + new.
+    mockConsoleCLIInstance.getServicePropertiesFromWorkspaceWithCredentialType.mockResolvedValue([
+      { name: 'Existing SDK', sdkCode: 'ExistingSDK', roles: null, licenseConfigs: null }
+    ])
+    command.argv = [
+      '--service-code', 'AppBuilderDataServicesSDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345'
+    ]
+    await command.run()
+
+    const call = mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mock.calls[0][0]
+    expect(call.serviceProperties.map(sp => sp.sdkCode)).toEqual(['ExistingSDK', 'AppBuilderDataServicesSDK'])
+  })
+
+  it('should not fail when fetching existing services errors out', async () => {
+    // A brand-new workspace has no credential yet; the lib's getServiceProperties
+    // call may reject. The command should fall back to "no existing services".
+    mockConsoleCLIInstance.getServicePropertiesFromWorkspaceWithCredentialType.mockRejectedValue(new Error('No credential'))
+    command.argv = [
+      '--service-code', 'AppBuilderDataServicesSDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345'
+    ]
+    await command.run()
+
+    const call = mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mock.calls[0][0]
+    expect(call.serviceProperties.map(sp => sp.sdkCode)).toEqual(['AppBuilderDataServicesSDK'])
   })
 
   it('should surface JIL embedded errors as a CLI error', async () => {
