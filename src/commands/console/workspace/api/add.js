@@ -21,7 +21,7 @@ const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
  * Format: "<sdkCode>=<nameOrId>[,<nameOrId>...]"
  *
  * @param {string[]} values raw flag values
- * @returns {Object<string, string[]>} map of sdkCode to list of profile identifiers
+ * @returns {{[sdkCode: string]: string[]}} map of sdkCode to list of profile identifiers
  */
 function parseLicenseConfigFlags (values) {
   const result = {}
@@ -53,7 +53,7 @@ function parseLicenseConfigFlags (values) {
  * which is convenient for services like Frame.io that expose a single
  * profile per product.
  *
- * @param {Array<{id: string, name: string, productId: string}>} available
+ * @param {Array<{id: string, name: string, productId: string}>} available licenseConfigs reported for the service
  * @param {string[]} requested profile names, ids, or productIds
  * @param {string} sdkCode service code for error messages
  * @returns {Array} selected licenseConfig objects
@@ -101,7 +101,10 @@ function pickServiceForCode (services, code) {
   if (matches.length === 0) {
     return undefined
   }
-  const hasLicenseConfigs = s => s.properties && Array.isArray(s.properties.licenseConfigs) && s.properties.licenseConfigs.length > 0
+  const hasLicenseConfigs = s =>
+    s.properties &&
+    Array.isArray(s.properties.licenseConfigs) &&
+    s.properties.licenseConfigs.length > 0
   const entpWithProfiles = matches.find(s => s.type === 'entp' && hasLicenseConfigs(s))
   if (entpWithProfiles) {
     return entpWithProfiles
@@ -174,10 +177,10 @@ function assertSubscribeSuccess (response) {
   }
   const formatted = errorDetails.length > 0
     ? errorDetails.map(d => {
-        const where = d && d.sdkCode ? `${d.sdkCode}: ` : ''
-        const message = (d && d.message) || JSON.stringify(d)
-        return `  ${where}${message}`
-      }).join('\n')
+      const where = d && d.sdkCode ? `${d.sdkCode}: ` : ''
+      const message = (d && d.message) || JSON.stringify(d)
+      return `  ${where}${message}`
+    }).join('\n')
     : `  ${errorCodes.join(', ')}`
   throw new Error(`Failed to add API service(s):\n${formatted}`)
 }
