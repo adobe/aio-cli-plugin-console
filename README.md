@@ -610,7 +610,8 @@ FLAGS
   -y, --yml                        Output yml
       --help                       Show help
       --license-config=<value>...  Product profile(s) for a service, format:
-                                   '<sdkCode>=<profileNameOrId>[,<profileNameOrId>...]'. Repeat for multiple services.
+                                   '<sdkCode>=<profileNameOrIdOrProductId>[,<profileNameOrIdOrProductId>...]'. Repeat for
+                                   multiple services.
       --orgId=<value>              Organization id
       --projectName=<value>        (required) Name of the project containing the workspace
       --service-code=<value>       (required) Comma-separated list of API service codes to add (e.g.
@@ -941,7 +942,8 @@ FLAGS
   -y, --yml                        Output yml
       --help                       Show help
       --license-config=<value>...  Product profile(s) for a service, format:
-                                   '<sdkCode>=<profileNameOrId>[,<profileNameOrId>...]'. Repeat for multiple services.
+                                   '<sdkCode>=<profileNameOrIdOrProductId>[,<profileNameOrIdOrProductId>...]'. Repeat for
+                                   multiple services.
       --orgId=<value>              Organization id
       --projectName=<value>        (required) Name of the project containing the workspace
       --service-code=<value>       (required) Comma-separated list of API service codes to add (e.g.

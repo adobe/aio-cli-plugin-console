@@ -46,10 +46,15 @@ function parseLicenseConfigFlags (values) {
 
 /**
  * Match requested profile identifiers against a service's available
- * licenseConfigs by either id or name.
+ * licenseConfigs by id, name, or productId.
+ *
+ * Matching by productId lets users pass the value they see in
+ * `properties.licenseConfigs[].productId` from `aio console api list`,
+ * which is convenient for services like Frame.io that expose a single
+ * profile per product.
  *
  * @param {Array<{id: string, name: string, productId: string}>} available
- * @param {string[]} requested profile names or ids
+ * @param {string[]} requested profile names, ids, or productIds
  * @param {string} sdkCode service code for error messages
  * @returns {Array} selected licenseConfig objects
  */
@@ -57,7 +62,7 @@ function resolveLicenseConfigs (available, requested, sdkCode) {
   const selected = []
   const notFound = []
   for (const id of requested) {
-    const match = available.find(lc => lc.id === id || lc.name === id)
+    const match = available.find(lc => lc.id === id || lc.name === id || lc.productId === id)
     if (match) {
       selected.push(match)
     } else {
@@ -72,6 +77,35 @@ function resolveLicenseConfigs (available, requested, sdkCode) {
     )
   }
   return selected
+}
+
+/**
+ * Detect JIL subscription errors embedded in a 200 response and throw
+ * a CLI-friendly error if any are found.
+ *
+ * JIL returns `{ error: [<sdkCode>...], errorDetails: [{ sdkCode, domain, code, message }...] }`
+ * for partial/total failures inside an otherwise successful HTTP response,
+ * so without this check `--json` output silently looks like success.
+ *
+ * @param {object} response the subscribe response body
+ */
+function assertSubscribeSuccess (response) {
+  if (!response || typeof response !== 'object') {
+    return
+  }
+  const errorDetails = Array.isArray(response.errorDetails) ? response.errorDetails : []
+  const errorCodes = Array.isArray(response.error) ? response.error : []
+  if (errorDetails.length === 0 && errorCodes.length === 0) {
+    return
+  }
+  const formatted = errorDetails.length > 0
+    ? errorDetails.map(d => {
+        const where = d && d.sdkCode ? `${d.sdkCode}: ` : ''
+        const message = (d && d.message) || JSON.stringify(d)
+        return `  ${where}${message}`
+      }).join('\n')
+    : `  ${errorCodes.join(', ')}`
+  throw new Error(`Failed to add API service(s):\n${formatted}`)
 }
 
 class AddCommand extends ConsoleCommand {
@@ -162,6 +196,8 @@ class AddCommand extends ConsoleCommand {
         credentialType: LibConsoleCLI.OAUTH_SERVER_TO_SERVER_CREDENTIAL
       })
 
+      assertSubscribeSuccess(result)
+
       if (flags.json) {
         this.printJson(result)
       } else if (flags.yml) {
@@ -200,7 +236,7 @@ AddCommand.flags = {
     required: true
   }),
   'license-config': Flags.string({
-    description: 'Product profile(s) for a service, format: \'<sdkCode>=<profileNameOrId>[,<profileNameOrId>...]\'. Repeat for multiple services.',
+    description: 'Product profile(s) for a service, format: \'<sdkCode>=<profileNameOrIdOrProductId>[,<profileNameOrIdOrProductId>...]\'. Repeat for multiple services.',
     multiple: true
   }),
   json: Flags.boolean({
@@ -222,3 +258,4 @@ AddCommand.aliases = [
 module.exports = AddCommand
 module.exports.parseLicenseConfigFlags = parseLicenseConfigFlags
 module.exports.resolveLicenseConfigs = resolveLicenseConfigs
+module.exports.assertSubscribeSuccess = assertSubscribeSuccess

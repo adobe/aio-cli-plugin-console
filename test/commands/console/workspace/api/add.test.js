@@ -56,7 +56,7 @@ jest.mock('@adobe/aio-cli-lib-console', () => ({
 }))
 
 const TheCommand = require('../../../../../src/commands/console/workspace/api/add')
-const { parseLicenseConfigFlags, resolveLicenseConfigs } = TheCommand
+const { parseLicenseConfigFlags, resolveLicenseConfigs, assertSubscribeSuccess } = TheCommand
 
 describe('parseLicenseConfigFlags', () => {
   it('should parse a single sdkCode with one profile', () => {
@@ -121,6 +121,13 @@ describe('resolveLicenseConfigs', () => {
     expect(resolveLicenseConfigs(available, ['ProfileB'], 'X')).toEqual([available[1]])
   })
 
+  it('should match a profile by productId', () => {
+    const single = [
+      { id: '875473476', name: 'Default Frame.io Enterprise', productId: 'AA458DFE4F7020A0441A' }
+    ]
+    expect(resolveLicenseConfigs(single, ['AA458DFE4F7020A0441A'], 'FrameioAPISDK')).toEqual([single[0]])
+  })
+
   it('should match multiple profiles mixing id and name', () => {
     expect(resolveLicenseConfigs(available, ['lc1', 'ProfileB'], 'X')).toEqual(available)
   })
@@ -128,6 +135,40 @@ describe('resolveLicenseConfigs', () => {
   it('should throw when a profile cannot be matched', () => {
     expect(() => resolveLicenseConfigs(available, ['bogus'], 'X'))
       .toThrow('Product profile(s) not found for service X: bogus')
+  })
+})
+
+describe('assertSubscribeSuccess', () => {
+  it('should not throw on a normal success response', () => {
+    expect(() => assertSubscribeSuccess({ sdkList: ['AdobeAnalyticsSDK'] })).not.toThrow()
+  })
+
+  it('should not throw on null/undefined', () => {
+    expect(() => assertSubscribeSuccess(null)).not.toThrow()
+    expect(() => assertSubscribeSuccess(undefined)).not.toThrow()
+  })
+
+  it('should not throw on empty error arrays', () => {
+    expect(() => assertSubscribeSuccess({ sdkList: [], error: [], errorDetails: [] })).not.toThrow()
+  })
+
+  it('should surface the JIL "requires selection of a product" error', () => {
+    const jilErrorResponse = {
+      error: ['FrameioAPISDK'],
+      errorDetails: [{
+        sdkCode: 'FrameioAPISDK',
+        domain: 'JIL',
+        code: 400,
+        message: 'Service FrameioAPISDK requires selection of a product'
+      }]
+    }
+    expect(() => assertSubscribeSuccess(jilErrorResponse))
+      .toThrow(/Failed to add API service\(s\)[\s\S]*FrameioAPISDK: Service FrameioAPISDK requires selection of a product/)
+  })
+
+  it('should fall back to error[] when errorDetails is missing', () => {
+    expect(() => assertSubscribeSuccess({ error: ['SomeSDK'] }))
+      .toThrow(/Failed to add API service\(s\)[\s\S]*SomeSDK/)
   })
 })
 
@@ -349,6 +390,25 @@ describe('console:workspace:api:add', () => {
       '--orgId', '12345'
     ]
     await expect(command.run()).rejects.toThrow('SDK subscribe failed')
+  })
+
+  it('should surface JIL embedded errors as a CLI error', async () => {
+    mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mockResolvedValue({
+      error: ['AppBuilderDataServicesSDK'],
+      errorDetails: [{
+        sdkCode: 'AppBuilderDataServicesSDK',
+        domain: 'JIL',
+        code: 400,
+        message: 'Service AppBuilderDataServicesSDK requires selection of a product'
+      }]
+    })
+    command.argv = [
+      '--service-code', 'AppBuilderDataServicesSDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345'
+    ]
+    await expect(command.run()).rejects.toThrow('requires selection of a product')
   })
 
   it('should output JSON when --json is used', async () => {
