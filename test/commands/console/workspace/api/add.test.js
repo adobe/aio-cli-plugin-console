@@ -45,6 +45,7 @@ const mockConsoleCLIInstance = {
   getProjects: jest.fn().mockResolvedValue([mockProject]),
   getWorkspaces: jest.fn().mockResolvedValue([mockWorkspace]),
   getEnabledServicesForOrg: jest.fn().mockResolvedValue(mockEnabledServices),
+  getServicePropertiesFromWorkspaceWithCredentialType: jest.fn().mockResolvedValue([]),
   subscribeToServicesWithCredentialType: jest.fn().mockResolvedValue(mockSubscribeResponse)
 }
 
@@ -56,7 +57,7 @@ jest.mock('@adobe/aio-cli-lib-console', () => ({
 }))
 
 const TheCommand = require('../../../../../src/commands/console/workspace/api/add')
-const { parseLicenseConfigFlags, resolveLicenseConfigs } = TheCommand
+const { parseLicenseConfigFlags, resolveLicenseConfigs, assertSubscribeSuccess, pickServiceForCode, dedupeServicesByCode, mergeServiceProperties } = TheCommand
 
 describe('parseLicenseConfigFlags', () => {
   it('should parse a single sdkCode with one profile', () => {
@@ -121,6 +122,13 @@ describe('resolveLicenseConfigs', () => {
     expect(resolveLicenseConfigs(available, ['ProfileB'], 'X')).toEqual([available[1]])
   })
 
+  it('should match a profile by productId', () => {
+    const single = [
+      { id: '875473476', name: 'Default Frame.io Enterprise', productId: 'AA458DFE4F7020A0441A' }
+    ]
+    expect(resolveLicenseConfigs(single, ['AA458DFE4F7020A0441A'], 'FrameioAPISDK')).toEqual([single[0]])
+  })
+
   it('should match multiple profiles mixing id and name', () => {
     expect(resolveLicenseConfigs(available, ['lc1', 'ProfileB'], 'X')).toEqual(available)
   })
@@ -128,6 +136,134 @@ describe('resolveLicenseConfigs', () => {
   it('should throw when a profile cannot be matched', () => {
     expect(() => resolveLicenseConfigs(available, ['bogus'], 'X'))
       .toThrow('Product profile(s) not found for service X: bogus')
+  })
+})
+
+describe('pickServiceForCode', () => {
+  it('should return undefined when no service matches the code', () => {
+    expect(pickServiceForCode([{ code: 'A', type: 'entp' }], 'B')).toBeUndefined()
+  })
+
+  it('should return the single match when there is no duplicate', () => {
+    const s = { code: 'A', type: 'entp', properties: { licenseConfigs: [{ id: 'lc1' }] } }
+    expect(pickServiceForCode([s], 'A')).toBe(s)
+  })
+
+  it('should prefer the entp record with populated licenseConfigs when a code appears twice', () => {
+    // Repro of the Frame.io case in getEnabledServicesForOrg
+    const adobeid = { code: 'FrameioAPISDK', type: 'adobeid', properties: null }
+    const entp = {
+      code: 'FrameioAPISDK',
+      type: 'entp',
+      properties: { licenseConfigs: [{ id: '875473476', productId: 'AA458DFE4F7020A0441A' }] }
+    }
+    expect(pickServiceForCode([adobeid, entp], 'FrameioAPISDK')).toBe(entp)
+  })
+
+  it('should fall back to an entp record without profiles before an adobeid record', () => {
+    const adobeid = { code: 'X', type: 'adobeid', properties: null }
+    const entp = { code: 'X', type: 'entp', properties: null }
+    expect(pickServiceForCode([adobeid, entp], 'X')).toBe(entp)
+  })
+
+  it('should fall back to the first match when no entp record exists', () => {
+    const a = { code: 'Y', type: 'adobeid' }
+    const b = { code: 'Y', type: 'adobeid' }
+    expect(pickServiceForCode([a, b], 'Y')).toBe(a)
+  })
+})
+
+describe('dedupeServicesByCode', () => {
+  it('should return a single record per code, preferring entp+licenseConfigs', () => {
+    const services = [
+      { code: 'FrameioAPISDK', type: 'adobeid', properties: null },
+      { code: 'FrameioAPISDK', type: 'entp', properties: { licenseConfigs: [{ id: 'lc1' }] } },
+      { code: 'OtherSDK', type: 'entp' }
+    ]
+    const deduped = dedupeServicesByCode(services)
+    expect(deduped).toHaveLength(2)
+    expect(deduped.find(s => s.code === 'FrameioAPISDK')).toBe(services[1])
+    expect(deduped.find(s => s.code === 'OtherSDK')).toBe(services[2])
+  })
+
+  it('should be a no-op when no duplicates exist', () => {
+    const services = [{ code: 'A', type: 'entp' }, { code: 'B', type: 'entp' }]
+    expect(dedupeServicesByCode(services)).toEqual(services)
+  })
+})
+
+describe('mergeServiceProperties', () => {
+  it('should append new services when there is no overlap', () => {
+    const existing = [{ sdkCode: 'A' }]
+    const requested = [{ sdkCode: 'B' }]
+    expect(mergeServiceProperties(existing, requested)).toEqual([{ sdkCode: 'A' }, { sdkCode: 'B' }])
+  })
+
+  it('should let the requested entry win for overlapping sdkCodes', () => {
+    const existing = [{ sdkCode: 'A', licenseConfigs: [{ id: 'old' }] }]
+    const requested = [{ sdkCode: 'A', licenseConfigs: [{ id: 'new' }] }]
+    expect(mergeServiceProperties(existing, requested)).toEqual([{ sdkCode: 'A', licenseConfigs: [{ id: 'new' }] }])
+  })
+
+  it('should preserve existing services not in the requested list', () => {
+    const existing = [{ sdkCode: 'KeepMe' }, { sdkCode: 'Override' }]
+    const requested = [{ sdkCode: 'Override', updated: true }]
+    expect(mergeServiceProperties(existing, requested)).toEqual([
+      { sdkCode: 'KeepMe' },
+      { sdkCode: 'Override', updated: true }
+    ])
+  })
+})
+
+describe('assertSubscribeSuccess', () => {
+  it('should not throw on a normal success response', () => {
+    expect(() => assertSubscribeSuccess({ sdkList: ['AdobeAnalyticsSDK'] })).not.toThrow()
+  })
+
+  it('should not throw on null/undefined', () => {
+    expect(() => assertSubscribeSuccess(null)).not.toThrow()
+    expect(() => assertSubscribeSuccess(undefined)).not.toThrow()
+  })
+
+  it('should not throw on empty error arrays', () => {
+    expect(() => assertSubscribeSuccess({ sdkList: [], error: [], errorDetails: [] })).not.toThrow()
+  })
+
+  it('should surface the JIL "requires selection of a product" error', () => {
+    const jilErrorResponse = {
+      error: ['FrameioAPISDK'],
+      errorDetails: [{
+        sdkCode: 'FrameioAPISDK',
+        domain: 'JIL',
+        code: 400,
+        message: 'Service FrameioAPISDK requires selection of a product'
+      }]
+    }
+    expect(() => assertSubscribeSuccess(jilErrorResponse))
+      .toThrow(/Failed to add API service\(s\)[\s\S]*FrameioAPISDK: Service FrameioAPISDK requires selection of a product/)
+  })
+
+  it('should fall back to error[] when errorDetails is missing', () => {
+    expect(() => assertSubscribeSuccess({ error: ['SomeSDK'] }))
+      .toThrow(/Failed to add API service\(s\)[\s\S]*SomeSDK/)
+  })
+
+  it('should format error details that lack a sdkCode', () => {
+    expect(() => assertSubscribeSuccess({
+      errorDetails: [{ domain: 'JIL', code: 500, message: 'kaboom' }]
+    })).toThrow(/Failed to add API service\(s\)[\s\S]*kaboom/)
+  })
+
+  it('should fall back to JSON.stringify when an error detail lacks a message', () => {
+    expect(() => assertSubscribeSuccess({
+      errorDetails: [{ sdkCode: 'WeirdSDK', code: 418 }]
+    })).toThrow(/Failed to add API service\(s\)[\s\S]*WeirdSDK:[\s\S]*"code":\s*418/)
+  })
+
+  it('should render a null entry inside errorDetails as "(unknown error)"', () => {
+    expect(() => assertSubscribeSuccess({
+      errorDetails: [null]
+    })).toThrow(/Failed to add API service\(s\)[\s\S]*\(unknown error\)/)
   })
 })
 
@@ -140,6 +276,7 @@ describe('console:workspace:api:add', () => {
     mockConsoleCLIInstance.getProjects.mockResolvedValue([mockProject])
     mockConsoleCLIInstance.getWorkspaces.mockResolvedValue([mockWorkspace])
     mockConsoleCLIInstance.getEnabledServicesForOrg.mockResolvedValue(mockEnabledServices)
+    mockConsoleCLIInstance.getServicePropertiesFromWorkspaceWithCredentialType.mockResolvedValue([])
     mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mockResolvedValue(mockSubscribeResponse)
   })
 
@@ -246,6 +383,21 @@ describe('console:workspace:api:add', () => {
     await expect(command.run()).rejects.toThrow('Product profile(s) not found for service AdobeAnalyticsSDK: UnknownProfile')
   })
 
+  it('should error when --license-config references a code not in --service-code', async () => {
+    // Catches typos / casing mismatches that would otherwise silently
+    // drop the license-config entry while the unrelated --service-code
+    // succeeds.
+    command.argv = [
+      '--service-code', 'AppBuilderDataServicesSDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345',
+      '--license-config', 'FrameIOAPISDK=875473476'
+    ]
+    await expect(command.run()).rejects.toThrow(/--license-config given for service code\(s\) not in --service-code: FrameIOAPISDK[\s\S]*Requested service codes: AppBuilderDataServicesSDK/)
+    expect(mockConsoleCLIInstance.subscribeToServicesWithCredentialType).not.toHaveBeenCalled()
+  })
+
   it('should error on malformed --license-config value', async () => {
     command.argv = [
       '--service-code', 'AdobeAnalyticsSDK',
@@ -349,6 +501,94 @@ describe('console:workspace:api:add', () => {
       '--orgId', '12345'
     ]
     await expect(command.run()).rejects.toThrow('SDK subscribe failed')
+  })
+
+  it('should prefer the entp duplicate service record when adobeid is listed first', async () => {
+    // Repro of the Frame.io shape in getEnabledServicesForOrg: same sdkCode
+    // appears once as adobeid (no licenseConfigs) and once as entp (with
+    // licenseConfigs). The pre-dedup code subscribed against the adobeid
+    // record and dropped --license-config silently.
+    mockConsoleCLIInstance.getEnabledServicesForOrg.mockResolvedValue([
+      { name: 'Frame.io API', code: 'FrameioAPISDK', type: 'adobeid', properties: null },
+      {
+        name: 'Frame.io API',
+        code: 'FrameioAPISDK',
+        type: 'entp',
+        properties: {
+          roles: [{ id: 1102, code: 'frame.s2s.all', name: null }],
+          licenseConfigs: [{ id: '875473476', name: 'Default Frame.io Enterprise', productId: 'AA458DFE4F7020A0441A' }]
+        }
+      }
+    ])
+    command.argv = [
+      '--service-code', 'FrameioAPISDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345',
+      '--license-config', 'FrameioAPISDK=875473476'
+    ]
+    await command.run()
+
+    const call = mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mock.calls[0][0]
+    expect(call.serviceProperties).toHaveLength(1)
+    expect(call.serviceProperties[0].sdkCode).toBe('FrameioAPISDK')
+    expect(call.serviceProperties[0].licenseConfigs).toEqual([
+      { id: '875473476', name: 'Default Frame.io Enterprise', productId: 'AA458DFE4F7020A0441A' }
+    ])
+  })
+
+  it('should merge new services with services already on the credential', async () => {
+    // JIL's PUT-services replaces the credential's service list, so the
+    // command must submit the union of existing + new.
+    mockConsoleCLIInstance.getServicePropertiesFromWorkspaceWithCredentialType.mockResolvedValue([
+      { name: 'Existing SDK', sdkCode: 'ExistingSDK', roles: null, licenseConfigs: null }
+    ])
+    command.argv = [
+      '--service-code', 'AppBuilderDataServicesSDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345'
+    ]
+    await command.run()
+
+    const call = mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mock.calls[0][0]
+    expect(call.serviceProperties.map(sp => sp.sdkCode)).toEqual(['ExistingSDK', 'AppBuilderDataServicesSDK'])
+  })
+
+  it('should propagate failures to fetch existing services instead of overwriting silently', async () => {
+    // The lib returns [] (not throws) for a workspace without a credential
+    // yet, so a thrown error here is a real auth/network/server failure.
+    // Swallowing it and proceeding with [] would cause the credential's
+    // current services to be replaced by just the requested adds — the
+    // exact overwrite this merge is supposed to prevent.
+    mockConsoleCLIInstance.getServicePropertiesFromWorkspaceWithCredentialType.mockRejectedValue(new Error('network blew up'))
+    command.argv = [
+      '--service-code', 'AppBuilderDataServicesSDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345'
+    ]
+    await expect(command.run()).rejects.toThrow('network blew up')
+    expect(mockConsoleCLIInstance.subscribeToServicesWithCredentialType).not.toHaveBeenCalled()
+  })
+
+  it('should surface JIL embedded errors as a CLI error', async () => {
+    mockConsoleCLIInstance.subscribeToServicesWithCredentialType.mockResolvedValue({
+      error: ['AppBuilderDataServicesSDK'],
+      errorDetails: [{
+        sdkCode: 'AppBuilderDataServicesSDK',
+        domain: 'JIL',
+        code: 400,
+        message: 'Service AppBuilderDataServicesSDK requires selection of a product'
+      }]
+    })
+    command.argv = [
+      '--service-code', 'AppBuilderDataServicesSDK',
+      '--projectName', 'myproject',
+      '--workspaceName', 'Stage',
+      '--orgId', '12345'
+    ]
+    await expect(command.run()).rejects.toThrow('requires selection of a product')
   })
 
   it('should output JSON when --json is used', async () => {

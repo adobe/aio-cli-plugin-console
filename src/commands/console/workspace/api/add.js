@@ -21,7 +21,7 @@ const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
  * Format: "<sdkCode>=<nameOrId>[,<nameOrId>...]"
  *
  * @param {string[]} values raw flag values
- * @returns {Object<string, string[]>} map of sdkCode to list of profile identifiers
+ * @returns {{[sdkCode: string]: string[]}} map of sdkCode to list of profile identifiers
  */
 function parseLicenseConfigFlags (values) {
   const result = {}
@@ -46,10 +46,15 @@ function parseLicenseConfigFlags (values) {
 
 /**
  * Match requested profile identifiers against a service's available
- * licenseConfigs by either id or name.
+ * licenseConfigs by id, name, or productId.
  *
- * @param {Array<{id: string, name: string, productId: string}>} available
- * @param {string[]} requested profile names or ids
+ * Matching by productId lets users pass the value they see in
+ * `properties.licenseConfigs[].productId` from `aio console api list`,
+ * which is convenient for services like Frame.io that expose a single
+ * profile per product.
+ *
+ * @param {Array<{id: string, name: string, productId: string}>} available licenseConfigs reported for the service
+ * @param {string[]} requested profile names, ids, or productIds
  * @param {string} sdkCode service code for error messages
  * @returns {Array} selected licenseConfig objects
  */
@@ -57,7 +62,7 @@ function resolveLicenseConfigs (available, requested, sdkCode) {
   const selected = []
   const notFound = []
   for (const id of requested) {
-    const match = available.find(lc => lc.id === id || lc.name === id)
+    const match = available.find(lc => lc.id === id || lc.name === id || lc.productId === id)
     if (match) {
       selected.push(match)
     } else {
@@ -72,6 +77,112 @@ function resolveLicenseConfigs (available, requested, sdkCode) {
     )
   }
   return selected
+}
+
+/**
+ * Pick the best service record to subscribe when multiple records share
+ * the same sdkCode.
+ *
+ * Some services (notably Frame.io) appear twice in `getEnabledServicesForOrg`:
+ * once as `type: 'adobeid'` with no licenseConfigs (browser/SPA flow) and
+ * once as `type: 'entp'` with the product profile metadata required for
+ * OAuth Server-to-Server. `Array.find` returns whichever the API lists
+ * first, which silently drops `--license-config` when the adobeid record
+ * wins and causes JIL to reject the subscription. Since this command
+ * always uses OAuth Server-to-Server credentials, prefer the `entp` record
+ * (and, within that, the one that actually carries licenseConfigs).
+ *
+ * @param {Array<object>} services full enabled-services list
+ * @param {string} code sdkCode to look up
+ * @returns {object|undefined} the chosen service record, or undefined
+ */
+function pickServiceForCode (services, code) {
+  const matches = services.filter(s => s.code === code)
+  if (matches.length === 0) {
+    return undefined
+  }
+  const hasLicenseConfigs = s =>
+    s.properties &&
+    Array.isArray(s.properties.licenseConfigs) &&
+    s.properties.licenseConfigs.length > 0
+  const entpWithProfiles = matches.find(s => s.type === 'entp' && hasLicenseConfigs(s))
+  if (entpWithProfiles) {
+    return entpWithProfiles
+  }
+  const entp = matches.find(s => s.type === 'entp')
+  if (entp) {
+    return entp
+  }
+  return matches[0]
+}
+
+/**
+ * Reduce the enabled-services list to one record per sdkCode using
+ * pickServiceForCode. Preserves the original ordering of the chosen records.
+ *
+ * @param {Array<object>} services enabled services
+ * @returns {Array<object>} deduplicated services
+ */
+function dedupeServicesByCode (services) {
+  const seen = new Set()
+  const result = []
+  for (const s of services) {
+    if (seen.has(s.code)) continue
+    seen.add(s.code)
+    // pickServiceForCode is guaranteed to return a record because s itself
+    // is in services and matches by code.
+    result.push(pickServiceForCode(services, s.code))
+  }
+  return result
+}
+
+/**
+ * Merge new service-subscription requests with existing services on the
+ * credential. JIL's PUT-services endpoint replaces the credential's
+ * service list rather than appending to it, so without this merge a
+ * subsequent `aio console workspace api add` call would silently wipe
+ * the services subscribed by an earlier call.
+ *
+ * For codes present in both, the new entry wins (the user is overriding
+ * the existing subscription, including any licenseConfig changes).
+ *
+ * @param {Array<object>} existing serviceProperties currently on the credential
+ * @param {Array<object>} requested serviceProperties the user is adding
+ * @returns {Array<object>} merged serviceProperties
+ */
+function mergeServiceProperties (existing, requested) {
+  const requestedCodes = new Set(requested.map(sp => sp.sdkCode))
+  const kept = existing.filter(sp => !requestedCodes.has(sp.sdkCode))
+  return [...kept, ...requested]
+}
+
+/**
+ * Detect JIL subscription errors embedded in a 200 response and throw
+ * a CLI-friendly error if any are found.
+ *
+ * JIL returns `{ error: [<sdkCode>...], errorDetails: [{ sdkCode, domain, code, message }...] }`
+ * for partial/total failures inside an otherwise successful HTTP response,
+ * so without this check `--json` output silently looks like success.
+ *
+ * @param {object} response the subscribe response body
+ */
+function assertSubscribeSuccess (response) {
+  if (!response || typeof response !== 'object') {
+    return
+  }
+  const errorDetails = Array.isArray(response.errorDetails) ? response.errorDetails : []
+  const errorCodes = Array.isArray(response.error) ? response.error : []
+  if (errorDetails.length === 0 && errorCodes.length === 0) {
+    return
+  }
+  const formatted = errorDetails.length > 0
+    ? errorDetails.map(d => {
+      const where = d && d.sdkCode ? `${d.sdkCode}: ` : ''
+      const message = d == null ? '(unknown error)' : (d.message || JSON.stringify(d))
+      return `  ${where}${message}`
+    }).join('\n')
+    : `  ${errorCodes.join(', ')}`
+  throw new Error(`Failed to add API service(s):\n${formatted}`)
 }
 
 class AddCommand extends ConsoleCommand {
@@ -107,14 +218,27 @@ class AddCommand extends ConsoleCommand {
 
       const licenseConfigMap = parseLicenseConfigFlags(flags['license-config'] || [])
 
+      // Fail fast if --license-config references a service code that isn't in
+      // --service-code. Otherwise the entry is silently ignored, which is the
+      // exact silent-drop class of bug this command was patched against.
+      const requestedSet = new Set(requestedCodes)
+      const orphanLicenseConfigs = Object.keys(licenseConfigMap).filter(c => !requestedSet.has(c))
+      if (orphanLicenseConfigs.length > 0) {
+        this.error(
+          `--license-config given for service code(s) not in --service-code: ${orphanLicenseConfigs.join(', ')}. ` +
+          `Requested service codes: ${requestedCodes.join(', ')}.`
+        )
+      }
+
       const enabledServices = await this.consoleCLI.getEnabledServicesForOrg(orgId)
-      aioConsoleLogger.debug(`Enabled services: ${JSON.stringify(enabledServices.map(s => s.code))}`)
+      const supportedServices = dedupeServicesByCode(enabledServices)
+      aioConsoleLogger.debug(`Enabled services (deduped): ${JSON.stringify(supportedServices.map(s => s.code))}`)
 
       const serviceProperties = []
       const notFound = []
       const missingProfiles = []
       for (const code of requestedCodes) {
-        const service = enabledServices.find(s => s.code === code)
+        const service = supportedServices.find(s => s.code === code)
         if (!service) {
           notFound.push(code)
           continue
@@ -154,13 +278,32 @@ class AddCommand extends ConsoleCommand {
         )
       }
 
+      // JIL's PUT-services endpoint replaces the credential's service list,
+      // so fetch what's already subscribed and submit the union — otherwise
+      // a later `api add` call silently wipes services attached by an earlier
+      // one. The lib returns [] (not throws) for a workspace without a
+      // credential yet, so any thrown error here is real (auth, network,
+      // server) and we let it propagate: proceeding with an empty list
+      // would cause the very overwrite this merge is supposed to prevent.
+      const existingProperties = await this.consoleCLI.getServicePropertiesFromWorkspaceWithCredentialType({
+        orgId,
+        projectId: project.id,
+        workspace,
+        supportedServices,
+        credentialType: LibConsoleCLI.OAUTH_SERVER_TO_SERVER_CREDENTIAL
+      })
+      const mergedProperties = mergeServiceProperties(existingProperties, serviceProperties)
+      aioConsoleLogger.debug(`Submitting service list: ${JSON.stringify(mergedProperties.map(sp => sp.sdkCode))}`)
+
       const result = await this.consoleCLI.subscribeToServicesWithCredentialType({
         orgId,
         project,
         workspace,
-        serviceProperties,
+        serviceProperties: mergedProperties,
         credentialType: LibConsoleCLI.OAUTH_SERVER_TO_SERVER_CREDENTIAL
       })
+
+      assertSubscribeSuccess(result)
 
       if (flags.json) {
         this.printJson(result)
@@ -200,7 +343,7 @@ AddCommand.flags = {
     required: true
   }),
   'license-config': Flags.string({
-    description: 'Product profile(s) for a service, format: \'<sdkCode>=<profileNameOrId>[,<profileNameOrId>...]\'. Repeat for multiple services.',
+    description: 'Product profile(s) for a service, format: \'<sdkCode>=<profileNameOrIdOrProductId>[,<profileNameOrIdOrProductId>...]\'. Repeat for multiple services.',
     multiple: true
   }),
   json: Flags.boolean({
@@ -222,3 +365,7 @@ AddCommand.aliases = [
 module.exports = AddCommand
 module.exports.parseLicenseConfigFlags = parseLicenseConfigFlags
 module.exports.resolveLicenseConfigs = resolveLicenseConfigs
+module.exports.assertSubscribeSuccess = assertSubscribeSuccess
+module.exports.pickServiceForCode = pickServiceForCode
+module.exports.dedupeServicesByCode = dedupeServicesByCode
+module.exports.mergeServiceProperties = mergeServiceProperties
