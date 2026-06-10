@@ -288,10 +288,12 @@ describe('ConsoleCommand', () => {
 
     test('includes the terms URL in the prompt', async () => {
       mockConsoleCLI.checkDevTermsForOrg.mockResolvedValue(false)
+      mockConsoleCLI.getDevTermsForOrg.mockResolvedValue({ text: '\n  Developer Terms text  \n' })
       await command.ensureDevTermAccepted(mockConsoleCLI, 'org-1')
       const promptArg = mockConsoleCLI.prompt.promptConfirm.mock.calls[0][0]
       expect(promptArg).toContain('https://www.adobe.com/go/developer-terms')
       expect(promptArg).toContain('Developer Terms text')
+      expect(promptArg).toMatch(/^Developer Terms text\n\nYou have not accepted/)
     })
 
     test('handles missing terms text in the prompt', async () => {

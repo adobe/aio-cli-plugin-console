@@ -113,7 +113,7 @@ class ConsoleCommand extends Command {
       this.error('Developer Terms of Service have not been accepted for this organization. Please re-run this command without `--json`/`--yml`, or run `aio app init` to accept the terms first.')
     }
     const terms = await consoleCLI.getDevTermsForOrg()
-    const termsText = terms.text ? terms.text.trimEnd() : ''
+    const termsText = terms.text ? terms.text.trim() : ''
     const confirmDevTerms = await consoleCLI.prompt.promptConfirm(`${termsText}\n\nYou have not accepted the Developer Terms of Service. Go to ${hyperlinker(DEV_TERMS_URL, DEV_TERMS_URL)} to view the terms. Do you accept the terms? (y/n):`)
     if (!confirmDevTerms) {
       this.error('The Developer Terms of Service were declined')
