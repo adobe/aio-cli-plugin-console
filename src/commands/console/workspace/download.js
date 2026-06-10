@@ -45,6 +45,7 @@ class DownloadCommand extends ConsoleCommand {
 
     await this.initSdk()
     try {
+      await this.ensureDevTermAccepted(this.consoleCLI, orgId)
       const consoleConfig = await this.consoleCLI.getWorkspaceConfig(orgId, projectId, workspaceId)
 
       let fileName = 'console.json'

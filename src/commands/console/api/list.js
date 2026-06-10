@@ -27,6 +27,7 @@ class ListCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
+      await this.ensureDevTermAccepted(this.consoleCLI, orgId, flags.json || flags.yml)
       const enabledServices = await this.consoleCLI.getEnabledServicesForOrg(orgId)
       aioConsoleLogger.debug(`Enabled services: ${JSON.stringify(enabledServices.map(s => s.code))}`)
 

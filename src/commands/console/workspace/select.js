@@ -36,6 +36,7 @@ class SelectCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
+      await this.ensureDevTermAccepted(this.consoleCLI, orgId)
       const workspace = await this.selectWorkspaceInteractive(orgId, projectId, args.workspaceIdOrName)
 
       const obj = {

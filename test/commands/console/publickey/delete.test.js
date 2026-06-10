@@ -49,6 +49,10 @@ function setDefaultMockConsoleCLI () {
   mockConsoleCLIInstance.getWorkspaceConfig = jest.fn().mockResolvedValue(consoleConfig)
   mockConsoleCLIInstance.getBindingsForWorkspace = jest.fn().mockResolvedValue([binding1, binding2])
   mockConsoleCLIInstance.deleteBindingFromWorkspace = jest.fn().mockResolvedValue(true)
+  mockConsoleCLIInstance.checkDevTermsForOrg = jest.fn().mockResolvedValue(true)
+  mockConsoleCLIInstance.getDevTermsForOrg = jest.fn().mockResolvedValue({ text: 'terms' })
+  mockConsoleCLIInstance.acceptDevTermsForOrg = jest.fn().mockResolvedValue(true)
+  mockConsoleCLIInstance.prompt = { promptConfirm: jest.fn().mockResolvedValue(true) }
 }
 jest.mock('@adobe/aio-cli-lib-console', () => ({
   init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),

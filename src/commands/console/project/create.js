@@ -54,6 +54,7 @@ class CreateCommand extends ConsoleCommand {
 
     await this.initSdk()
     try {
+      await this.ensureDevTermAccepted(this.consoleCLI, orgId, flags.json || flags.yml)
       // check name is not already in use
       const projects = await this.consoleCLI.getProjects(orgId)
       if (projects.find(project => project.name === projectDetails.name)) {

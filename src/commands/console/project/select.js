@@ -29,6 +29,7 @@ class SelectCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
+      await this.ensureDevTermAccepted(this.consoleCLI, orgId)
       const project = await this.selectProjectInteractive(orgId, args.projectIdOrName)
 
       this.setConfig(CONFIG_KEYS.PROJECT, project)

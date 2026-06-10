@@ -37,6 +37,7 @@ class ListCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
+      await this.ensureDevTermAccepted(this.consoleCLI, orgId, flags.json || flags.yml)
       const workspaces = await this.getConsoleProjectWorkspaces(orgId, projectId)
 
       if (flags.json) {

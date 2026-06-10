@@ -227,4 +227,71 @@ describe('ConsoleCommand', () => {
       expect(config.delete).toHaveBeenCalledWith(CONFIG_KEYS.CONSOLE)
     })
   })
+
+  describe('ensureDevTermAccepted', () => {
+    let mockConsoleCLI
+
+    beforeEach(() => {
+      mockConsoleCLI = {
+        checkDevTermsForOrg: jest.fn().mockResolvedValue(true),
+        getDevTermsForOrg: jest.fn().mockResolvedValue({ text: 'Developer Terms text' }),
+        acceptDevTermsForOrg: jest.fn().mockResolvedValue(true),
+        prompt: { promptConfirm: jest.fn().mockResolvedValue(true) }
+      }
+      command.error = jest.fn((msg) => { throw new Error(msg) })
+      command.log = jest.fn()
+    })
+
+    test('no-op when terms already accepted', async () => {
+      mockConsoleCLI.checkDevTermsForOrg.mockResolvedValue(true)
+      await command.ensureDevTermAccepted(mockConsoleCLI, 'org-1')
+      expect(mockConsoleCLI.checkDevTermsForOrg).toHaveBeenCalledWith('org-1')
+      expect(mockConsoleCLI.getDevTermsForOrg).not.toHaveBeenCalled()
+      expect(mockConsoleCLI.prompt.promptConfirm).not.toHaveBeenCalled()
+      expect(mockConsoleCLI.acceptDevTermsForOrg).not.toHaveBeenCalled()
+      expect(command.log).not.toHaveBeenCalled()
+    })
+
+    test('errors fast when terms not accepted and skipPrompts=true', async () => {
+      mockConsoleCLI.checkDevTermsForOrg.mockResolvedValue(false)
+      await expect(command.ensureDevTermAccepted(mockConsoleCLI, 'org-1', true))
+        .rejects.toThrow(/Developer Terms of Service have not been accepted/)
+      expect(mockConsoleCLI.getDevTermsForOrg).not.toHaveBeenCalled()
+      expect(mockConsoleCLI.prompt.promptConfirm).not.toHaveBeenCalled()
+    })
+
+    test('errors when user declines the terms', async () => {
+      mockConsoleCLI.checkDevTermsForOrg.mockResolvedValue(false)
+      mockConsoleCLI.prompt.promptConfirm.mockResolvedValue(false)
+      await expect(command.ensureDevTermAccepted(mockConsoleCLI, 'org-1'))
+        .rejects.toThrow('The Developer Terms of Service were declined')
+      expect(mockConsoleCLI.getDevTermsForOrg).toHaveBeenCalled()
+      expect(mockConsoleCLI.acceptDevTermsForOrg).not.toHaveBeenCalled()
+    })
+
+    test('accepts terms programmatically when user confirms', async () => {
+      mockConsoleCLI.checkDevTermsForOrg.mockResolvedValue(false)
+      mockConsoleCLI.prompt.promptConfirm.mockResolvedValue(true)
+      mockConsoleCLI.acceptDevTermsForOrg.mockResolvedValue(true)
+      await command.ensureDevTermAccepted(mockConsoleCLI, 'org-1')
+      expect(mockConsoleCLI.acceptDevTermsForOrg).toHaveBeenCalledWith('org-1')
+      expect(command.log).toHaveBeenCalledWith(expect.stringContaining('successfully accepted'))
+    })
+
+    test('errors when accept call returns false', async () => {
+      mockConsoleCLI.checkDevTermsForOrg.mockResolvedValue(false)
+      mockConsoleCLI.prompt.promptConfirm.mockResolvedValue(true)
+      mockConsoleCLI.acceptDevTermsForOrg.mockResolvedValue(false)
+      await expect(command.ensureDevTermAccepted(mockConsoleCLI, 'org-1'))
+        .rejects.toThrow('The Developer Terms of Service could not be accepted')
+    })
+
+    test('includes the terms URL in the prompt', async () => {
+      mockConsoleCLI.checkDevTermsForOrg.mockResolvedValue(false)
+      await command.ensureDevTermAccepted(mockConsoleCLI, 'org-1')
+      const promptArg = mockConsoleCLI.prompt.promptConfirm.mock.calls[0][0]
+      expect(promptArg).toContain('https://www.adobe.com/go/developer-terms')
+      expect(promptArg).toContain('Developer Terms text')
+    })
+  })
 })

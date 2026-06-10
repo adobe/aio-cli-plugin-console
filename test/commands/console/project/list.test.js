@@ -44,6 +44,10 @@ const mockConsoleCLIInstance = {}
  */
 function setDefaultMockConsoleCLI () {
   mockConsoleCLIInstance.getProjects = jest.fn().mockResolvedValue(projects)
+  mockConsoleCLIInstance.checkDevTermsForOrg = jest.fn().mockResolvedValue(true)
+  mockConsoleCLIInstance.getDevTermsForOrg = jest.fn().mockResolvedValue({ text: 'terms' })
+  mockConsoleCLIInstance.acceptDevTermsForOrg = jest.fn().mockResolvedValue(true)
+  mockConsoleCLIInstance.prompt = { promptConfirm: jest.fn().mockResolvedValue(true) }
 }
 jest.mock('@adobe/aio-cli-lib-console', () => ({
   init: jest.fn().mockResolvedValue(mockConsoleCLIInstance),
@@ -115,6 +119,15 @@ describe('console:project:list', () => {
     await expect(command.run()).resolves.not.toThrow()
     expect(JSON.parse(stdout.output)).toMatchFixtureJson('project/list.json')
     expect(mockConsoleCLIInstance.getProjects).toHaveBeenCalledWith('1001')
+  })
+
+  test('should not prompt for developer terms when returning projects as json', async () => {
+    mockConsoleCLIInstance.checkDevTermsForOrg.mockResolvedValue(false)
+    command.argv = ['--orgId', '1001', '--json']
+
+    await expect(command.run()).rejects.toThrow('Developer Terms of Service have not been accepted')
+    expect(mockConsoleCLIInstance.prompt.promptConfirm).not.toHaveBeenCalled()
+    expect(mockConsoleCLIInstance.getProjects).not.toHaveBeenCalled()
   })
 
   test('should return list of projects yaml', async () => {
