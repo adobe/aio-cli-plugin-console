@@ -46,6 +46,7 @@ class CreateCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
+      await this.ensureDevTermAccepted(this.consoleCLI, orgId, flags.json || flags.yml)
       // resolve project by name to project id
       const projects = await this.consoleCLI.getProjects(orgId)
       const project = projects.find(p => p.name === flags.projectName)

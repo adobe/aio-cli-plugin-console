@@ -28,6 +28,7 @@ class ListCommand extends ConsoleCommand {
     await this.initSdk()
 
     try {
+      await this.ensureDevTermAccepted(this.consoleCLI, orgId, flags.json || flags.yml)
       const projects = await this.consoleCLI.getProjects(orgId)
       const project = projects.find(p => p.name === flags.projectName)
       if (!project) {

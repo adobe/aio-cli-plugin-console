@@ -18,7 +18,10 @@ const LibConsoleCLI = require('@adobe/aio-cli-lib-console')
 const { CLI } = require('@adobe/aio-lib-ims/src/context')
 const { getCliEnv } = require('@adobe/aio-lib-env')
 const yaml = require('js-yaml')
+const hyperlinker = require('hyperlinker')
 const { CONFIG_KEYS, API_KEYS } = require('../../config')
+
+const DEV_TERMS_URL = 'https://www.adobe.com/go/developer-terms'
 
 class ConsoleCommand extends Command {
   async run () {
@@ -87,6 +90,39 @@ class ConsoleCommand extends Command {
 
   cleanOutput () {
     LibConsoleCLI.cleanStdOut()
+  }
+
+  /**
+   * Ensure the Developer Terms of Service have been accepted for the given org.
+   * Mirrors the flow in @adobe/aio-cli-plugin-app's `app init` command so that
+   * `console` subcommands surface a CLI-native prompt instead of leaking a raw
+   * 451 "use POST /console/services/ims/organizations/:orgId/terms" message
+   * from the underlying SDK.
+   *
+   * @param {object} consoleCLI initialised @adobe/aio-cli-lib-console instance (this.consoleCLI)
+   * @param {string} orgId organization id to check
+   * @param {boolean} [skipPrompts] when true, fail fast instead of prompting (default false)
+   * @returns {Promise<void>}
+   */
+  async ensureDevTermAccepted (consoleCLI, orgId, skipPrompts = false) {
+    const isTermAccepted = await consoleCLI.checkDevTermsForOrg(orgId)
+    if (isTermAccepted) {
+      return
+    }
+    if (skipPrompts) {
+      this.error('Developer Terms of Service have not been accepted for this organization. Please re-run this command without `--json`/`--yml`, or run `aio app init` to accept the terms first.')
+    }
+    const terms = await consoleCLI.getDevTermsForOrg()
+    const termsText = terms.text ? terms.text.trim() : ''
+    const confirmDevTerms = await consoleCLI.prompt.promptConfirm(`${termsText}\n\nYou have not accepted the Developer Terms of Service. Go to ${hyperlinker(DEV_TERMS_URL, DEV_TERMS_URL)} to view the terms. Do you accept the terms? (y/n):`)
+    if (!confirmDevTerms) {
+      this.error('The Developer Terms of Service were declined')
+    }
+    const accepted = await consoleCLI.acceptDevTermsForOrg(orgId)
+    if (!accepted) {
+      this.error('The Developer Terms of Service could not be accepted')
+    }
+    this.log(`The Developer Terms of Service were successfully accepted for org ${orgId}`)
   }
 
   /**

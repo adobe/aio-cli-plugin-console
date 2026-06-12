@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 
 const TestCommand = require('../../../src/commands/console/open')
 const config = require('@adobe/aio-lib-core-config')
-const { STAGE_ENV } = require('@adobe/aio-lib-env')
+const { PROD_ENV, STAGE_ENV } = require('@adobe/aio-lib-env')
 
 const mockOpen = jest.fn()
 jest.unstable_mockModule('open', () => ({
@@ -25,6 +25,7 @@ beforeAll(() => {
   ORIGINAL_AIO_CLI_ENV = process.env.AIO_CLI_ENV
 })
 beforeEach(() => {
+  process.env.AIO_CLI_ENV = PROD_ENV
   config.get.mockReset()
   mockOpen.mockReset()
   command = new TestCommand([])
