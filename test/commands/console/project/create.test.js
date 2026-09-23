@@ -26,11 +26,7 @@ const mockProject = {
 
 const mockConsoleCLIInstance = {
   getProjects: jest.fn().mockResolvedValue([]),
-  createProject: jest.fn().mockResolvedValue(mockProject),
-  checkDevTermsForOrg: jest.fn().mockResolvedValue(true),
-  getDevTermsForOrg: jest.fn().mockResolvedValue({ text: 'terms' }),
-  acceptDevTermsForOrg: jest.fn().mockResolvedValue(true),
-  prompt: { promptConfirm: jest.fn().mockResolvedValue(true) }
+  createProject: jest.fn().mockResolvedValue(mockProject)
 }
 
 jest.mock('@adobe/aio-cli-lib-console', () => ({
@@ -50,7 +46,6 @@ describe('console:project:create', () => {
     mockConsoleCLIInstance.createProject = jest.fn().mockResolvedValue(mockProject)
     mockConsoleCLIInstance.getProjects.mockReset()
     mockConsoleCLIInstance.getProjects = jest.fn().mockResolvedValue([])
-    mockConsoleCLIInstance.checkDevTermsForOrg = jest.fn().mockResolvedValue(true)
   })
 
   afterEach(() => {
