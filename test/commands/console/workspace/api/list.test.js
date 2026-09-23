@@ -40,11 +40,7 @@ const mockConsoleCLIInstance = {
   getProjects: jest.fn().mockResolvedValue([mockProject]),
   getWorkspaces: jest.fn().mockResolvedValue([mockWorkspace]),
   getEnabledServicesForOrg: jest.fn().mockResolvedValue(mockEnabledServices),
-  getServicePropertiesFromWorkspaceWithCredentialType: jest.fn().mockResolvedValue(mockSubscribedServiceProperties),
-  checkDevTermsForOrg: jest.fn().mockResolvedValue(true),
-  getDevTermsForOrg: jest.fn().mockResolvedValue({ text: 'terms' }),
-  acceptDevTermsForOrg: jest.fn().mockResolvedValue(true),
-  prompt: { promptConfirm: jest.fn().mockResolvedValue(true) }
+  getServicePropertiesFromWorkspaceWithCredentialType: jest.fn().mockResolvedValue(mockSubscribedServiceProperties)
 }
 
 jest.mock('@adobe/aio-cli-lib-console', () => {
