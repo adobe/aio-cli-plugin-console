@@ -24,6 +24,7 @@ Console Integration Plugin for the Adobe I/O CLI
 
 <!-- toc -->
 * [Usage](#usage)
+* [Skills](#skills)
 * [Commands](#commands)
 <!-- tocstop -->
 
@@ -34,6 +35,45 @@ $ # OR
 $ aio discover -i
 $ aio console --help
 ```
+
+# Skills
+
+This repository includes [agent skills](https://github.com/vercel-labs/skills) that teach coding agents (Cursor, Claude Code, Codex, and others) how to use `aio console` commands.
+
+Install all skills:
+
+```sh
+npx skills add adobe/aio-cli-plugin-console
+```
+
+Install a specific skill:
+
+```sh
+npx skills add adobe/aio-cli-plugin-console --skill aio-console-context
+```
+
+Target a specific agent:
+
+```sh
+npx skills add adobe/aio-cli-plugin-console -a cursor
+npx skills add adobe/aio-cli-plugin-console -a claude-code -a codex
+```
+
+Install globally (available in all projects):
+
+```sh
+npx skills add adobe/aio-cli-plugin-console --global
+```
+
+### Available skills
+
+| Skill | Description |
+|-------|-------------|
+| `aio-console-setup` | Plugin install, IMS login, context hierarchy, and `aio console where` |
+| `aio-console-context` | Select and list orgs, projects, and workspaces |
+| `aio-console-projects` | Create projects and workspaces |
+| `aio-console-api-services` | Subscribe Adobe APIs and configure product profiles |
+| `aio-console-credentials` | Public key certificates and workspace config download |
 
 # Commands
 <!-- commands -->
